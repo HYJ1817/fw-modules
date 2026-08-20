@@ -4,16 +4,16 @@
 
 ## 订阅地址
 
-在 Forward 中优先添加以下 CDN 清单（中国大陆网络通常比 GitHub Raw 稳定）：
+在 Forward 中优先添加以下 GitHub Pages JSON 清单：
+
+```text
+https://hyj1817.github.io/fw-modules/fw-modules.json
+```
+
+CDN 备用地址：
 
 ```text
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-modules-cdn.fwd
-```
-
-GitHub Raw 备用地址：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/fw-modules.fwd
 ```
 
 ## 模块列表

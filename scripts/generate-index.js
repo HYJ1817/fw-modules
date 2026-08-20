@@ -11,6 +11,7 @@ const OUTPUT_FILES = [
   path.join(ROOT, "fw-modules.fwd"),
 ];
 const CDN_OUTPUT_FILE = path.join(ROOT, "fw-modules-cdn.fwd");
+const PAGES_OUTPUT_FILE = path.join(ROOT, "fw-modules.json");
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -68,9 +69,19 @@ const cdnOutput = {
     url: `${cdnBase}/widgets/${widget.url.split("/").pop()}`,
   })),
 };
+const pagesBase = `https://${OWNER.toLowerCase()}.github.io/${REPOSITORY}`;
+const pagesOutput = {
+  ...output,
+  icon: `${pagesBase}/icon.png`,
+  widgets: output.widgets.map((widget) => ({
+    ...widget,
+    url: `${pagesBase}/widgets/${widget.url.split("/").pop()}`,
+  })),
+};
 
 for (const outputFile of OUTPUT_FILES) {
   fs.writeFileSync(outputFile, `${JSON.stringify(output, null, 2)}\n`);
 }
 fs.writeFileSync(CDN_OUTPUT_FILE, `${JSON.stringify(cdnOutput, null, 2)}\n`);
-console.log(`Generated ${OUTPUT_FILES.concat(CDN_OUTPUT_FILE).map((file) => path.relative(ROOT, file)).join(", ")} with ${output.widgets.length} widgets.`);
+fs.writeFileSync(PAGES_OUTPUT_FILE, `${JSON.stringify(pagesOutput, null, 2)}\n`);
+console.log(`Generated ${OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE).map((file) => path.relative(ROOT, file)).join(", ")} with ${output.widgets.length} widgets.`);

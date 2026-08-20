@@ -53,9 +53,12 @@ async function testManifestCompatibility() {
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "forward-widgets.fwd"), "utf8"));
   const freshManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules.fwd"), "utf8"));
   const cdnManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules-cdn.fwd"), "utf8"));
+  const pagesManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules.json"), "utf8"));
   assert.deepStrictEqual(freshManifest, manifest, "fresh subscription manifest must match the canonical manifest");
   assert.ok(cdnManifest.icon.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/"));
   assert.ok(cdnManifest.widgets.every((widget) => widget.url.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/")));
+  assert.ok(pagesManifest.icon.startsWith("https://hyj1817.github.io/fw-modules/"));
+  assert.ok(pagesManifest.widgets.every((widget) => widget.url.startsWith("https://hyj1817.github.io/fw-modules/widgets/")));
   assert.ok(/^https:\/\//.test(manifest.icon), "manifest icon must be an absolute HTTPS URL");
   assert.ok(/\.(?:png|jpe?g|webp)(?:[?#].*)?$/i.test(manifest.icon), "Forward source icon must use a raster image format");
   assert.ok(Array.isArray(manifest.widgets) && manifest.widgets.length > 0, "manifest must contain widgets");
