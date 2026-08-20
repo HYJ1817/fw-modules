@@ -10,6 +10,7 @@ const OUTPUT_FILES = [
   path.join(ROOT, "forward-widgets.fwd"),
   path.join(ROOT, "fw-modules.fwd"),
 ];
+const CDN_OUTPUT_FILE = path.join(ROOT, "fw-modules-cdn.fwd");
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -58,8 +59,18 @@ const output = {
   icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
   widgets: files.map(metadataFromFile),
 };
+const cdnBase = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPOSITORY}@${BRANCH}`;
+const cdnOutput = {
+  ...output,
+  icon: `${cdnBase}/icon.png`,
+  widgets: output.widgets.map((widget) => ({
+    ...widget,
+    url: `${cdnBase}/widgets/${widget.url.split("/").pop()}`,
+  })),
+};
 
 for (const outputFile of OUTPUT_FILES) {
   fs.writeFileSync(outputFile, `${JSON.stringify(output, null, 2)}\n`);
 }
-console.log(`Generated ${OUTPUT_FILES.map((file) => path.relative(ROOT, file)).join(", ")} with ${output.widgets.length} widgets.`);
+fs.writeFileSync(CDN_OUTPUT_FILE, `${JSON.stringify(cdnOutput, null, 2)}\n`);
+console.log(`Generated ${OUTPUT_FILES.concat(CDN_OUTPUT_FILE).map((file) => path.relative(ROOT, file)).join(", ")} with ${output.widgets.length} widgets.`);
