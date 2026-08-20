@@ -1,0 +1,16 @@
+{
+  "title": "Forward 最小校验源",
+  "description": "不访问任何网站，仅用于定位模块来源校验问题",
+  "icon": "https://hyj1817.github.io/fw-modules/icon.png",
+  "widgets": [
+    {
+      "id": "hyj1817.control.minimal",
+      "title": "Forward 最小校验模块",
+      "description": "不访问任何网站，仅用于定位模块来源校验问题",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/fix/reachable-widget-icons/widgets/control.js"
+    }
+  ]
+}
