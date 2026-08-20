@@ -26,8 +26,8 @@ var HOMEPAGE_CATEGORIES = [
 WidgetMetadata = {
   id: "hyj1817.hstream.home",
   title: "HStream",
-  icon: "https://hstream.moe/favicon.ico",
-  version: "2.1.1",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "2.1.2",
   requiredVersion: "0.0.1",
   description: "HStream.moe 首页、搜索、详情与分集",
   author: "hstream",

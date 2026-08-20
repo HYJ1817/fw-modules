@@ -6,8 +6,8 @@ var YIN_CATEGORIES = ("1080p|1080p\n3P|3p\n60FPS|60fps\n69|69\nAI解码|ai解碼
 WidgetMetadata = {
   id: "hyj1817.yinhentai.home",
   title: "YinHentai",
-  icon: "https://yinhentai.com/favicon.ico",
-  version: "1.1.0",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.1.1",
   requiredVersion: "0.0.1",
   description: "YinHentai 首页、中文分类、搜索、详情与分集",
   author: "Forward Widgets",

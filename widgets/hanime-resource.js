@@ -2,8 +2,8 @@
 WidgetMetadata = {
   id: "hyj1817.hanime.resource",
   title: "Hanime 播放源",
-  icon: "https://hanime.tv/favicon.ico",
-  version: "1.1.0",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.1.1",
   requiredVersion: "0.0.1",
   description: "Hanime 多画质播放源；支持自建的已认证解析服务，并兼容旧版直链",
   author: "Forward Widgets",

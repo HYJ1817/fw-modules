@@ -66,8 +66,8 @@ var HANIME_CATEGORIES = [
 WidgetMetadata = {
   id: "hyj1817.hanime.home",
   title: "Hanime",
-  icon: "https://hanime.tv/favicon.ico",
-  version: "1.1.0",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.1.1",
   requiredVersion: "0.0.1",
   description: "Hanime.tv 首页、中文分类、搜索、详情与分集",
   author: "Forward Widgets",

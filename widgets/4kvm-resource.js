@@ -2,8 +2,8 @@
 WidgetMetadata = {
   id: "hyj1817.4kvm.resource",
   title: "4KVM 播放源",
-  icon: "https://www.4kvm.net/favicon.ico",
-  version: "1.0.1",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.0.2",
   requiredVersion: "0.0.1",
   description: "4KVM 电影、电视剧与动漫的 HLS 播放源",
   author: "Forward Widgets",

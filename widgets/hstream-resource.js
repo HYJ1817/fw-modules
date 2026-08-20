@@ -7,8 +7,8 @@
 WidgetMetadata = {
   id: "hyj1817.hstream.resource",
   title: "HStream 播放源",
-  icon: "https://hstream.moe/favicon.ico",
-  version: "1.0.0",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.0.1",
   requiredVersion: "0.0.1",
   description: "为 Forward 提供 HStream 720p MP4 多线路",
   author: "hstream",

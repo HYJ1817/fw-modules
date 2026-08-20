@@ -2,8 +2,8 @@
 WidgetMetadata = {
   id: "hyj1817.yinhentai.resource",
   title: "YinHentai 播放源",
-  icon: "https://yinhentai.com/favicon.ico",
-  version: "1.1.0",
+  icon: "https://hyj1817.github.io/fw-modules/icon.png",
+  version: "1.1.1",
   requiredVersion: "0.0.1",
   description: "YinHentai HLS/MP4 多线路播放源",
   author: "Forward Widgets",
