@@ -1,7 +1,7 @@
 {
   "title": "fw模块",
   "description": "Forward 自用首页模块与播放源",
-  "icon": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/icon.svg",
+  "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/icon.svg",
   "widgets": [
     {
       "id": "com.hstream.home",
@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.1",
       "version": "2.1.1",
       "author": "hstream",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hstream.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/hstream.js"
     },
     {
       "id": "hstream_resource",
@@ -19,7 +19,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "hstream",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hstream-resource.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/hstream-resource.js"
     },
     {
       "id": "com.yinhentai.home",
@@ -28,7 +28,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/yinhentai.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/yinhentai.js"
     },
     {
       "id": "yinhentai_resource",
@@ -37,7 +37,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/yinhentai-resource.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/yinhentai-resource.js"
     },
     {
       "id": "com.hanime.home",
@@ -46,7 +46,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hanime.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/hanime.js"
     },
     {
       "id": "hanime_resource",
@@ -55,7 +55,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hanime-resource.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/hanime-resource.js"
     },
     {
       "id": "fourkvm_resource",
@@ -64,7 +64,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "Forward Widgets",
-      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/4kvm-resource.js"
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.js"
     }
   ]
 }

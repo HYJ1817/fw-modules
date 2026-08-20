@@ -7,13 +7,13 @@
 在 Forward 中添加以下远程清单：
 
 ```text
-https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/forward-widgets.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/forward-widgets.fwd
 ```
 
 如果 GitHub Raw 连接不稳定，可尝试 jsDelivr：
 
 ```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw%E6%A8%A1%E5%9D%97@main/forward-widgets.fwd
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/forward-widgets.fwd
 ```
 
 ## 模块列表
@@ -41,13 +41,13 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw%E6%A8%A1%E5%9D%97@main/forward-widgets.fw
 单文件 Raw 地址格式：
 
 ```text
-https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/文件名.js
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/文件名.js
 ```
 
 例如 4KVM 播放源：
 
 ```text
-https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/4kvm-resource.js
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.js
 ```
 
 ## 维护

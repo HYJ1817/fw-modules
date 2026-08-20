@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, "..");
 const WIDGETS_DIR = path.join(ROOT, "widgets");
 const OUTPUT_FILE = path.join(ROOT, "forward-widgets.fwd");
 const OWNER = "HYJ1817";
-const REPOSITORY = "fw模块";
+const REPOSITORY = "fw-modules";
 const BRANCH = "main";
 
 function metadataFromFile(filename) {
@@ -52,7 +52,7 @@ const files = [
 const output = {
   title: "fw模块",
   description: "Forward 自用首页模块与播放源",
-  icon: "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/icon.svg",
+  icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/icon.svg",
   widgets: files.map(metadataFromFile),
 };
 
