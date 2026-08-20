@@ -1,0 +1,13 @@
+{
+  "name": "fw-modules",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Forward 自用首页模块与播放源",
+  "scripts": {
+    "generate:index": "node scripts/generate-index.js",
+    "test": "node tests/widgets.test.js",
+    "test:4kvm:live": "node tests/4kvm-live.test.js",
+    "test:hstream:home:live": "node tests/hstream-home.live.test.js",
+    "test:hstream:resource:live": "node tests/hstream-resource.live.test.js"
+  }
+}

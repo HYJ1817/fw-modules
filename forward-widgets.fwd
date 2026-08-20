@@ -1,0 +1,70 @@
+{
+  "title": "fw模块",
+  "description": "Forward 自用首页模块与播放源",
+  "icon": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/icon.svg",
+  "widgets": [
+    {
+      "id": "com.hstream.home",
+      "title": "HStream",
+      "description": "HStream.moe 首页、搜索、详情与分集",
+      "requiredVersion": "0.0.1",
+      "version": "2.1.1",
+      "author": "hstream",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hstream.js"
+    },
+    {
+      "id": "hstream_resource",
+      "title": "HStream 播放源",
+      "description": "为 Forward 提供 HStream 720p MP4 多线路",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "hstream",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hstream-resource.js"
+    },
+    {
+      "id": "com.yinhentai.home",
+      "title": "YinHentai",
+      "description": "YinHentai 首页、中文分类、搜索、详情与分集",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward Widgets",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/yinhentai.js"
+    },
+    {
+      "id": "yinhentai_resource",
+      "title": "YinHentai 播放源",
+      "description": "YinHentai HLS/MP4 多线路播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward Widgets",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/yinhentai-resource.js"
+    },
+    {
+      "id": "com.hanime.home",
+      "title": "Hanime",
+      "description": "Hanime.tv 首页、中文分类、搜索、详情与分集",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward Widgets",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hanime.js"
+    },
+    {
+      "id": "hanime_resource",
+      "title": "Hanime 播放源",
+      "description": "Hanime 多画质播放源；支持自建的已认证解析服务，并兼容旧版直链",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward Widgets",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/hanime-resource.js"
+    },
+    {
+      "id": "fourkvm_resource",
+      "title": "4KVM 播放源",
+      "description": "4KVM 电影、电视剧与动漫的 HLS 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.1",
+      "author": "Forward Widgets",
+      "url": "https://raw.githubusercontent.com/HYJ1817/fw%E6%A8%A1%E5%9D%97/main/widgets/4kvm-resource.js"
+    }
+  ]
+}
