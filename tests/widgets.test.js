@@ -48,6 +48,13 @@ async function testMetadata() {
   });
 }
 
+async function testManifestCompatibility() {
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "forward-widgets.fwd"), "utf8"));
+  assert.ok(/^https:\/\//.test(manifest.icon), "manifest icon must be an absolute HTTPS URL");
+  assert.ok(/\.(?:png|jpe?g|webp)(?:[?#].*)?$/i.test(manifest.icon), "Forward source icon must use a raster image format");
+  assert.ok(Array.isArray(manifest.widgets) && manifest.widgets.length > 0, "manifest must contain widgets");
+}
+
 async function test4kvmParsing() {
   const r = load("4kvm-resource.js");
   assert.strictEqual(r.WidgetMetadata.modules.length, 1);
@@ -206,7 +213,7 @@ async function testYinStreams() {
 }
 
 async function main() {
-  const tests = [testMetadata, test4kvmParsing, test4kvmPlayback, testHanimeParsing, testHanimeRoutes, testHanimeStreams, testYinParsing, testYinStreams];
+  const tests = [testMetadata, testManifestCompatibility, test4kvmParsing, test4kvmPlayback, testHanimeParsing, testHanimeRoutes, testHanimeStreams, testYinParsing, testYinStreams];
   for (const test of tests) {
     await test();
     process.stdout.write(`PASS ${test.name}\n`);

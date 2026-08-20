@@ -52,7 +52,7 @@ const files = [
 const output = {
   title: "fw模块",
   description: "Forward 自用首页模块与播放源",
-  icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/icon.svg",
+  icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
   widgets: files.map(metadataFromFile),
 };
 
