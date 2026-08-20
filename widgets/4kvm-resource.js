@@ -1,6 +1,6 @@
 /** 4KVM playback source for Forward. */
 WidgetMetadata = {
-  id: "fourkvm_resource",
+  id: "hyj1817.4kvm.resource",
   title: "4KVM 播放源",
   icon: "https://www.4kvm.net/favicon.ico",
   version: "1.0.1",

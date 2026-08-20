@@ -4,7 +4,7 @@ var YIN_CATEGORIES = ("1080p|1080p\n3P|3p\n60FPS|60fps\n69|69\nAI解码|ai解碼
   .split("\n").map(function (line) { var pair = line.split("|"); return { title: pair[0], value: pair[1] }; });
 
 WidgetMetadata = {
-  id: "com.yinhentai.home",
+  id: "hyj1817.yinhentai.home",
   title: "YinHentai",
   icon: "https://yinhentai.com/favicon.ico",
   version: "1.1.0",
@@ -29,7 +29,7 @@ WidgetMetadata = {
 
 var BASE = "https://yinhentai.com";
 var UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1";
-var NS = "com.yinhentai.home";
+var NS = "hyj1817.yinhentai.home";
 
 function decodeEntities(value) {
   return String(value || "").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#039;|&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ");

@@ -64,7 +64,7 @@ var HANIME_CATEGORIES = [
 ];
 
 WidgetMetadata = {
-  id: "com.hanime.home",
+  id: "hyj1817.hanime.home",
   title: "Hanime",
   icon: "https://hanime.tv/favicon.ico",
   version: "1.1.0",
@@ -98,7 +98,7 @@ WidgetMetadata = {
 var BASE = "https://hanime.tv";
 var SEARCH_API = "https://search.htv-services.com/";
 var UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1";
-var NS = "com.hanime.home";
+var NS = "hyj1817.hanime.home";
 
 function absoluteUrl(url) {
   url = decodeEntities(String(url || "").replace(/\\u002F/g, "/").replace(/\\\//g, "/"));

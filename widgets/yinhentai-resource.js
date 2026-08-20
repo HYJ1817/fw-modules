@@ -1,6 +1,6 @@
 /** YinHentai playback source for Forward. */
 WidgetMetadata = {
-  id: "yinhentai_resource",
+  id: "hyj1817.yinhentai.resource",
   title: "YinHentai 播放源",
   icon: "https://yinhentai.com/favicon.ico",
   version: "1.1.0",

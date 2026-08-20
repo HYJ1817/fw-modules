@@ -24,7 +24,7 @@ var HOMEPAGE_CATEGORIES = [
 ];
 
 WidgetMetadata = {
-  id: "com.hstream.home",
+  id: "hyj1817.hstream.home",
   title: "HStream",
   icon: "https://hstream.moe/favicon.ico",
   version: "2.1.1",
@@ -93,7 +93,7 @@ WidgetMetadata = {
 var BASE = "https://hstream.moe";
 var UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36";
-var NS = "com.hstream.home";
+var NS = "hyj1817.hstream.home";
 
 // ---------------------------------------------------------------------------
 // 缓存(sharedCache + storage 兼容兜底;自带 TTL,值存为 {t, v})

@@ -1,6 +1,6 @@
 /** Hanime.tv playback source for Forward. */
 WidgetMetadata = {
-  id: "hanime_resource",
+  id: "hyj1817.hanime.resource",
   title: "Hanime 播放源",
   icon: "https://hanime.tv/favicon.ico",
   version: "1.1.0",

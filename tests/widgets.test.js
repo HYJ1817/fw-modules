@@ -33,6 +33,7 @@ async function testMetadata() {
   const resources = [load("hanime-resource.js"), load("yinhentai-resource.js"), load("4kvm-resource.js")];
   const ids = homes.concat(resources).map((x) => x.WidgetMetadata.id);
   assert.strictEqual(new Set(ids).size, ids.length, "widget ids must be unique");
+  assert.ok(ids.every((id) => id.startsWith("hyj1817.")), "remote widget ids must use the repository namespace");
   homes.forEach((x) => {
     assert.ok(x.WidgetMetadata.search, "homepage must expose search");
     assert.ok(x.WidgetMetadata.modules.some((m) => m.id === "categories"));

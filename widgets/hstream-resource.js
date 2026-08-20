@@ -5,7 +5,7 @@
  * 返回 HStream 720p MP4 多 CDN 线路。
  */
 WidgetMetadata = {
-  id: "hstream_resource",
+  id: "hyj1817.hstream.resource",
   title: "HStream 播放源",
   icon: "https://hstream.moe/favicon.ico",
   version: "1.0.0",
