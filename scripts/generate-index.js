@@ -6,7 +6,10 @@ const vm = require("vm");
 
 const ROOT = path.resolve(__dirname, "..");
 const WIDGETS_DIR = path.join(ROOT, "widgets");
-const OUTPUT_FILE = path.join(ROOT, "forward-widgets.fwd");
+const OUTPUT_FILES = [
+  path.join(ROOT, "forward-widgets.fwd"),
+  path.join(ROOT, "fw-modules.fwd"),
+];
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -56,5 +59,7 @@ const output = {
   widgets: files.map(metadataFromFile),
 };
 
-fs.writeFileSync(OUTPUT_FILE, `${JSON.stringify(output, null, 2)}\n`);
-console.log(`Generated ${path.relative(ROOT, OUTPUT_FILE)} with ${output.widgets.length} widgets.`);
+for (const outputFile of OUTPUT_FILES) {
+  fs.writeFileSync(outputFile, `${JSON.stringify(output, null, 2)}\n`);
+}
+console.log(`Generated ${OUTPUT_FILES.map((file) => path.relative(ROOT, file)).join(", ")} with ${output.widgets.length} widgets.`);

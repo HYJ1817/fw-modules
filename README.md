@@ -7,13 +7,13 @@
 在 Forward 中添加以下远程清单：
 
 ```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/forward-widgets.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/fw-modules.fwd
 ```
 
 如果 GitHub Raw 连接不稳定，可尝试 jsDelivr：
 
 ```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/forward-widgets.fwd
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-modules.fwd
 ```
 
 ## 模块列表
