@@ -4,8 +4,11 @@
   "private": true,
   "description": "Forward 自用首页模块与播放源",
   "scripts": {
+    "build:all": "node scripts/build-fw-all.js",
     "generate:index": "node scripts/generate-index.js",
     "test": "node tests/widgets.test.js",
+    "test:all": "node tests/fw-all.test.js",
+    "verify": "npm run build:all && npm run test:all && npm test",
     "test:4kvm:live": "node tests/4kvm-live.test.js",
     "test:hstream:home:live": "node tests/hstream-home.live.test.js",
     "test:hstream:resource:live": "node tests/hstream-resource.live.test.js"
