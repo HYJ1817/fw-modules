@@ -29,11 +29,18 @@ function load(name) {
 }
 
 async function testMetadata() {
-  const homes = [load("hanime.js"), load("yinhentai.js")];
-  const resources = [load("hanime-resource.js"), load("yinhentai-resource.js"), load("4kvm-resource.js")];
+  const homes = [load("hstream.js"), load("hanime.js"), load("yinhentai.js")];
+  const resources = [load("hstream-resource.js"), load("hanime-resource.js"), load("yinhentai-resource.js"), load("4kvm-resource.js")];
   const ids = homes.concat(resources).map((x) => x.WidgetMetadata.id);
   assert.strictEqual(new Set(ids).size, ids.length, "widget ids must be unique");
   assert.ok(ids.every((id) => id.startsWith("hyj1817.")), "remote widget ids must use the repository namespace");
+  homes.concat(resources).forEach((x) => {
+    assert.strictEqual(
+      x.WidgetMetadata.icon,
+      "https://hyj1817.github.io/fw-modules/icon.png",
+      "widget metadata must use the reachable repository PNG instead of a target-site favicon"
+    );
+  });
   homes.forEach((x) => {
     assert.ok(x.WidgetMetadata.search, "homepage must expose search");
     assert.ok(x.WidgetMetadata.modules.some((m) => m.id === "categories"));
@@ -69,7 +76,7 @@ async function test4kvmParsing() {
   assert.strictEqual(r.WidgetMetadata.modules.length, 1);
   assert.strictEqual(r.WidgetMetadata.modules[0].type, "stream");
   assert.ok(!r.WidgetMetadata.search);
-  assert.strictEqual(r.WidgetMetadata.version, "1.0.1");
+  assert.strictEqual(r.WidgetMetadata.version, "1.0.2");
 
   const searchHtml = `
     <div class="group relative"><a href="/play/movie-wrong"><img alt="复仇者联盟3：无限战争"><div>2018</div></a></div>
