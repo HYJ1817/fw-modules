@@ -56,6 +56,16 @@ async function testMetadata() {
   });
 }
 
+async function testControlModule() {
+  const control = load("control.js");
+  assert.strictEqual(control.WidgetMetadata.id, "hyj1817.control.minimal");
+  assert.strictEqual(control.WidgetMetadata.detailCacheDuration, 60);
+  assert.strictEqual(control.WidgetMetadata.modules.length, 1);
+  assert.strictEqual(control.WidgetMetadata.modules[0].functionName, "loadControl");
+  assert.strictEqual(typeof control.loadControl, "function");
+  assert.deepStrictEqual(Array.from(await control.loadControl()), []);
+}
+
 async function testManifestCompatibility() {
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "forward-widgets.fwd"), "utf8"));
   const freshManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules.fwd"), "utf8"));
@@ -229,7 +239,7 @@ async function testYinStreams() {
 }
 
 async function main() {
-  const tests = [testMetadata, testManifestCompatibility, test4kvmParsing, test4kvmPlayback, testHanimeParsing, testHanimeRoutes, testHanimeStreams, testYinParsing, testYinStreams];
+  const tests = [testMetadata, testControlModule, testManifestCompatibility, test4kvmParsing, test4kvmPlayback, testHanimeParsing, testHanimeRoutes, testHanimeStreams, testYinParsing, testYinStreams];
   for (const test of tests) {
     await test();
     process.stdout.write(`PASS ${test.name}\n`);
