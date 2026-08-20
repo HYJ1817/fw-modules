@@ -2,6 +2,16 @@
 
 个人整理的 Forward 首页模块与播放源。仓库中的模块均为独立 JavaScript 文件，可单独导入，也可以通过订阅清单一次添加。
 
+## 单链接总模块（推荐）
+
+Forward 右上角选择链接导入，只需添加：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
+```
+
+该 JS 同时包含 HStream、YinHentai、Hanime 首页模块和 HStream、YinHentai、Hanime、4KVM 播放源，不依赖 `.fwd` 集合来源。
+
 ## 订阅地址
 
 在 Forward 中优先添加以下 GitHub Pages JSON 清单：
@@ -55,8 +65,9 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.
 修改模块后需要同步提升该文件的 `WidgetMetadata.version`，然后重新生成订阅清单：
 
 ```bash
+npm run build:all
 npm run generate:index
-npm test
+npm run verify
 ```
 
 真实站点验证属于可选测试：
