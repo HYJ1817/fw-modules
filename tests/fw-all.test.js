@@ -17,6 +17,7 @@ function loadBundle() {
     encodeURIComponent,
     decodeURIComponent,
     setTimeout,
+    clearTimeout,
     Widget: {
       http: { get: async () => ({ data: "" }), post: async () => ({ data: {} }) },
       storage: null,
@@ -105,12 +106,83 @@ async function testDeterministicBuild() {
   assert.strictEqual(after, before);
 }
 
+async function testPlaybackLatency() {
+  const bundle = loadBundle();
+  // Scale runtime deadlines, keeping the outer test watchdog independent.
+  bundle.setTimeout = (fn, ms) => setTimeout(fn, ms / 100);
+  let calls = 0;
+  let release;
+  const delayed = new Promise(resolve => { release = resolve; });
+  bundle.FW_HSTREAM_RESOURCE.loadResource = async () => { calls++; return delayed; };
+  let unrelated = 0;
+  bundle.FW_YIN_RESOURCE.loadResource = async () => { unrelated++; return []; };
+  bundle.FW_HANIME_RESOURCE.loadResource = async () => { unrelated++; return []; };
+  bundle.FW_4KVM_RESOURCE.loadResource = async () => { unrelated++; return []; };
+  const one = bundle.loadResource({ id: 'hstream%3Atest-1' });
+  const two = bundle.loadResource({ id: 'hstream%3Atest-1' });
+  await new Promise(resolve => setImmediate(resolve));
+  release([{ url: 'https://cdn/test.mp4' }]);
+  await Promise.all([one, two]);
+  assert.strictEqual(unrelated, 0, 'id must select only its own provider');
+  assert.strictEqual(calls, 1, 'concurrent identical playback requests must share work');
+
+  bundle.FW_HSTREAM_RESOURCE.loadResource = async () => [{ url: 'https://cdn/fast.mp4' }];
+  bundle.FW_4KVM_RESOURCE.loadResource = () => new Promise(() => {});
+  let watchdog;
+  const result = await Promise.race([
+    bundle.loadResource({ title: 'test' }),
+    new Promise(resolve => { watchdog = setTimeout(() => resolve('hung'), 100); }),
+  ]);
+  clearTimeout(watchdog);
+  assert.notStrictEqual(result, 'hung', 'a hung provider must not withhold working streams');
+  assert.strictEqual(result[0].url, 'https://cdn/fast.mp4');
+}
+
+async function testPlaybackRecovery() {
+  const bundle = loadBundle();
+  bundle.setTimeout = (fn, ms) => setTimeout(fn, ms / 1000);
+  let late;
+  bundle.FW_HSTREAM_RESOURCE.loadResource = () => new Promise(resolve => { late = resolve; });
+  const result = await bundle.loadResource({ link: 'hstream:test-1' });
+  assert.strictEqual(result.length, 0, 'direct source deadline must settle');
+  late([{ url: 'https://cdn/late.mp4' }]);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.strictEqual(result.length, 0, 'late completion must not mutate returned results');
+  bundle.FW_HSTREAM_RESOURCE.loadResource = async () => [{ url: 'https://cdn/recovered.mp4' }];
+  const retry = await bundle.loadResource({ link: 'hstream:test-1' });
+  assert.strictEqual(retry[0].url, 'https://cdn/recovered.mp4', 'empty results must not be cached');
+  const cases = [
+    ['FW_HSTREAM_RESOURCE', { url: 'https://hstream.moe/hentai/test-1' }, 'hstream:test-1'],
+    ['FW_YIN_RESOURCE', { id: 'yinhentai%3Atest-1' }, 'yinhentai:test-1'],
+    ['FW_HANIME_RESOURCE', { url: 'https://hanime.tv/videos/hentai/test-1' }, 'hanime:test-1'],
+    ['FW_4KVM_RESOURCE', { url: 'https://www.4kvm.net/play/test-1' }, '4kvm:test-1'],
+  ];
+  for (const [name, input, expected] of cases) {
+    const invoked = [];
+    for (const [provider] of cases) {
+      bundle[provider].loadResource = async params => {
+        invoked.push([provider, params.link]);
+        return [{ url: 'https://cdn/test.mp4' }];
+      };
+    }
+    await bundle.loadResource(input);
+    assert.deepStrictEqual(invoked, [[name, expected]]);
+    invoked.length = 0;
+    await bundle.loadResource({ ...input, multiSource: 'disabled' });
+    assert.strictEqual(invoked.length, 0);
+  }
+}
+
 async function testVerifyCommand() {
   const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
   assert.strictEqual(packageJson.scripts.verify, "npm run build:all && npm run test:all && npm test");
 }
 
 async function main() {
+  await testPlaybackLatency();
+  process.stdout.write("PASS testPlaybackLatency\n");
+  await testPlaybackRecovery();
+  process.stdout.write("PASS testPlaybackRecovery\n");
   await testMetadata();
   process.stdout.write("PASS testMetadata\n");
   await testSearchAll();
