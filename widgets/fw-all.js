@@ -7,7 +7,7 @@ var WidgetMetadata = {
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "requiredVersion": "0.0.1",
   "detailCacheDuration": 60,
   "globalParams": [
@@ -3429,29 +3429,96 @@ function resourceProviderForLink(link) {
   return null;
 }
 
-async function loadResource(params) {
+var FW_PLAYBACK_PENDING = Object.create(null);
+
+function collectPlayback(providers, input, direct) {
+  return new Promise(function (resolve) {
+    var groups = new Array(providers.length);
+    var remaining = providers.length;
+    var finished = false;
+    var grace;
+    var deadline;
+    function finish(reason) {
+      if (finished) return;
+      finished = true;
+      if (typeof clearTimeout === "function") {
+        clearTimeout(deadline);
+        if (grace) clearTimeout(grace);
+      }
+      var seen = Object.create(null);
+      var output = [];
+      groups.forEach(function (items) {
+        (items || []).forEach(function (item) {
+          if (item && item.url && !seen[item.url]) {
+            seen[item.url] = true;
+            output.push(item);
+          }
+        });
+      });
+      console.log("FW playback: " + reason + ", completed=" + (providers.length - remaining) + "/" + providers.length + ", streams=" + output.length);
+      resolve(output);
+    }
+    // A source may perform multiple sequential 15-second HTTP requests.
+    // Bound the user-facing wait without claiming to cancel native HTTP work.
+    deadline = setTimeout(function () { finish("deadline"); }, direct ? 25000 : 20000);
+    providers.forEach(function (provider, index) {
+      Promise.resolve().then(function () { return provider(input); }).catch(function () { return []; }).then(function (items) {
+        if (finished) return;
+        groups[index] = Array.isArray(items) ? items.filter(function (item) { return item && item.url; }) : [];
+        remaining--;
+        if (!remaining) return finish("all complete");
+        if (!direct && groups[index].length && !grace) {
+          grace = setTimeout(function () { finish("available streams"); }, 1500);
+        }
+      });
+    });
+    if (!remaining) finish("no providers");
+  });
+}
+
+function playbackInput(params) {
+  var input = Object.assign({}, params || {});
+  var values = [input.link, input.id, input.url];
+  for (var i = 0; i < values.length; i++) {
+    var value = String(values[i] || "");
+    try { value = decodeURIComponent(value); } catch (e) {}
+    var prefix = value.match(/^(hstream|yinhentai|hanime|4kvm):(.+)$/i);
+    if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net)\/([^?#]+)/i);
+    if (!url) continue;
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/] };
+    var route = routes[url[1].toLowerCase()];
+    var slug = url[2].match(route[1]);
+    if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
+  }
+  return input;
+}
+
+async function resolvePlayback(params) {
   var input = params || {};
   var direct = resourceProviderForLink(String(input.link || ""));
-  if (direct) return direct(input);
+  if (direct) return collectPlayback([direct], input, true);
   var providers = [
     FW_HSTREAM_RESOURCE.loadResource,
     FW_YIN_RESOURCE.loadResource,
     FW_HANIME_RESOURCE.loadResource,
     FW_4KVM_RESOURCE.loadResource,
   ];
-  var groups = await Promise.all(providers.map(function (provider) {
-    return Promise.resolve().then(function () { return provider(input); }).catch(function () { return []; });
-  }));
-  var seen = {};
-  var output = [];
-  groups.forEach(function (items) {
-    (Array.isArray(items) ? items : []).forEach(function (item) {
-      var key = String(item.url || "");
-      if (key && !seen[key]) {
-        seen[key] = true;
-        output.push(item);
-      }
-    });
+  return collectPlayback(providers, input, false);
+}
+
+function loadResource(params) {
+  if (params && params.multiSource === "disabled") return Promise.resolve([]);
+  var input = playbackInput(params);
+  var key = JSON.stringify(Object.keys(input).sort().map(function (name) { return [name, input[name]]; }));
+  if (FW_PLAYBACK_PENDING[key]) return FW_PLAYBACK_PENDING[key];
+  var pending = resolvePlayback(input).then(function (items) {
+    delete FW_PLAYBACK_PENDING[key];
+    return items;
+  }, function (error) {
+    delete FW_PLAYBACK_PENDING[key];
+    throw error;
   });
-  return output;
+  FW_PLAYBACK_PENDING[key] = pending;
+  return pending;
 }
