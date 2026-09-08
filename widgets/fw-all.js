@@ -7,7 +7,7 @@ var WidgetMetadata = {
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "requiredVersion": "0.0.1",
   "detailCacheDuration": 60,
   "globalParams": [
@@ -3436,6 +3436,7 @@ function collectPlayback(providers, input, direct) {
     var groups = new Array(providers.length);
     var remaining = providers.length;
     var finished = false;
+    var hasTimers = typeof setTimeout === "function";
     var grace;
     var deadline;
     function finish(reason) {
@@ -3460,14 +3461,20 @@ function collectPlayback(providers, input, direct) {
     }
     // A source may perform multiple sequential 15-second HTTP requests.
     // Bound the user-facing wait without claiming to cancel native HTTP work.
-    deadline = setTimeout(function () { finish("deadline"); }, direct ? 25000 : 20000);
+    if (hasTimers) {
+      deadline = setTimeout(function () { finish("deadline"); }, direct ? 25000 : 20000);
+    } else {
+      // Embedded JS hosts need not provide browser/Node timer globals.
+      // In that case providers rely on their native HTTP timeouts.
+      console.log("FW playback: timers unavailable; native HTTP timeouts only");
+    }
     providers.forEach(function (provider, index) {
       Promise.resolve().then(function () { return provider(input); }).catch(function () { return []; }).then(function (items) {
         if (finished) return;
         groups[index] = Array.isArray(items) ? items.filter(function (item) { return item && item.url; }) : [];
         remaining--;
         if (!remaining) return finish("all complete");
-        if (!direct && groups[index].length && !grace) {
+        if (hasTimers && !direct && groups[index].length && !grace) {
           grace = setTimeout(function () { finish("available streams"); }, 1500);
         }
       });
