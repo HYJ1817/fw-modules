@@ -178,7 +178,28 @@ async function testVerifyCommand() {
   assert.strictEqual(packageJson.scripts.verify, "npm run build:all && npm run test:all && npm test");
 }
 
+async function testPlaybackWithoutTimers() {
+  const bundle = loadBundle();
+  delete bundle.setTimeout;
+  delete bundle.clearTimeout;
+  const logs = [];
+  bundle.console.log = message => logs.push(message);
+  const stream = { url: 'https://example.invalid/sample.mp4' };
+  const provider = async () => [stream];
+  const result = await bundle.collectPlayback([provider], {}, true);
+  assert.strictEqual(result[0].url, stream.url);
+  const aggregate = await bundle.collectPlayback([
+    provider,
+    async () => { throw new Error('unavailable'); },
+    provider,
+  ], {}, false);
+  assert.strictEqual(aggregate.length, 1, 'timerless aggregation still deduplicates and isolates failures');
+  assert.ok(logs.some(message => /timers unavailable/.test(message)), 'report degraded deadline support');
+}
+
 async function main() {
+  await testPlaybackWithoutTimers();
+  process.stdout.write("PASS testPlaybackWithoutTimers\n");
   await testPlaybackLatency();
   process.stdout.write("PASS testPlaybackLatency\n");
   await testPlaybackRecovery();
