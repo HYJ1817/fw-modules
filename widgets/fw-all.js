@@ -1556,7 +1556,7 @@ var B="https://missav.live",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac 
 function tx(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&#39;/g,"'").replace(/\s+/g," ").trim()}
 function parse(h){let a=[],re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,m;while(m=re.exec(h||"")){let u=m[1],t=tx(m[2]);if(/\/(?:cn\/)?[A-Za-z0-9]+-[0-9]+|\/cn\/[A-Za-z0-9]+/i.test(u)&&t&&t.length>3&&u.indexOf("#")<0){if(u[0]==="/")u=B+u;if(!a.some(x=>x.url===u))a.push({url:u,title:t})}}return a}
 async function list(path){try{let r=await Widget.http.get(B+path,{headers:{"User-Agent":U,Referer:B+"/cn"},timeout:15000});return parse(typeof r?.data==="string"?r.data:r?.body)}catch(e){return[]}}
-function out(a){return a.map(x=>({name:"MissAV",description:x.title,url:x.url,link:x.url}))}
+function out(a){return a.map((x,i)=>({id:"missav:"+encodeURIComponent(x.url),name:"MissAV",title:x.title,description:x.title,url:x.url,link:"missav:"+x.url}))}
 async function loadLatest(){return out(await list("/dm539/cn/new"))}async function loadRelease(){return out(await list("/dm635/cn/release"))}async function loadUncensored(){return out(await list("/dm817/cn/uncensored-leak"))}async function loadSubtitle(){return out(await list("/dm278/cn/chinese-subtitle"))}async function loadActresses(p){p=p||{};return out(await list("/cn/actresses?cup="+encodeURIComponent(p.cup||"H")+"&age="+encodeURIComponent(p.age||"20-30")))}async function search(p){return out(await list("/cn/search?query="+encodeURIComponent(p?.keyword||"")))}
 
 return {
@@ -1580,7 +1580,7 @@ function html(r){return typeof r?.data==="string"?r.data:(r?.body||"")}
 function abs(u){u=String(u||"").replace(/\\u002F/g,"/").replace(/\\\//g,"/").replace(/&amp;/g,"&");if(u.startsWith("//"))return "https:"+u;if(u.startsWith("/"))return BASE+u;return u}
 function media(s){let a=[],re=/(?:https?:)?\/\/[^"'<>\s]+?\.(?:m3u8|mp4)(?:\?[^"'<>\s]*)?/gi,m;while((m=re.exec(s||"")))a.push(abs(m[0]));return [...new Set(a)]}
 function title(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim()}
-async function loadResource(p){p=p||{};let u=String(p.url||p.link||p.id||"");if(!u)return[];if(!/^https?:/i.test(u))u=BASE+(u.startsWith("/")?u:"/cn/"+u);try{let r=await Widget.http.get(u,{headers:{"User-Agent":UA,Referer:BASE+"/cn"},timeout:15000}),h=html(r),xs=media(h);return xs.map((x,i)=>({name:"MissAV"+(i?" · 备用":""),description:title(h.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||u),url:x,customHeaders:{"User-Agent":UA,Referer:u},playerType:"app"}))}catch(e){return[]}}
+async function loadResource(p){p=p||{};let u=String(p.url||p.link||p.id||"");if(!u)return[];if(!/^https?:/i.test(u))u=BASE+(u.startsWith("/")?u:"/cn/"+u);try{let r=await Widget.http.get(u,{headers:{"User-Agent":UA,Referer:BASE+"/cn"},timeout:15000}),h=html(r),xs=media(h);return xs.map((x,i)=>({id:"missav:"+x,name:"MissAV"+(i?" · 备用":""),description:title(h.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||u),url:x,customHeaders:{"User-Agent":UA,Referer:u},playerType:"app"}))}catch(e){return[]}}
 
 return {
 metadata: WidgetMetadata,
