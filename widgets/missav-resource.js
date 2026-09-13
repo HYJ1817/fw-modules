@@ -1,5 +1,5 @@
 // MissAV resource module for Forward
-WidgetMetadata={id:"missav.resource",title:"MissAV 播放源",icon:"https://missav.live/favicon.ico",version:"1.0.1",requiredVersion:"0.0.1",description:"MissAV MP4/HLS 播放源",author:"Forward Widgets",site:"https://missav.live",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
+WidgetMetadata={id:"hyj1817.missav.resource",title:"MissAV 播放源",icon:"https://missav.live/favicon.ico",version:"1.0.1",requiredVersion:"0.0.1",description:"MissAV MP4/HLS 播放源",author:"Forward Widgets",site:"https://missav.live",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
 var BASE="https://missav.live",UA="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
 function html(r){return typeof r?.data==="string"?r.data:(r?.body||"")}
 function abs(u){u=String(u||"").replace(/\\u002F/g,"/").replace(/\\\//g,"/").replace(/&amp;/g,"&");if(u.startsWith("//"))return "https:"+u;if(u.startsWith("/"))return BASE+u;return u}
