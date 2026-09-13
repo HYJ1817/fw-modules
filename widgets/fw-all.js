@@ -3,7 +3,7 @@
 var WidgetMetadata = {
   "id": "hyj1817.fw.all",
   "title": "FW 总模块",
-  "description": "HStream、YinHentai、Hanime 首页与四站播放源",
+  "description": "HStream、YinHentai、MissAV、Hanime 首页与五站播放源",
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
@@ -41,6 +41,54 @@ var WidgetMetadata = {
     }
   ],
   "modules": [
+    {
+      "id": "missav_latest",
+      "title": "[MissAV] 最近更新",
+      "functionName": "missav_loadLatest",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "missav_release",
+      "title": "[MissAV] 新作上市",
+      "functionName": "missav_loadRelease",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "missav_uncensored",
+      "title": "[MissAV] 无码流出",
+      "functionName": "missav_loadUncensored",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "missav_subtitle",
+      "title": "[MissAV] 中文字幕",
+      "functionName": "missav_loadSubtitle",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "missav_actresses",
+      "title": "[MissAV] 女优筛选",
+      "functionName": "missav_loadActresses",
+      "cacheDuration": 600,
+      "params": [
+        {
+          "name": "cup",
+          "title": "罩杯",
+          "type": "input",
+          "value": "H"
+        },
+        {
+          "name": "age",
+          "title": "年龄",
+          "type": "input",
+          "value": "20-30"
+        }
+      ]
+    },
     {
       "id": "hstream_latest",
       "title": "[HStream] 最新发布",
@@ -1500,6 +1548,46 @@ var WidgetMetadata = {
   }
 };
 
+var FW_MISSAV_HOME = (function () {
+var WidgetMetadata;
+// MissAV homepage/search widget for Forward
+WidgetMetadata={id:"missav.home",title:"MissAV",icon:"https://missav.live/favicon.ico",version:"1.0.0",requiredVersion:"0.0.1",description:"MissAV 首页、分类、搜索与详情",author:"Forward Widgets",site:"https://missav.live",modules:[{id:"latest",title:"最近更新",functionName:"loadLatest",cacheDuration:600,params:[]},{id:"release",title:"新作上市",functionName:"loadRelease",cacheDuration:600,params:[]},{id:"uncensored",title:"无码流出",functionName:"loadUncensored",cacheDuration:600,params:[]},{id:"subtitle",title:"中文字幕",functionName:"loadSubtitle",cacheDuration:600,params:[]},{id:"actresses",title:"女优筛选",functionName:"loadActresses",cacheDuration:600,params:[{name:"cup",title:"罩杯",type:"input",value:"H"},{name:"age",title:"年龄",type:"input",value:"20-30"}]}],search:{title:"搜索",functionName:"search",params:[{name:"keyword",title:"关键词",type:"input"}]}};
+var B="https://missav.live",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
+function tx(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&#39;/g,"'").replace(/\s+/g," ").trim()}
+function parse(h){let a=[],re=/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,m;while(m=re.exec(h||"")){let u=m[1],t=tx(m[2]);if(/\/(?:cn\/)?[A-Za-z0-9]+-[0-9]+|\/cn\/[A-Za-z0-9]+/i.test(u)&&t&&t.length>3&&u.indexOf("#")<0){if(u[0]==="/")u=B+u;if(!a.some(x=>x.url===u))a.push({url:u,title:t})}}return a}
+async function list(path){try{let r=await Widget.http.get(B+path,{headers:{"User-Agent":U,Referer:B+"/cn"},timeout:15000});return parse(typeof r?.data==="string"?r.data:r?.body)}catch(e){return[]}}
+function out(a){return a.map(x=>({name:"MissAV",description:x.title,url:x.url,link:x.url}))}
+async function loadLatest(){return out(await list("/dm539/cn/new"))}async function loadRelease(){return out(await list("/dm635/cn/release"))}async function loadUncensored(){return out(await list("/dm817/cn/uncensored-leak"))}async function loadSubtitle(){return out(await list("/dm278/cn/chinese-subtitle"))}async function loadActresses(p){p=p||{};return out(await list("/cn/actresses?cup="+encodeURIComponent(p.cup||"H")+"&age="+encodeURIComponent(p.age||"20-30")))}async function search(p){return out(await list("/cn/search?query="+encodeURIComponent(p?.keyword||"")))}
+
+return {
+metadata: WidgetMetadata,
+"loadLatest": typeof loadLatest === "function" ? loadLatest : null,
+"loadRelease": typeof loadRelease === "function" ? loadRelease : null,
+"loadUncensored": typeof loadUncensored === "function" ? loadUncensored : null,
+"loadSubtitle": typeof loadSubtitle === "function" ? loadSubtitle : null,
+"loadActresses": typeof loadActresses === "function" ? loadActresses : null,
+"search": typeof search === "function" ? search : null,
+"loadDetail": typeof loadDetail === "function" ? loadDetail : null
+};
+})();
+
+var FW_MISSAV_RESOURCE = (function () {
+var WidgetMetadata;
+// MissAV resource module for Forward
+WidgetMetadata={id:"missav.resource",title:"MissAV 播放源",icon:"https://missav.live/favicon.ico",version:"1.0.1",requiredVersion:"0.0.1",description:"MissAV MP4/HLS 播放源",author:"Forward Widgets",site:"https://missav.live",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
+var BASE="https://missav.live",UA="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
+function html(r){return typeof r?.data==="string"?r.data:(r?.body||"")}
+function abs(u){u=String(u||"").replace(/\\u002F/g,"/").replace(/\\\//g,"/").replace(/&amp;/g,"&");if(u.startsWith("//"))return "https:"+u;if(u.startsWith("/"))return BASE+u;return u}
+function media(s){let a=[],re=/(?:https?:)?\/\/[^"'<>\s]+?\.(?:m3u8|mp4)(?:\?[^"'<>\s]*)?/gi,m;while((m=re.exec(s||"")))a.push(abs(m[0]));return [...new Set(a)]}
+function title(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim()}
+async function loadResource(p){p=p||{};let u=String(p.url||p.link||p.id||"");if(!u)return[];if(!/^https?:/i.test(u))u=BASE+(u.startsWith("/")?u:"/cn/"+u);try{let r=await Widget.http.get(u,{headers:{"User-Agent":UA,Referer:BASE+"/cn"},timeout:15000}),h=html(r),xs=media(h);return xs.map((x,i)=>({name:"MissAV"+(i?" · 备用":""),description:title(h.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]||u),url:x,customHeaders:{"User-Agent":UA,Referer:u},playerType:"app"}))}catch(e){return[]}}
+
+return {
+metadata: WidgetMetadata,
+"loadResource": typeof loadResource === "function" ? loadResource : null
+};
+})();
+
 var FW_HSTREAM_HOME = (function () {
 var WidgetMetadata;
 /**
@@ -1530,8 +1618,8 @@ var HOMEPAGE_CATEGORIES = [
 WidgetMetadata = {
   id: "hyj1817.hstream.home",
   title: "HStream",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "2.1.2",
+  icon: "https://hstream.moe/favicon.ico",
+  version: "2.1.1",
   requiredVersion: "0.0.1",
   description: "HStream.moe 首页、搜索、详情与分集",
   author: "hstream",
@@ -1904,8 +1992,8 @@ var YIN_CATEGORIES = ("1080p|1080p\n3P|3p\n60FPS|60fps\n69|69\nAI解码|ai解碼
 WidgetMetadata = {
   id: "hyj1817.yinhentai.home",
   title: "YinHentai",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.1.1",
+  icon: "https://yinhentai.com/favicon.ico",
+  version: "1.1.0",
   requiredVersion: "0.0.1",
   description: "YinHentai 首页、中文分类、搜索、详情与分集",
   author: "Forward Widgets",
@@ -2209,8 +2297,8 @@ var HANIME_CATEGORIES = [
 WidgetMetadata = {
   id: "hyj1817.hanime.home",
   title: "Hanime",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.1.1",
+  icon: "https://hanime.tv/favicon.ico",
+  version: "1.1.0",
   requiredVersion: "0.0.1",
   description: "Hanime.tv 首页、中文分类、搜索、详情与分集",
   author: "Forward Widgets",
@@ -2456,8 +2544,8 @@ var WidgetMetadata;
 WidgetMetadata = {
   id: "hyj1817.hstream.resource",
   title: "HStream 播放源",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.0.1",
+  icon: "https://hstream.moe/favicon.ico",
+  version: "1.0.0",
   requiredVersion: "0.0.1",
   description: "为 Forward 提供 HStream 720p MP4 多线路",
   author: "hstream",
@@ -2734,8 +2822,8 @@ var WidgetMetadata;
 WidgetMetadata = {
   id: "hyj1817.yinhentai.resource",
   title: "YinHentai 播放源",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.1.1",
+  icon: "https://yinhentai.com/favicon.ico",
+  version: "1.1.0",
   requiredVersion: "0.0.1",
   description: "YinHentai HLS/MP4 多线路播放源",
   author: "Forward Widgets",
@@ -2892,8 +2980,8 @@ var WidgetMetadata;
 WidgetMetadata = {
   id: "hyj1817.hanime.resource",
   title: "Hanime 播放源",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.1.1",
+  icon: "https://hanime.tv/favicon.ico",
+  version: "1.1.0",
   requiredVersion: "0.0.1",
   description: "Hanime 多画质播放源；支持自建的已认证解析服务，并兼容旧版直链",
   author: "Forward Widgets",
@@ -3040,8 +3128,8 @@ var WidgetMetadata;
 WidgetMetadata = {
   id: "hyj1817.4kvm.resource",
   title: "4KVM 播放源",
-  icon: "https://hyj1817.github.io/fw-modules/icon.png",
-  version: "1.0.2",
+  icon: "https://www.4kvm.net/favicon.ico",
+  version: "1.0.1",
   requiredVersion: "0.0.1",
   description: "4KVM 电影、电视剧与动漫的 HLS 播放源",
   author: "Forward Widgets",
@@ -3342,6 +3430,26 @@ metadata: WidgetMetadata,
 };
 })();
 
+async function missav_loadLatest(params) {
+return FW_MISSAV_HOME["loadLatest"](params || {});
+}
+
+async function missav_loadRelease(params) {
+return FW_MISSAV_HOME["loadRelease"](params || {});
+}
+
+async function missav_loadUncensored(params) {
+return FW_MISSAV_HOME["loadUncensored"](params || {});
+}
+
+async function missav_loadSubtitle(params) {
+return FW_MISSAV_HOME["loadSubtitle"](params || {});
+}
+
+async function missav_loadActresses(params) {
+return FW_MISSAV_HOME["loadActresses"](params || {});
+}
+
 async function hstream_loadLatest(params) {
 return FW_HSTREAM_HOME["loadLatest"](params || {});
 }
@@ -3395,7 +3503,7 @@ return FW_HANIME_HOME["loadCategory"](params || {});
 }
 
 async function searchAll(params) {
-  var calls = [FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search];
+  var calls = [FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search, FW_MISSAV_HOME.search];
   var groups = await Promise.all(calls.map(function (fn) {
     return Promise.resolve().then(function () { return fn(params || {}); }).catch(function () { return []; });
   }));
@@ -3415,6 +3523,7 @@ async function searchAll(params) {
 
 async function loadDetail(link) {
   var value = String(link || "");
+  if (value.indexOf("missav:") === 0) return FW_MISSAV_HOME.loadDetail(link);
   if (value.indexOf("hstream:") === 0) return FW_HSTREAM_HOME.loadDetail(link);
   if (value.indexOf("yinhentai:") === 0) return FW_YIN_HOME.loadDetail(link);
   if (value.indexOf("hanime:") === 0) return FW_HANIME_HOME.loadDetail(link);
@@ -3422,6 +3531,7 @@ async function loadDetail(link) {
 }
 
 function resourceProviderForLink(link) {
+  if (link.indexOf("missav:") === 0) return FW_MISSAV_RESOURCE.loadResource;
   if (link.indexOf("hstream:") === 0) return FW_HSTREAM_RESOURCE.loadResource;
   if (link.indexOf("yinhentai:") === 0) return FW_YIN_RESOURCE.loadResource;
   if (link.indexOf("hanime:") === 0) return FW_HANIME_RESOURCE.loadResource;
@@ -3489,11 +3599,11 @@ function playbackInput(params) {
   for (var i = 0; i < values.length; i++) {
     var value = String(values[i] || "");
     try { value = decodeURIComponent(value); } catch (e) {}
-    var prefix = value.match(/^(hstream|yinhentai|hanime|4kvm):(.+)$/i);
+    var prefix = value.match(/^(missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
-    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net)\/([^?#]+)/i);
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|missav\.live)\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
     var slug = url[2].match(route[1]);
     if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
@@ -3510,6 +3620,7 @@ async function resolvePlayback(params) {
     FW_YIN_RESOURCE.loadResource,
     FW_HANIME_RESOURCE.loadResource,
     FW_4KVM_RESOURCE.loadResource,
+    FW_MISSAV_RESOURCE.loadResource,
   ];
   return collectPlayback(providers, input, false);
 }

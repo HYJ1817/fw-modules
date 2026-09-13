@@ -3,6 +3,8 @@
   "description": "Forward 自用首页模块与播放源",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
   "widgets": [
+    {"id":"hyj1817.missav.home","title":"MissAV","description":"MissAV 首页、分类、搜索与详情","requiredVersion":"0.0.1","version":"1.0.0","author":"Forward Widgets","url":"https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/missav.js"},
+    {"id":"hyj1817.missav.resource","title":"MissAV 播放源","description":"MissAV MP4/HLS 播放源","requiredVersion":"0.0.1","version":"1.0.1","author":"Forward Widgets","url":"https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/missav-resource.js"},
     {
       "id": "hyj1817.hstream.home",
       "title": "HStream",

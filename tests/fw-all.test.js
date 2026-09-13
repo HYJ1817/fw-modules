@@ -36,7 +36,7 @@ async function testMetadata() {
   assert.strictEqual(metadata.id, "hyj1817.fw.all");
   assert.strictEqual(metadata.modules.filter((item) => item.type === "stream").length, 1);
   assert.strictEqual(metadata.modules.find((item) => item.type === "stream").id, "loadResource");
-  assert.strictEqual(metadata.modules.filter((item) => item.type !== "stream").length, 13);
+  assert.strictEqual(metadata.modules.filter((item) => item.type !== "stream").length, 19);
   assert.strictEqual(new Set(metadata.modules.map((item) => item.id)).size, metadata.modules.length);
   assert.strictEqual(metadata.search.functionName, "searchAll");
   assert.deepStrictEqual(

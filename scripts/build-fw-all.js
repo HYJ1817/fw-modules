@@ -9,6 +9,8 @@ const WIDGETS = path.join(ROOT, "widgets");
 const OUTPUT = path.join(WIDGETS, "fw-all.js");
 
 const SOURCES = [
+  { key: "missav", namespace: "FW_MISSAV_HOME", file: "missav.js", kind: "home", detail: "loadDetail" },
+  { key: "missav", namespace: "FW_MISSAV_RESOURCE", file: "missav-resource.js", kind: "resource" },
   { key: "hstream", namespace: "FW_HSTREAM_HOME", file: "hstream.js", kind: "home", detail: "loadDetail" },
   { key: "yin", namespace: "FW_YIN_HOME", file: "yinhentai.js", kind: "home", detail: "loadDetail" },
   { key: "hanime", namespace: "FW_HANIME_HOME", file: "hanime.js", kind: "home", detail: "loadDetail" },
@@ -80,7 +82,7 @@ function homepageWrapperBlocks(entries) {
 }
 
 async function searchAll(params) {
-  var calls = [FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search];
+  var calls = [FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search, FW_MISSAV_HOME.search];
   var groups = await Promise.all(calls.map(function (fn) {
     return Promise.resolve().then(function () { return fn(params || {}); }).catch(function () { return []; });
   }));
@@ -100,6 +102,7 @@ async function searchAll(params) {
 
 async function loadDetail(link) {
   var value = String(link || "");
+  if (value.indexOf("missav:") === 0) return FW_MISSAV_HOME.loadDetail(link);
   if (value.indexOf("hstream:") === 0) return FW_HSTREAM_HOME.loadDetail(link);
   if (value.indexOf("yinhentai:") === 0) return FW_YIN_HOME.loadDetail(link);
   if (value.indexOf("hanime:") === 0) return FW_HANIME_HOME.loadDetail(link);
@@ -107,6 +110,7 @@ async function loadDetail(link) {
 }
 
 function resourceProviderForLink(link) {
+  if (link.indexOf("missav:") === 0) return FW_MISSAV_RESOURCE.loadResource;
   if (link.indexOf("hstream:") === 0) return FW_HSTREAM_RESOURCE.loadResource;
   if (link.indexOf("yinhentai:") === 0) return FW_YIN_RESOURCE.loadResource;
   if (link.indexOf("hanime:") === 0) return FW_HANIME_RESOURCE.loadResource;
@@ -172,11 +176,11 @@ function playbackInput(params) {
   for (var i = 0; i < values.length; i++) {
     var value = String(values[i] || "");
     try { value = decodeURIComponent(value); } catch (e) {}
-    var prefix = value.match(/^(hstream|yinhentai|hanime|4kvm):(.+)$/i);
+    var prefix = value.match(/^(missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
-    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net)\/([^?#]+)/i);
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|missav\.live)\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
     var slug = url[2].match(route[1]);
     if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
@@ -209,6 +213,7 @@ async function resolvePlayback(params) {
     FW_YIN_RESOURCE.loadResource,
     FW_HANIME_RESOURCE.loadResource,
     FW_4KVM_RESOURCE.loadResource,
+    FW_MISSAV_RESOURCE.loadResource,
   ];
   return collectPlayback(providers, input, false);
 }
@@ -220,7 +225,7 @@ function build() {
   const metadata = {
     id: "hyj1817.fw.all",
     title: "FW 总模块",
-    description: "HStream、YinHentai、Hanime 首页与四站播放源",
+    description: "HStream、YinHentai、MissAV、Hanime 首页与五站播放源",
     author: "HYJ1817",
     site: "https://github.com/HYJ1817/fw-modules",
     icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
