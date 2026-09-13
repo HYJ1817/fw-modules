@@ -3,8 +3,26 @@
   "description": "Forward 自用首页模块与播放源",
   "icon": "https://hyj1817.github.io/fw-modules/icon.png",
   "widgets": [
-    {"id":"hyj1817.missav.home","title":"MissAV","description":"MissAV 首页、分类、搜索与详情","requiredVersion":"0.0.1","version":"1.0.0","author":"Forward Widgets","url":"https://hyj1817.github.io/fw-modules/widgets/missav.js"},
-    {"id":"hyj1817.missav.resource","title":"MissAV 播放源","description":"MissAV MP4/HLS 播放源","requiredVersion":"0.0.1","version":"1.0.1","author":"Forward Widgets","url":"https://hyj1817.github.io/fw-modules/widgets/missav-resource.js"},
+    {
+      "id": "hyj1817.missav.home",
+      "title": "MissAV",
+      "description": "MissAV 首页、分类、搜索与详情",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward Widgets",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/missav.js",
+      "type": "url"
+    },
+    {
+      "id": "hyj1817.missav.resource",
+      "title": "MissAV 播放源",
+      "description": "MissAV MP4/HLS 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.1",
+      "author": "Forward Widgets",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/missav-resource.js",
+      "type": "url"
+    },
     {
       "id": "hyj1817.hstream.home",
       "title": "HStream",
@@ -12,7 +30,8 @@
       "requiredVersion": "0.0.1",
       "version": "2.1.1",
       "author": "hstream",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/hstream.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/hstream.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.hstream.resource",
@@ -21,7 +40,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "hstream",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/hstream-resource.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/hstream-resource.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.yinhentai.home",
@@ -30,7 +50,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/yinhentai.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/yinhentai.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.yinhentai.resource",
@@ -39,7 +60,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/yinhentai-resource.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/yinhentai-resource.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.hanime.home",
@@ -48,7 +70,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/hanime.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/hanime.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.hanime.resource",
@@ -57,7 +80,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/hanime-resource.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/hanime-resource.js",
+      "type": "url"
     },
     {
       "id": "hyj1817.4kvm.resource",
@@ -66,7 +90,8 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "Forward Widgets",
-      "url": "https://hyj1817.github.io/fw-modules/widgets/4kvm-resource.js"
+      "url": "https://hyj1817.github.io/fw-modules/widgets/4kvm-resource.js",
+      "type": "url"
     }
   ]
 }
