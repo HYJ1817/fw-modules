@@ -45,6 +45,7 @@ var WidgetMetadata = {
       "id": "hentaimama_latest",
       "title": "[Hentaimama] 最新发布",
       "functionName": "hentaimama_loadLatest",
+      "type": "video",
       "cacheDuration": 600,
       "params": []
     },
@@ -52,6 +53,7 @@ var WidgetMetadata = {
       "id": "hentaimama_series",
       "title": "[Hentaimama] Hentai 系列",
       "functionName": "hentaimama_loadSeries",
+      "type": "video",
       "cacheDuration": 600,
       "params": []
     },
@@ -59,6 +61,7 @@ var WidgetMetadata = {
       "id": "hentaimama_uncensored",
       "title": "[Hentaimama] 无码",
       "functionName": "hentaimama_loadUncensored",
+      "type": "video",
       "cacheDuration": 600,
       "params": []
     },
@@ -3052,16 +3055,12 @@ var WidgetMetadata = {
 
 var FW_HENTAI_MAMA_HOME = (function () {
 var WidgetMetadata;
-WidgetMetadata={id:"hyj1817.hentaimama.home",title:"Hentaimama",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.1.0",requiredVersion:"0.0.2",description:"Hentaimama 首页、详情与 HLS 播放",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"latest",title:"最新发布",functionName:"loadLatest",cacheDuration:600,params:[]},{id:"series",title:"Hentai 系列",functionName:"loadSeries",cacheDuration:600,params:[]},{id:"uncensored",title:"无码",functionName:"loadUncensored",cacheDuration:600,params:[]}],search:{title:"搜索",functionName:"search",params:[{name:"keyword",title:"关键词",type:"input"}]}};
+WidgetMetadata={id:"hyj1817.hentaimama.home",title:"Hentaimama",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.2.0",requiredVersion:"0.0.2",description:"Hentaimama 首页、系列与搜索",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"latest",title:"最新发布",functionName:"loadLatest",type:"video",cacheDuration:600,params:[]},{id:"series",title:"Hentai 系列",functionName:"loadSeries",type:"video",cacheDuration:600,params:[]},{id:"uncensored",title:"无码",functionName:"loadUncensored",type:"video",cacheDuration:600,params:[]}],search:{title:"搜索",functionName:"search",params:[{name:"keyword",title:"关键词",type:"input"}]}};
 var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
 function clean(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&#039;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/\s+/g," ").trim()}
 function full(s){s=String(s||"");return s.indexOf("http")===0?s:B+"/"+s.replace(/^\//,"")}
-async function page(u,ref){var r=await Widget.http.get(full(u),{headers:{"User-Agent":U,Referer:ref||B+"/"},timeout:15000});return typeof r.data==="string"?r.data:r.body||""}
-function cards(h){var $=Widget.html.load(h),a=[];$("a[href]").each(function(){var q=$(this),u=q.attr("href")||"",im=q.find("img").first(),cover=im.attr("data-src")||im.attr("src")||"",t=im.attr("alt")||q.attr("title")||clean(q.text());if(u.indexOf("/tvshows/")<0||!cover||!t||a.some(function(x){return x.link===u}))return;u=full(u);a.push({id:"hentaimama:"+u.replace(B+"/",""),type:"url",title:t,seriesName:t,description:t,posterPath:cover,backdropPath:cover,mediaType:"tv",link:"hentaimama:"+u})});return a}
-async function list(u){try{return cards(await page(u))}catch(e){return[]}}
+async function list(url){try{var r=await Widget.http.get(full(url),{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000}),$=Widget.html.load(typeof r.data==="string"?r.data:r.body||""),out=[];$("a[href]").each(function(){var a=$(this),href=a.attr("href")||"",im=a.find("img").first(),cover=im.attr("data-src")||im.attr("src")||"",title=im.attr("alt")||a.attr("title")||clean(a.text());if(href.indexOf("/tvshows/")<0||!cover||!title||out.some(function(x){return x.link===href}))return;href=full(href);out.push({id:"hentaimama:"+href.replace(B+"/",""),type:"video",title:title,seriesName:title,description:title,posterPath:cover,backdropPath:cover,mediaType:"tv",link:"hentaimama:"+href})});return out}catch(e){return[]}}
 async function loadLatest(){return list(B+"/")}async function loadSeries(){return list(B+"/hentai-series/")}async function loadUncensored(){return list(B+"/genre/uncensored/")}async function search(p){return list(B+"/?s="+encodeURIComponent(p&&p.keyword||""))}
-function streamFromHtml(h,ref){var m=String(h||"").match(/dt_embed=hls[^>]*[?&]p=([^&"']+)/i);if(!m){var f=String(h||"").match(/<iframe[^>]+src=["']([^"']*dt_embed=hls[^"']*)["']/i);if(f)m=f[1].match(/[?&]p=([^&]+)/i)}if(!m)return "";var p=decodeURIComponent(m[1]);try{p=atob(p)}catch(e){}return full(p)}
-async function loadDetail(link){var u=String(link||"").replace(/^hentaimama:/i,"");u=full(u);try{var h=await page(u),$=Widget.html.load(h),title=$("h1").first().text().trim()||clean($("title").text()).replace(/\s+-\s*Hentaimama.*$/i,"")||u,cover=$("meta[property='og:image']").attr("content")||$(".poster img").first().attr("src")||"",eps=[];$("a[href]").each(function(){var a=$(this),href=a.attr("href")||"";if(href.indexOf("/episodes/")<0||eps.some(function(x){return x.href===href}))return;eps.push({href:full(href),name:clean(a.text())||"Episode "+(eps.length+1)})});if(!eps.length)eps=[{href:u,name:"播放"}];var out=[];for(var i=0;i<eps.length;i++){try{var eh=await page(eps[i].href,u),url=streamFromHtml(eh,eps[i].href);if(url)out.push({id:"hentaimama:"+eps[i].href.replace(B+"/",""),type:"detail",title:eps[i].name,seriesName:title,episodeName:eps[i].name,episode:i+1,description:title,posterPath:cover,backdropPath:cover,mediaType:"tv",videoUrl:url,playerType:"app",customHeaders:{"User-Agent":U,Referer:eps[i].href},headers:{"User-Agent":U,Referer:eps[i].href},link:"hentaimama:"+eps[i].href})}catch(e){}}if(out.length===1)return out[0];return {id:"hentaimama:"+u.replace(B+"/",""),type:"detail",title:title,seriesName:title,description:title,posterPath:cover,backdropPath:cover,mediaType:"tv",link:"hentaimama:"+u,episodeItems:out};}catch(e){return {id:"hentaimama:"+u,type:"detail",title:u,link:"hentaimama:"+u}}}
 
 return {
 metadata: WidgetMetadata,
@@ -3075,12 +3074,14 @@ metadata: WidgetMetadata,
 
 var FW_HENTAI_MAMA_RESOURCE = (function () {
 var WidgetMetadata;
-WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.0.2",requiredVersion:"0.0.2",description:"Hentaimama HLS 播放源",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",params:[]}]};
+WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.2.0",requiredVersion:"0.0.2",description:"Hentaimama HLS 播放源",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",params:[]}]};
 var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
+function full(s){s=String(s||"");return s.indexOf("http")===0?s:B+"/"+s.replace(/^\//,"")}
 function body(r){return typeof r.data==="string"?r.data:r.body||""}
-function abs(x){return x.indexOf("http")===0?x:B+"/"+x.replace(/^\//,"")}
-async function one(u,ref){var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:ref||B+"/"},timeout:15000}),h=body(r),m=h.match(/dt_embed=hls[^>]*[?&]p=([^&"']+)/i);if(!m){var f=h.match(/<iframe[^>]+src=["']([^"']*dt_embed=hls[^"']*)["']/i);if(f)m=f[1].match(/[?&]p=([^&]+)/i)}if(!m)return null;var path=decodeURIComponent(m[1]);try{path=atob(path)}catch(e){}return {name:"Hentaimama",description:"HLS",url:abs(path),customHeaders:{"User-Agent":U,Referer:u}}}
-async function loadResource(p){var u=String(p&&p.link||p&&p.url||p&&p.id||"").replace(/^hentaimama:/i,"");u=abs(u);try{var x=await one(u,B+"/");if(x)return[x];var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000}),h=body(r),re=/href=["']([^"']*\/episodes\/[^"']+)["']/gi,m,out=[];while((m=re.exec(h))&&out.length<20){var y=await one(abs(m[1]),u);if(y&&!out.some(function(z){return z.url===y.url}))out.push(y)}return out}catch(e){return[]}}
+function nameFrom(p){var v=[p&&p.link,p&&p.url,p&&p.id,p&&p.seriesName,p&&p.title].filter(Boolean).map(String)[0]||"";v=v.replace(/^hentaimama:/i,"").replace(/^https?:\/\/[^/]+\/tvshows\//i,"").replace(/\/$/,"");return decodeURIComponent(v).replace(/[-_]+/g," ").trim()}
+function stream(html){var m=String(html||"").match(/dt_embed=hls[^>]*[?&]p=([^&"']+)/i);if(!m){var f=String(html||"").match(/<iframe[^>]+src=["']([^"']*dt_embed=hls[^"']*)["']/i);if(f)m=f[1].match(/[?&]p=([^&]+)/i)}if(!m)return"";var x=decodeURIComponent(m[1]);try{x=atob(x)}catch(e){}return full(x)}
+async function fetch(u,ref){var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:ref||B+"/"},timeout:15000});return body(r)}
+async function loadResource(p){try{var raw=String(p&&p.link||p&&p.url||p&&p.id||"").replace(/^hentaimama:/i,"");var show=raw.indexOf("/tvshows/")>=0?full(raw):"";if(!show){var q=nameFrom(p).replace(/\s+/g,"+");var sh=await fetch(B+"/?s="+encodeURIComponent(q));var m=sh.match(/href=["']([^"']*\/tvshows\/[^"']+)["']/i);if(!m)return[];show=full(m[1])}var h=await fetch(show,B+"/"),re=/href=["']([^"']*\/episodes\/[^"']+)["']/gi,m,out=[];while((m=re.exec(h))&&out.length<12){var ep=full(m[1]),eh=await fetch(ep,show),url=stream(eh);if(url&&!out.some(function(x){return x.url===url}))out.push({name:"Hentaimama · Episode "+(out.length+1),description:"HLS",url:url,customHeaders:{"User-Agent":U,Referer:ep}})}return out}catch(e){return[]}}
 
 return {
 metadata: WidgetMetadata,
