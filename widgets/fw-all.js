@@ -3072,9 +3072,9 @@ metadata: WidgetMetadata,
 
 var FW_HENTAI_MAMA_RESOURCE = (function () {
 var WidgetMetadata;
-WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.0.0",requiredVersion:"0.0.2",description:"Hentaimama HLS 播放源",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",params:[]}]};
+WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.0.1",requiredVersion:"0.0.2",description:"Hentaimama HLS 播放源",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",params:[]}]};
 var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
-async function loadResource(p){var u=String(p&&p.link||p&&p.url||p&&p.id||"").replace(/^hentaimama:/i,"");if(u.indexOf("http")!==0)u=B+"/"+u;try{var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000}),h=typeof r.data==="string"?r.data:r.body||"",m=h.match(/dt_embed=hls[^"']*p=([^&"']+)/i);if(!m)return[];var path=decodeURIComponent(m[1]);try{path=atob(path)}catch(e){}var media=B+"/"+path.replace(/^\//,"");return[{name:"Hentaimama",description:"HLS",url:media,customHeaders:{"User-Agent":U,Referer:u}}]}catch(e){return[]}}
+async function loadResource(p){var u=String(p&&p.link||p&&p.url||p&&p.id||"").replace(/^hentaimama:/i,"");if(u.indexOf("http")!==0)u=B+"/"+u.replace(/^\//,"");try{var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000}),h=typeof r.data==="string"?r.data:r.body||"",m=h.match(/dt_embed=hls[^>]*p=([^&"']+)/i);if(!m){var em=h.match(/<iframe[^>]+src=["']([^"']*dt_embed=hls[^"']+)["']/i);if(em)m=em[1].match(/[?&]p=([^&]+)/i)}if(!m)return[];var path=decodeURIComponent(m[1]);try{path=atob(path)}catch(e){}var media=path.indexOf("http")===0?path:B+"/"+path.replace(/^\//,"");return[{name:"Hentaimama",description:"HLS",url:media,customHeaders:{"User-Agent":U,Referer:u}}]}catch(e){return[]}}
 
 return {
 metadata: WidgetMetadata,
