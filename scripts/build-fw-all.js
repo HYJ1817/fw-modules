@@ -38,7 +38,10 @@ function vmContext() {
 
 function readSource(entry) {
   const filename = path.join(WIDGETS, entry.file);
-  const source = fs.readFileSync(filename, "utf8");
+  // 归一化行尾：源文件在 Windows 检出时可能是 CRLF，若原样嵌入，
+  // 构建产物就会随检出行尾变化，导致 testDeterministicBuild 之类的
+  // 字节级比对在不同机器/不同检出状态下表现不一致。
+  const source = fs.readFileSync(filename, "utf8").replace(/\r\n/g, "\n");
   const context = vmContext();
   vm.createContext(context);
   vm.runInContext(source, context, { filename });

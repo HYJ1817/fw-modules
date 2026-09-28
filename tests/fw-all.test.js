@@ -125,7 +125,11 @@ async function testResourceDispatch() {
 
 async function testDeterministicBuild() {
   const filename = path.join(ROOT, "widgets", "fw-all.js");
-  const before = fs.readFileSync(filename, "utf8");
+  // 归一化行尾后再比对：构建脚本固定写 LF，而 Windows 检出可能是 CRLF。
+  // 本测试要验证的是「构建结果确定」，不是「输出使用哪种行尾」，
+  // 因此不应因检出行尾不同而失败（仓库已用 .gitattributes 统一为 LF）。
+  const normalize = (text) => text.replace(/\r\n/g, "\n");
+  const before = normalize(fs.readFileSync(filename, "utf8"));
 
   // 首选真实子进程路径（同时验证 build-fw-all.js 可作为 CLI 执行）。
   // 受限环境（容器 / 沙箱）可能禁止创建任何子进程，此时退回进程内构建，
@@ -139,8 +143,8 @@ async function testDeterministicBuild() {
     builder.build();
   }
 
-  const after = fs.readFileSync(filename, "utf8");
-  assert.strictEqual(after, before);
+  const after = normalize(fs.readFileSync(filename, "utf8"));
+  assert.strictEqual(after, before, "重复构建必须产生完全相同的输出");
   if (!viaChildProcess) {
     process.stdout.write("  note: 当前环境禁止创建子进程，已退回进程内构建验证（未覆盖 CLI 入口）\n");
   }

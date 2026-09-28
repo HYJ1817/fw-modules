@@ -1,0 +1,21 @@
+# 统一行尾为 LF。
+#
+# 背景：本仓库的构建脚本（build-fw-all.js / build-maccms.js）一律以 "\n" 写文件，
+# 而 Windows 默认 core.autocrlf=true 会在检出时转成 CRLF。两者叠加导致：
+#   1. 每次跑完 npm run verify，git status 都会显示 fw-all.js 被修改（实际内容相同）；
+#   2. tests/fw-all.test.js 的 testDeterministicBuild 直接比对文件字节，
+#      若不先跑 build:all 就单独跑 test:all，会因 CRLF/LF 差异而失败。
+# 固定为 LF 后，检出内容与构建输出一致，上述两个问题同时消失。
+#
+# 仓库内均为 JS / JSON / Markdown 文本文件，LF 在 Node 与 Forward 中均可正常工作。
+
+* text=auto eol=lf
+
+# 显式声明二进制文件，避免被当作文本处理
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.wasm binary
+*.zip binary
