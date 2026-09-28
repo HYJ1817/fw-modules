@@ -42,6 +42,27 @@ var WidgetMetadata = {
   ],
   "modules": [
     {
+      "id": "hentaimama_latest",
+      "title": "[Hentaimama] 最新发布",
+      "functionName": "hentaimama_loadLatest",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "hentaimama_series",
+      "title": "[Hentaimama] Hentai 系列",
+      "functionName": "hentaimama_loadSeries",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
+      "id": "hentaimama_uncensored",
+      "title": "[Hentaimama] 无码",
+      "functionName": "hentaimama_loadUncensored",
+      "cacheDuration": 600,
+      "params": []
+    },
+    {
       "title": "[MissAV] 搜索影片",
       "description": "搜索 MissAV 影片内容",
       "requiresWebView": false,
@@ -3029,6 +3050,38 @@ var WidgetMetadata = {
   }
 };
 
+var FW_HENTAI_MAMA_HOME = (function () {
+var WidgetMetadata;
+WidgetMetadata={id:"hyj1817.hentaimama.home",title:"Hentaimama",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.0.0",requiredVersion:"0.0.2",description:"Hentaimama 首页、系列、搜索",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"latest",title:"最新发布",functionName:"loadLatest",cacheDuration:600,params:[]},{id:"series",title:"Hentai 系列",functionName:"loadSeries",cacheDuration:600,params:[]},{id:"uncensored",title:"无码",functionName:"loadUncensored",cacheDuration:600,params:[]}],search:{title:"搜索",functionName:"search",params:[{name:"keyword",title:"关键词",type:"input"}]}};
+var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
+function text(s){return String(s||"").replace(/<[^>]+>/g," ").replace(/&amp;/g,"&").replace(/&#039;|&#39;/g,"'").replace(/&quot;/g,'"').replace(/\s+/g," ").trim()}
+function parse(h){var $=Widget.html.load(h),a=[];$("a[href]").each(function(){var q=$(this),u=q.attr("href")||"",im=q.find("img").first(),src=im.attr("data-src")||im.attr("src")||"",t=im.attr("alt")||q.attr("title")||text(q.text());if(/\/tvshows\//i.test(u)&&src&&t&&!a.some(function(x){return x.link===u}))a.push({id:"hentaimama:"+u.replace(B+"/",""),type:"url",title:t,seriesName:t,description:t,posterPath:src,backdropPath:src,mediaType:"movie",link:"hentaimama:"+u})});return a}
+async function get(path){try{var r=await Widget.http.get(path,{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000});return parse(typeof r.data==="string"?r.data:r.body||"")}catch(e){return[]}}
+async function loadLatest(){return get(B+"/")}async function loadSeries(){return get(B+"/hentai-series/")}async function loadUncensored(){return get(B+"/genre/uncensored/")}async function search(p){return get(B+"/?s="+encodeURIComponent(p&&p.keyword||""))}
+async function loadDetail(link){var u=String(link||"").replace(/^hentaimama:/i,"");if(u.indexOf("http")!==0)u=B+"/"+u;var items=await get(u);return items[0]||{id:"hentaimama:"+u,type:"detail",title:u,link:"hentaimama:"+u}}
+
+return {
+metadata: WidgetMetadata,
+"loadLatest": typeof loadLatest === "function" ? loadLatest : null,
+"loadSeries": typeof loadSeries === "function" ? loadSeries : null,
+"loadUncensored": typeof loadUncensored === "function" ? loadUncensored : null,
+"search": typeof search === "function" ? search : null,
+"loadDetail": typeof loadDetail === "function" ? loadDetail : null
+};
+})();
+
+var FW_HENTAI_MAMA_RESOURCE = (function () {
+var WidgetMetadata;
+WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.0.0",requiredVersion:"0.0.2",description:"Hentaimama HLS 播放源",author:"Forward Widgets",site:"https://hentaimama.io",modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",params:[]}]};
+var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
+async function loadResource(p){var u=String(p&&p.link||p&&p.url||p&&p.id||"").replace(/^hentaimama:/i,"");if(u.indexOf("http")!==0)u=B+"/"+u;try{var r=await Widget.http.get(u,{headers:{"User-Agent":U,Referer:B+"/"},timeout:15000}),h=typeof r.data==="string"?r.data:r.body||"",m=h.match(/dt_embed=hls[^"']*p=([^&"']+)/i);if(!m)return[];var path=decodeURIComponent(m[1]);try{path=atob(path)}catch(e){}var media=B+"/"+path.replace(/^\//,"");return[{name:"Hentaimama",description:"HLS",url:media,customHeaders:{"User-Agent":U,Referer:u}}]}catch(e){return[]}}
+
+return {
+metadata: WidgetMetadata,
+"loadResource": typeof loadResource === "function" ? loadResource : null
+};
+})();
+
 var FW_MISSAV_HOME = (function () {
 var WidgetMetadata;
 var WidgetMetadata = {
@@ -6003,6 +6056,18 @@ metadata: WidgetMetadata,
 };
 })();
 
+async function hentaimama_loadLatest(params) {
+return FW_HENTAI_MAMA_HOME["loadLatest"](params || {});
+}
+
+async function hentaimama_loadSeries(params) {
+return FW_HENTAI_MAMA_HOME["loadSeries"](params || {});
+}
+
+async function hentaimama_loadUncensored(params) {
+return FW_HENTAI_MAMA_HOME["loadUncensored"](params || {});
+}
+
 async function missav_searchVideos(params) {
 return FW_MISSAV_HOME["searchVideos"](params || {});
 }
@@ -6132,7 +6197,7 @@ return FW_HANIME_HOME["loadCategory"](params || {});
 }
 
 async function searchAll(params) {
-  var calls = [FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search, FW_MISSAV_HOME.search];
+  var calls = [FW_HENTAI_MAMA_HOME.search, FW_HSTREAM_HOME.search, FW_YIN_HOME.search, FW_HANIME_HOME.search, FW_MISSAV_HOME.search];
   var groups = await Promise.all(calls.map(function (fn) {
     return Promise.resolve().then(function () { return fn(params || {}); }).catch(function () { return []; });
   }));
@@ -6152,6 +6217,7 @@ async function searchAll(params) {
 
 async function loadDetail(link) {
   var value = String(link || "");
+  if (value.indexOf("hentaimama:") === 0) return FW_HENTAI_MAMA_HOME.loadDetail(link);
   if (value.indexOf("missav:") === 0) return FW_MISSAV_HOME.loadDetail(link);
   if (value.indexOf("hstream:") === 0) return FW_HSTREAM_HOME.loadDetail(link);
   if (value.indexOf("yinhentai:") === 0) return FW_YIN_HOME.loadDetail(link);
@@ -6160,6 +6226,7 @@ async function loadDetail(link) {
 }
 
 function resourceProviderForLink(link) {
+  if (link.indexOf("hentaimama:") === 0) return FW_HENTAI_MAMA_RESOURCE.loadResource;
   if (link.indexOf("missav:") === 0) return FW_MISSAV_RESOURCE.loadResource;
   if (link.indexOf("hstream:") === 0) return FW_HSTREAM_RESOURCE.loadResource;
   if (link.indexOf("yinhentai:") === 0) return FW_YIN_RESOURCE.loadResource;
@@ -6228,11 +6295,11 @@ function playbackInput(params) {
   for (var i = 0; i < values.length; i++) {
     var value = String(values[i] || "");
     try { value = decodeURIComponent(value); } catch (e) {}
-    var prefix = value.match(/^(missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
+    var prefix = value.match(/^(hentaimama|missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
     var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|missav\.live)\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
     var slug = url[2].match(route[1]);
     if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
@@ -6245,6 +6312,7 @@ async function resolvePlayback(params) {
   var direct = resourceProviderForLink(String(input.link || ""));
   if (direct) return collectPlayback([direct], input, true);
   var providers = [
+    FW_HENTAI_MAMA_RESOURCE.loadResource,
     FW_HSTREAM_RESOURCE.loadResource,
     FW_YIN_RESOURCE.loadResource,
     FW_HANIME_RESOURCE.loadResource,
