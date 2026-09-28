@@ -6,9 +6,9 @@
     {
       "id": "hyj1817.hentaimama.home",
       "title": "Hentaimama",
-      "description": "Hentaimama 首页、系列、搜索",
+      "description": "Hentaimama 首页、系列与搜索",
       "requiredVersion": "0.0.2",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "author": "Forward Widgets",
       "url": "https://hyj1817.github.io/fw-modules/widgets/hentaimama.js"
     },
@@ -17,26 +17,26 @@
       "title": "Hentaimama 播放源",
       "description": "Hentaimama HLS 播放源",
       "requiredVersion": "0.0.2",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "author": "Forward Widgets",
       "url": "https://hyj1817.github.io/fw-modules/widgets/hentaimama-resource.js"
     },
     {
       "id": "hyj1817.missav.home",
       "title": "MissAV",
-      "description": "MissAV 首页、分类、搜索与详情",
-      "requiredVersion": "0.0.1",
-      "version": "1.0.0",
-      "author": "Forward Widgets",
+      "description": "获取 MissAV 推荐",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.4",
+      "author": "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
       "url": "https://hyj1817.github.io/fw-modules/widgets/missav.js",
       "type": "url"
     },
     {
       "id": "hyj1817.missav.resource",
       "title": "MissAV 播放源",
-      "description": "MissAV MP4/HLS 播放源",
+      "description": "MissAV HLS/MP4 播放源",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.3",
       "author": "Forward Widgets",
       "url": "https://hyj1817.github.io/fw-modules/widgets/missav-resource.js",
       "type": "url"
@@ -110,6 +110,15 @@
       "author": "Forward Widgets",
       "url": "https://hyj1817.github.io/fw-modules/widgets/4kvm-resource.js",
       "type": "url"
+    },
+    {
+      "id": "hyj1817.maccms.resource",
+      "title": "苹果CMS 聚合源",
+      "description": "苹果CMS/MacCMS 通用聚合播放源：多站可配、自动翻页、片名归一化匹配、解析型线路可选",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/maccms-source.js"
     }
   ]
 }

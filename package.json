@@ -4,11 +4,17 @@
   "private": true,
   "description": "Forward 自用首页模块与播放源",
   "scripts": {
+    "build:maccms": "node scripts/build-maccms.js",
     "build:all": "node scripts/build-fw-all.js",
+    "build": "npm run build:maccms && npm run build:all",
     "generate:index": "node scripts/generate-index.js",
+    "check:manifests": "node scripts/check-manifests.js",
     "test": "node tests/widgets.test.js",
+    "test:maccms": "node tests/maccms.test.js",
     "test:all": "node tests/fw-all.test.js",
-    "verify": "npm run build:all && npm run test:all && npm test",
+    "verify:fast": "npm run build:maccms && npm run test:maccms && npm run check:manifests",
+    "verify": "npm run verify:fast && npm run build:all && npm run test:all && npm test",
+    "test:maccms:live": "node tests/maccms-live.test.js",
     "test:4kvm:live": "node tests/4kvm-live.test.js",
     "test:hstream:home:live": "node tests/hstream-home.live.test.js",
     "test:hstream:resource:live": "node tests/hstream-resource.live.test.js"
