@@ -5,6 +5,19 @@ const path = require("path");
 const vm = require("vm");
 
 const ROOT = path.resolve(__dirname, "..");
+const builder = require(path.join(ROOT, "scripts", "build-fw-all.js"));
+
+/**
+ * 从各首页组件源码推导期望的首页模块数。
+ * 早期这里硬编码了 19（恰好等于 missav.js 一个文件的模块数），
+ * 组件增加模块后测试就会失败，且失败信息指向 bundle 而非测试本身。
+ */
+function expectedHomeModuleCount() {
+  return builder.SOURCES.filter((entry) => entry.kind === "home").reduce(
+    (total, entry) => total + builder.readSource(entry).metadata.modules.length,
+    0
+  );
+}
 
 function loadBundle() {
   const filename = path.join(ROOT, "widgets", "fw-all.js");
@@ -36,8 +49,20 @@ async function testMetadata() {
   assert.strictEqual(metadata.id, "hyj1817.fw.all");
   assert.strictEqual(metadata.modules.filter((item) => item.type === "stream").length, 1);
   assert.strictEqual(metadata.modules.find((item) => item.type === "stream").id, "loadResource");
-  assert.strictEqual(metadata.modules.filter((item) => item.type !== "stream").length, 19);
-  assert.strictEqual(new Set(metadata.modules.map((item) => item.id)).size, metadata.modules.length);
+  // 期望值从源码推导，避免组件增减模块后测试变成假失败
+  assert.strictEqual(
+    metadata.modules.filter((item) => item.type !== "stream").length,
+    expectedHomeModuleCount()
+  );
+  // 模块 id 必须唯一 —— Forward 以 id 区分模块，重复会导致模块不可用
+  const ids = Array.from(metadata.modules, (item) => item.id);
+  const duplicated = ids.filter((id, index) => ids.indexOf(id) !== index);
+  assert.deepStrictEqual(
+    duplicated,
+    [],
+    `模块 id 重复：${JSON.stringify(Array.from(new Set(duplicated)))}`
+  );
+  assert.strictEqual(new Set(ids).size, metadata.modules.length);
   assert.strictEqual(metadata.search.functionName, "searchAll");
   assert.deepStrictEqual(
     Array.from(metadata.globalParams, (item) => item.name),
@@ -101,9 +126,24 @@ async function testResourceDispatch() {
 async function testDeterministicBuild() {
   const filename = path.join(ROOT, "widgets", "fw-all.js");
   const before = fs.readFileSync(filename, "utf8");
-  childProcess.execFileSync(process.execPath, [path.join(ROOT, "scripts", "build-fw-all.js")]);
+
+  // 首选真实子进程路径（同时验证 build-fw-all.js 可作为 CLI 执行）。
+  // 受限环境（容器 / 沙箱）可能禁止创建任何子进程，此时退回进程内构建，
+  // 仍然验证「构建结果确定」这一核心性质，只是不再覆盖 CLI 入口。
+  let viaChildProcess = true;
+  try {
+    childProcess.execFileSync(process.execPath, [path.join(ROOT, "scripts", "build-fw-all.js")]);
+  } catch (error) {
+    if (!["EBUSY", "EPERM", "EACCES", "ENOENT"].includes(error.code)) throw error;
+    viaChildProcess = false;
+    builder.build();
+  }
+
   const after = fs.readFileSync(filename, "utf8");
   assert.strictEqual(after, before);
+  if (!viaChildProcess) {
+    process.stdout.write("  note: 当前环境禁止创建子进程，已退回进程内构建验证（未覆盖 CLI 入口）\n");
+  }
 }
 
 async function testPlaybackLatency() {
@@ -175,7 +215,13 @@ async function testPlaybackRecovery() {
 
 async function testVerifyCommand() {
   const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
-  assert.strictEqual(packageJson.scripts.verify, "npm run build:all && npm run test:all && npm test");
+  const verify = packageJson.scripts.verify || "";
+  // 断言结构性要求，而不是整串字符串 —— 调整脚本顺序不应导致测试失败
+  assert.ok(/build:all/.test(verify), "verify 必须包含 build:all");
+  assert.ok(/test:all/.test(verify), "verify 必须包含 test:all");
+  assert.ok(/npm test(\s|$)/.test(verify), "verify 必须包含 npm test");
+  assert.ok(/verify:fast/.test(verify), "verify 应包含 verify:fast（构建 + 单测 + 清单校验）");
+  assert.ok(/verify:fast/.test(verify) && verify.indexOf("verify:fast") < verify.indexOf("build:all"), "verify:fast 应排在 build:all 之前，便于快速失败");
 }
 
 async function testPlaybackWithoutTimers() {

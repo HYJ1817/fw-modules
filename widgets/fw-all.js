@@ -124,7 +124,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_searchVideos"
     },
     {
       "title": "[MissAV] 今日热门",
@@ -141,7 +141,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadTodayHot"
     },
     {
       "title": "[MissAV] 本周热门",
@@ -158,7 +158,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadWeeklyHot"
     },
     {
       "title": "[MissAV] 本月热门",
@@ -175,7 +175,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadMonthlyHot"
     },
     {
       "title": "[MissAV] 新作上市",
@@ -192,7 +192,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadNewRelease"
     },
     {
       "title": "[MissAV] 中文字幕",
@@ -246,7 +246,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadChineseSubtitle"
     },
     {
       "title": "[MissAV] 无码影片库",
@@ -348,7 +348,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage"
     },
     {
       "title": "[MissAV] 亚洲AV专区",
@@ -422,7 +422,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_2"
     },
     {
       "title": "[MissAV] 影片质量类",
@@ -532,7 +532,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_3"
     },
     {
       "title": "[MissAV] 角色与身份",
@@ -670,7 +670,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_4"
     },
     {
       "title": "[MissAV] 性行为类型",
@@ -804,7 +804,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_5"
     },
     {
       "title": "[MissAV] 情节与主题",
@@ -914,7 +914,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_6"
     },
     {
       "title": "[MissAV] 特殊玩法类",
@@ -1004,7 +1004,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_7"
     },
     {
       "title": "[MissAV] 身材特征类",
@@ -1122,7 +1122,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_8"
     },
     {
       "title": "[MissAV] 职业角色类",
@@ -1216,7 +1216,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_9"
     },
     {
       "title": "[MissAV] 拍摄方式类",
@@ -1302,7 +1302,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_10"
     },
     {
       "title": "[MissAV] 时长合集类",
@@ -1376,7 +1376,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_11"
     },
     {
       "title": "[MissAV] 服装造型类",
@@ -1482,7 +1482,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_12"
     },
     {
       "title": "[MissAV] 特殊题材类",
@@ -1592,7 +1592,7 @@ var WidgetMetadata = {
           "value": "1"
         }
       ],
-      "id": "missav_undefined"
+      "id": "missav_loadPage_13"
     },
     {
       "id": "hstream_latest",

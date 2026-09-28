@@ -64,14 +64,39 @@ function namespaceBlock(entry) {
 }
 
 function homepageModules(entries) {
-  return entries.filter((entry) => entry.kind === "home").flatMap((entry) =>
-    entry.metadata.modules.map((module) => ({
-      ...JSON.parse(JSON.stringify(module)),
-      id: `${entry.key}_${module.id}`,
-      title: `[${entry.metadata.title}] ${module.title}`,
-      functionName: `${entry.key}_${module.functionName}`,
-    }))
-  );
+  const used = new Set();
+  const output = [];
+
+  for (const entry of entries) {
+    if (entry.kind !== "home") continue;
+
+    entry.metadata.modules.forEach((module, index) => {
+      // 部分组件（当前是 missav.js）的模块既没有 id，functionName 也重复
+      // （13 个模块共用 loadPage，仅靠 title 与 params 区分）。
+      // 直接用 ${key}_${module.id} 会得到 19 个相同的 "missav_undefined"，
+      // 导致 bundle 里模块 id 重复、Forward 无法区分这些模块。
+      // 依次回退到 id → functionName → 序号，并对最终碰撞追加后缀。
+      const base = `${entry.key}_${module.id || module.functionName || `module${index}`}`;
+      let id = base;
+      let suffix = 2;
+      while (used.has(id)) {
+        id = `${base}_${suffix}`;
+        suffix += 1;
+      }
+      used.add(id);
+
+      output.push({
+        ...JSON.parse(JSON.stringify(module)),
+        id,
+        title: `[${entry.metadata.title}] ${module.title}`,
+        // functionName 允许重复：多个模块共用同一实现、靠 params 区分是合法用法，
+        // 重复的函数声明会指向同一个 wrapper，行为一致。
+        functionName: `${entry.key}_${module.functionName}`,
+      });
+    });
+  }
+
+  return output;
 }
 
 function homepageWrapperBlocks(entries) {
@@ -277,6 +302,20 @@ function build() {
   vm.runInContext(output, verify, { filename: OUTPUT });
   fs.rmSync(OUTPUT, { force: true });
   fs.renameSync(temporary, OUTPUT);
+  return output;
 }
 
-build();
+// 作为脚本执行时构建；被 require 时只导出，供测试推导期望值。
+if (require.main === module) {
+  build();
+}
+
+module.exports = {
+  SOURCES,
+  build,
+  readSource,
+  homepageModules,
+  exportNames,
+  vmContext,
+  OUTPUT,
+};
