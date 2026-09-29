@@ -30,7 +30,14 @@ const REPOSITORY = "fw-modules";
 const BRANCH = "main";
 
 /** 不进入正式清单的文件：构建产物与独立诊断模块，按设计走单独的 Raw 链接。 */
-const EXCLUDED_FILES = new Set(["fw-all.js", "fw-trace.js", "fw-diagnostics.js", "fw-sourcecheck.js", "control.js"]);
+const EXCLUDED_FILES = new Set([
+  "fw-all.js",
+  "fw-trace.js",
+  "fw-diagnostics.js",
+  "fw-sourcecheck.js",
+  "fw-probe.js",
+  "control.js",
+]);
 
 /** 生成器负责产出的字段；其余字段从现有清单继承，避免丢失手工配置。 */
 const GENERATED_FIELDS = new Set(["id", "title", "description", "requiredVersion", "version", "author", "url"]);

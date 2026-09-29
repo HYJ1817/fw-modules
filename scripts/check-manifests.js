@@ -212,7 +212,7 @@ for (const name of widgetFiles) {
 
 /** 独立诊断 / 构建产物 / 最小校验模块：按设计不进入正式清单，也不要求 multiSource。 */
 function isInfraFile(name) {
-  return /^(fw-all|fw-trace|fw-diagnostics|fw-sourcecheck|control)\.js$/.test(name);
+  return /^(fw-all|fw-trace|fw-diagnostics|fw-sourcecheck|fw-probe|control)\.js$/.test(name);
 }
 
 // 清单 id ↔ 文件 id 双向覆盖
