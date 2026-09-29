@@ -121,6 +121,62 @@ async function testResourceDispatch() {
     Array.from(aggregate, (item) => item.url),
     ["https://cdn/h.m3u8", "https://cdn/shared.m3u8", "https://cdn/4k.m3u8"]
   );
+
+  // 域名路由：已知站点的 https 链接只允许命中对应源，落到 6 源并发会明显变慢且抢带宽
+  const calls = { missav: 0, hentaimama: 0, hstream: 0, yin: 0, hanime: 0, f4k: 0 };
+  const originals = {
+    missav: bundle.FW_MISSAV_RESOURCE.loadResource,
+    hentaimama: bundle.FW_HENTAI_MAMA_RESOURCE.loadResource,
+    hstream: bundle.FW_HSTREAM_RESOURCE.loadResource,
+    yin: bundle.FW_YIN_RESOURCE.loadResource,
+    hanime: bundle.FW_HANIME_RESOURCE.loadResource,
+    f4k: bundle.FW_4KVM_RESOURCE.loadResource,
+  };
+  bundle.FW_MISSAV_RESOURCE.loadResource = async () => { calls.missav++; return []; };
+  bundle.FW_HENTAI_MAMA_RESOURCE.loadResource = async () => { calls.hentaimama++; return []; };
+  bundle.FW_HSTREAM_RESOURCE.loadResource = async () => { calls.hstream++; return []; };
+  bundle.FW_YIN_RESOURCE.loadResource = async () => { calls.yin++; return []; };
+  bundle.FW_HANIME_RESOURCE.loadResource = async () => { calls.hanime++; return []; };
+  bundle.FW_4KVM_RESOURCE.loadResource = async () => { calls.f4k++; return []; };
+
+  const missavCalls = async (link) => {
+    for (const key of Object.keys(calls)) calls[key] = 0;
+    await bundle.loadResource({ link });
+    return { ...calls };
+  };
+
+  assert.deepStrictEqual(
+    await missavCalls("https://missav.fans/dm44/cn/ssis-001"),
+    { missav: 1, hentaimama: 0, hstream: 0, yin: 0, hanime: 0, f4k: 0 },
+    "missav.fans 链接必须只走 missav 源"
+  );
+  assert.deepStrictEqual(
+    await missavCalls("https://missav.live/dm44/cn/ssis-001"),
+    { missav: 1, hentaimama: 0, hstream: 0, yin: 0, hanime: 0, f4k: 0 },
+    "missav.live 链接必须只走 missav 源"
+  );
+  assert.deepStrictEqual(
+    await missavCalls("https://hentaimama.io/tvshows/demo"),
+    { missav: 0, hentaimama: 1, hstream: 0, yin: 0, hanime: 0, f4k: 0 },
+    "hentaimama.io 链接必须只走 hentaimama 源"
+  );
+  assert.deepStrictEqual(
+    await missavCalls("https://www.4kvm.net/play/demo"),
+    { missav: 0, hentaimama: 0, hstream: 0, yin: 0, hanime: 0, f4k: 1 },
+    "4kvm.net 链接必须只走 4kvm 源"
+  );
+  assert.deepStrictEqual(
+    await missavCalls("https://unknown.example/play/demo"),
+    { missav: 1, hentaimama: 1, hstream: 1, yin: 1, hanime: 1, f4k: 1 },
+    "未知域名仍然 6 源并发兜底"
+  );
+
+  Object.assign(bundle.FW_MISSAV_RESOURCE, { loadResource: originals.missav });
+  Object.assign(bundle.FW_HENTAI_MAMA_RESOURCE, { loadResource: originals.hentaimama });
+  Object.assign(bundle.FW_HSTREAM_RESOURCE, { loadResource: originals.hstream });
+  Object.assign(bundle.FW_YIN_RESOURCE, { loadResource: originals.yin });
+  Object.assign(bundle.FW_HANIME_RESOURCE, { loadResource: originals.hanime });
+  Object.assign(bundle.FW_4KVM_RESOURCE, { loadResource: originals.f4k });
 }
 
 async function testDeterministicBuild() {

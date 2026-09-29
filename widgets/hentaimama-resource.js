@@ -1,4 +1,4 @@
-WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.3.0",requiredVersion:"0.0.2",description:"Hentaimama HLS/MP4 播放源",author:"Forward Widgets",site:"https://hentaimama.io",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
+WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.3.1",requiredVersion:"0.0.2",description:"Hentaimama HLS/MP4 播放源",author:"Forward Widgets",site:"https://hentaimama.io",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
 var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
 function full(s){s=String(s||"");return s.indexOf("http")===0?s:B+"/"+s.replace(/^\//,"")}
 function body(r){return typeof r?.data==="string"?r.data:(r?.body||"")}
@@ -39,10 +39,10 @@ async function loadResource(p){try{
   if(p.multiSource==="disabled")return[];
   var raw=String(p.link||p.url||p.id||"").replace(/^hentaimama:/i,"").replace(/^https?:\/\/[^/]+/i,"");
   var epUrl="";
-  if(/\/episodes\//.test(raw))epUrl=full(raw);
+  if(/(?:^|\/)episodes\//.test(raw))epUrl=full(raw);
   else{
     var show="";
-    if(/\/tvshows\//.test(raw))show=full(raw);
+    if(/(?:^|\/)tvshows\//.test(raw))show=full(raw);
     else{
       var q=nameFrom(p).replace(/\s+/g," ");
       if(q){var sh=await get(B+"/?s="+encodeURIComponent(q),B+"/");var m=sh.match(/href=["']([^"']*\/tvshows\/[^"']+)["']/i);if(m)show=abs(m[1])}

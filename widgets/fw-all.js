@@ -7,7 +7,7 @@ var WidgetMetadata = {
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "requiredVersion": "0.0.1",
   "detailCacheDuration": 60,
   "globalParams": [
@@ -3074,7 +3074,7 @@ metadata: WidgetMetadata,
 
 var FW_HENTAI_MAMA_RESOURCE = (function () {
 var WidgetMetadata;
-WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.3.0",requiredVersion:"0.0.2",description:"Hentaimama HLS/MP4 播放源",author:"Forward Widgets",site:"https://hentaimama.io",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
+WidgetMetadata={id:"hyj1817.hentaimama.resource",title:"Hentaimama 播放源",icon:"https://hentaimama.io/wp-content/themes/dooplay/assets/img/favicon.png",version:"1.3.1",requiredVersion:"0.0.2",description:"Hentaimama HLS/MP4 播放源",author:"Forward Widgets",site:"https://hentaimama.io",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
 var B="https://hentaimama.io",U="Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
 function full(s){s=String(s||"");return s.indexOf("http")===0?s:B+"/"+s.replace(/^\//,"")}
 function body(r){return typeof r?.data==="string"?r.data:(r?.body||"")}
@@ -3115,10 +3115,10 @@ async function loadResource(p){try{
   if(p.multiSource==="disabled")return[];
   var raw=String(p.link||p.url||p.id||"").replace(/^hentaimama:/i,"").replace(/^https?:\/\/[^/]+/i,"");
   var epUrl="";
-  if(/\/episodes\//.test(raw))epUrl=full(raw);
+  if(/(?:^|\/)episodes\//.test(raw))epUrl=full(raw);
   else{
     var show="";
-    if(/\/tvshows\//.test(raw))show=full(raw);
+    if(/(?:^|\/)tvshows\//.test(raw))show=full(raw);
     else{
       var q=nameFrom(p).replace(/\s+/g," ");
       if(q){var sh=await get(B+"/?s="+encodeURIComponent(q),B+"/");var m=sh.match(/href=["']([^"']*\/tvshows\/[^"']+)["']/i);if(m)show=abs(m[1])}
@@ -6412,10 +6412,13 @@ function playbackInput(params) {
     try { value = decodeURIComponent(value); } catch (e) {}
     var prefix = value.match(/^(hentaimama|missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
-    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|missav\.live)\/([^?#]+)/i);
+    // 命中已知站点域名时只查对应的那一个源；漏掉的域名会落到 resolvePlayback 的
+    // 6 源并发，慢且互相抢带宽（踩过：missav.fans 不在表里，用户起播要等全量并发）。
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|hentaimama\.io|missav\.(?:live|fans|ws|ai))\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.fans": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ws": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ai": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
+    if (!route) continue;
     var slug = url[2].match(route[1]);
     if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
   }

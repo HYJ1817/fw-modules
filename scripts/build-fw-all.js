@@ -220,10 +220,13 @@ function playbackInput(params) {
     try { value = decodeURIComponent(value); } catch (e) {}
     var prefix = value.match(/^(hentaimama|missav|hstream|yinhentai|hanime|4kvm):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
-    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|missav\.live)\/([^?#]+)/i);
+    // 命中已知站点域名时只查对应的那一个源；漏掉的域名会落到 resolvePlayback 的
+    // 6 源并发，慢且互相抢带宽（踩过：missav.fans 不在表里，用户起播要等全量并发）。
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|hentaimama\.io|missav\.(?:live|fans|ws|ai))\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.fans": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ws": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ai": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
+    if (!route) continue;
     var slug = url[2].match(route[1]);
     if (slug) { input.link = route[0] + ":" + slug[1]; return input; }
   }
@@ -274,7 +277,7 @@ function build() {
     icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
     // 每次改动任何被内联的源都必须手动 bump：客户端只按 version 决定是否重新拉取 fw-all.js，
     // 版本不变时会一直用缓存的旧内联代码（踩过：missav 改了 fans 域名但没 bump，用户端仍是旧源）。
-    version: "1.0.3",
+    version: "1.0.4",
     requiredVersion: "0.0.1",
     detailCacheDuration: 60,
     globalParams: JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || [])),

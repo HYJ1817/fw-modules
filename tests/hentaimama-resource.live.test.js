@@ -64,6 +64,13 @@ function check(name, condition, detail) {
   const show = await sandbox.loadResource({ seriesName: 'Pure x Holic' });
   check('按系列名检索也返回线路', Array.isArray(show) && show.length > 0, 'len=' + (show && show.length));
 
+  // fw-all 路由改写后的形态：无前导斜杠的 tvshows 路径，必须仍能解析到分集
+  const routed = await sandbox.loadResource({
+    link: 'hentaimama:tvshows/pure-x-holic-junketsu-otome-to-konin-kankei-the-animation/',
+  });
+  check('tvshows 路径形式返回线路', Array.isArray(routed) && routed.length > 0, 'len=' + (routed && routed.length));
+  check('tvshows 线路是直链', /https?:\/\/.+\.(m3u8|mp4)/i.test(routed[0].url), routed[0].url);
+
   console.log('\nHentaimama 播放源模块 ' + passed + ' 项通过');
 })().catch((error) => {
   console.error('Hentaimama 播放源模块测试失败: ' + (error.stack || error.message));
