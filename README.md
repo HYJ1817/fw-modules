@@ -204,6 +204,9 @@ npm run test:maccms:live
 npm run test:4kvm:live
 npm run test:hstream:home:live
 npm run test:hstream:resource:live
+npm run test:hentaimama:live
+npm run test:missav:live
+npm run test:yinhentai:live
 ```
 
 站点结构随时可能变化；若模块失效，请先运行 `npm run test:maccms:live` 与源站自检模块，

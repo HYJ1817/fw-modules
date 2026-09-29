@@ -3,7 +3,7 @@ WidgetMetadata = {
   id: "hyj1817.yinhentai.resource",
   title: "YinHentai 播放源",
   icon: "https://yinhentai.com/favicon.ico",
-  version: "1.1.0",
+  version: "1.2.0",
   requiredVersion: "0.0.1",
   description: "YinHentai HLS/MP4 多线路播放源",
   author: "Forward Widgets",
@@ -88,6 +88,36 @@ function extractResources(payload, slug) {
   return output;
 }
 
+function directMediaUrl(value) {
+  var url = normalizeMediaUrl(value);
+  if (/^https?:\/\/pixeldrain\.com\/u\/([^/?#]+)/i.test(url)) url = url.replace(/pixeldrain\.com\/u\//i, "pixeldrain.com/api/file/");
+  return url;
+}
+
+function resourcesFromServerLinks(payload, slug) {
+  var links = payload;
+  if (typeof links === "string") {
+    var match = links.match(/links\\?"\s*:\s*(\[[\s\S]*?\])\s*(?:,|\])/);
+    if (!match) return [];
+    try { links = JSON.parse(match[1].replace(/\\"/g, '"').replace(/\\\//g, "/")); } catch (e) {
+      links = [];
+      var item, pattern = /\{"id":(\d+)[\s\S]*?"link_url":"([^"]+)"[\s\S]*?"server_name":"([^"]*)"[\s\S]*?"type":"([^"]*)"\}/g;
+      var raw = match[1].replace(/\\+"/g, '"');
+      while ((item = pattern.exec(raw))) links.push({ id: +item[1], link_url: item[2], server_name: item[3], type: item[4], is_active: true });
+    }
+  }
+  if (!Array.isArray(links)) return [];
+  var output = [];
+  for (var i = 0; i < links.length; i++) {
+    var entry = links[i];
+    if (!entry || entry.is_active === false || !(entry.link_url || entry.url)) continue;
+    var url = directMediaUrl(entry.link_url || entry.url);
+    if (!/\.m3u8(?:[?#]|$)|\.mp4(?:[?#]|$)|\/api\/file\//i.test(url)) continue;
+    output.push(resource(url, slug, output.length, entry.server_name || entry.type || ""));
+  }
+  return output;
+}
+
 function iframeUrls(html) {
   var result = [], match, pattern = /<iframe[^>]+(?:data-src|src)=["']([^"']+)["']/gi;
   while ((match = pattern.exec(String(html || "")))) {
@@ -131,6 +161,8 @@ async function loadResource(params) {
     try {
       var page = await get(BASE + paths[i], BASE + "/", false);
       var html = page && page.data;
+      var serverLinks = resourcesFromServerLinks(html, slug);
+      if (serverLinks.length) return serverLinks;
       var direct = extractResources(html, slug);
       if (direct.length) return direct;
       var encoded = resourcesFromIframeData(html, slug);
@@ -141,6 +173,12 @@ async function loadResource(params) {
       }
     } catch (pageError) { console.log("YinHentai page fallback: " + pageError.message); }
   }
+  try {
+    var download = await get(BASE + "/api/videos/download?slug=" + encodeURIComponent(slug), pageUrl(slug), true);
+    var downloadData = parseData(download);
+    var downloadResources = resourcesFromServerLinks(downloadData && (downloadData.links || downloadData), slug);
+    if (downloadResources.length) return downloadResources;
+  } catch (downloadError) { console.log("YinHentai download API fallback: " + downloadError.message); }
   var apis = ["/api/video/" + slug, "/api/videos/" + slug, "/api/watch/" + slug, "/wp-json/wp/v2/search?search=" + encodeURIComponent(slug)];
   for (var a = 0; a < apis.length; a++) {
     try { var api = await get(BASE + apis[a], pageUrl(slug), true); var apiResources = extractResources(parseData(api), slug); if (apiResources.length) return apiResources; } catch (apiError) { console.log("YinHentai API fallback: " + apiError.message); }

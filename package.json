@@ -17,6 +17,9 @@
     "test:maccms:live": "node tests/maccms-live.test.js",
     "test:4kvm:live": "node tests/4kvm-live.test.js",
     "test:hstream:home:live": "node tests/hstream-home.live.test.js",
-    "test:hstream:resource:live": "node tests/hstream-resource.live.test.js"
+    "test:hstream:resource:live": "node tests/hstream-resource.live.test.js",
+    "test:missav:live": "node tests/missav-resource.live.test.js",
+    "test:yinhentai:live": "node tests/yinhentai-resource.live.test.js",
+    "test:hentaimama:live": "node tests/hentaimama-resource.live.test.js"
   }
 }
