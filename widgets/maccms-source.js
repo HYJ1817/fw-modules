@@ -150,6 +150,18 @@ var Maccms = (function () {
     return base + (base.indexOf('?') >= 0 ? '&' : '?') + pairs.join('&');
   }
 
+  /**
+   * 诊断日志。返回空列表时最需要它 —— 常见原因是宿主没有传片名，
+   * 此时任何依赖片名搜索的播放源都会静默返回空。
+   */
+  function trace(payload) {
+    try {
+      console.log('FW_MACCMS ' + JSON.stringify(payload));
+    } catch (error) {
+      /* 日志失败不影响返回 */
+    }
+  }
+
   /** 去掉零宽字符、标点、空白与大小写差异，用于跨站片名比较。 */
   function normalize(value) {
     return String(value === undefined || value === null ? '' : value)
@@ -499,11 +511,28 @@ var Maccms = (function () {
     params = params || {};
     options = options || {};
 
+    var paramKeys = [];
+    for (var key in params) {
+      if (Object.prototype.hasOwnProperty.call(params, key)) paramKeys.push(key);
+    }
+
     // 默认放行：只有显式 disabled 才关闭。绝不能写成 !== "enabled"。
-    if (String(params.multiSource || '').toLowerCase() === 'disabled') return [];
+    if (String(params.multiSource || '').toLowerCase() === 'disabled') {
+      trace({ event: 'skipped', reason: 'multiSource=disabled' });
+      return [];
+    }
 
     var seriesTitle = readTitle(params);
-    if (!seriesTitle) return [];
+    if (!seriesTitle) {
+      // 这是「线路列表为空」最常见的原因：Forward 未传任何片名字段。
+      trace({
+        event: 'no-title',
+        at: new Date().toISOString(),
+        paramKeys: paramKeys,
+        note: '未收到片名，无法搜索。请确认宿主是否传递了 seriesName/title/name 之一。'
+      });
+      return [];
+    }
 
     var type = readType(params);
     var parsed = parseSeason(seriesTitle);
@@ -562,8 +591,29 @@ var Maccms = (function () {
           },
         });
         var best = pickBest(items, wanted);
-        if (!best) return [];
-        if (wanted.strictSeason && best.quality !== 'exact') return [];
+        if (!best) {
+          trace({
+            event: 'no-match',
+            site: site.title,
+            keyword: wanted.base,
+            candidates: items.length,
+            note: '该站返回了结果但没有任何条目与片名相关。'
+          });
+          return [];
+        }
+        if (wanted.strictSeason && best.quality !== 'exact') {
+          trace({ event: 'rejected-strict-season', site: site.title, matched: best.item.vod_name, quality: best.quality });
+          return [];
+        }
+        trace({
+          event: 'matched',
+          site: site.title,
+          keyword: wanted.base,
+          matched: best.item.vod_name,
+          quality: best.quality,
+          score: best.score,
+          candidates: items.length
+        });
         return resourcesFromItem(best.item, site.title, seriesTitle, type, parseApi, best.quality);
       } catch (error) {
         report(error);
@@ -586,7 +636,20 @@ var Maccms = (function () {
       }
     }
 
-    return filterByEpisode(merged, wantedEpisode, type);
+    var filtered = filterByEpisode(merged, wantedEpisode, type);
+    trace({
+      event: 'done',
+      at: new Date().toISOString(),
+      title: seriesTitle,
+      type: type,
+      season: wanted.season,
+      episode: wantedEpisode,
+      sites: sites.length,
+      collected: merged.length,
+      returned: filtered.length,
+      note: merged.length > 0 && filtered.length === 0 ? '有线路但被集数过滤掉了，可能是集号不匹配。' : undefined
+    });
+    return filtered;
   }
 
   // -------------------------------------------------------------------------

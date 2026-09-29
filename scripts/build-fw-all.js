@@ -20,6 +20,9 @@ const SOURCES = [
   { key: "yin", namespace: "FW_YIN_RESOURCE", file: "yinhentai-resource.js", kind: "resource" },
   { key: "hanime", namespace: "FW_HANIME_RESOURCE", file: "hanime-resource.js", kind: "resource" },
   { key: "fourkvm", namespace: "FW_4KVM_RESOURCE", file: "4kvm-resource.js", kind: "resource" },
+  // 苹果CMS 聚合源：主流影视资源。此前遗漏，导致按 README 推荐安装
+  // fw-all.js 的用户拿不到任何影视线路。
+  { key: "maccms", namespace: "FW_MACCMS_RESOURCE", file: "maccms-source.js", kind: "resource" },
 ];
 
 function vmContext() {
@@ -247,6 +250,7 @@ async function resolvePlayback(params) {
     FW_HANIME_RESOURCE.loadResource,
     FW_4KVM_RESOURCE.loadResource,
     FW_MISSAV_RESOURCE.loadResource,
+    FW_MACCMS_RESOURCE.loadResource,
   ];
   return collectPlayback(providers, input, false);
 }
@@ -255,17 +259,34 @@ function build() {
   const entries = SOURCES.map(readSource);
   const resourceEntries = entries.filter((entry) => entry.kind === "resource");
   const hanimeResource = resourceEntries.find((entry) => entry.key === "hanime");
+  const maccmsResource = resourceEntries.find((entry) => entry.key === "maccms");
+
+  // 以 hanime 的全局参数为基础（保持原有行为），再并入 maccms 独有的参数，
+  // 使 fw-all.js 也能配置苹果CMS 源站列表与解析接口。
+  const globalParams = (function () {
+    const base = JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || []));
+    const seen = Object.create(null);
+    for (const param of base) seen[param.name] = true;
+    const extra = maccmsResource ? maccmsResource.metadata.globalParams || [] : [];
+    for (const param of extra) {
+      if (!param || !param.name || seen[param.name]) continue;
+      seen[param.name] = true;
+      base.push(JSON.parse(JSON.stringify(param)));
+    }
+    return base;
+  })();
+
   const metadata = {
     id: "hyj1817.fw.all",
     title: "FW 总模块",
-    description: "HStream、YinHentai、MissAV、Hanime 首页与五站播放源",
+    description: "HStream、YinHentai、MissAV、Hanime 首页与六站播放源，并含苹果CMS 聚合源",
     author: "HYJ1817",
     site: "https://github.com/HYJ1817/fw-modules",
     icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-    version: "1.0.2",
+    version: "1.1.0",
     requiredVersion: "0.0.1",
     detailCacheDuration: 60,
-    globalParams: JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || [])),
+    globalParams,
     modules: homepageModules(entries).concat({
       id: "loadResource",
       title: "统一播放源",

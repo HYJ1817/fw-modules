@@ -10,7 +10,35 @@ Forward 右上角选择链接导入，只需添加：
 https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
 ```
 
-该 JS 同时包含 HStream、YinHentai、Hanime 首页模块和 HStream、YinHentai、Hanime、4KVM 播放源，不依赖 `.fwd` 集合来源。
+该 JS 同时包含 HStream、YinHentai、Hanime、MissAV 首页模块，以及 HStream、YinHentai、Hanime、4KVM、MissAV、**苹果CMS 聚合源**六站播放源，不依赖 `.fwd` 集合来源。
+
+> 聚合搜索范围由 `WidgetMetadata.modules` 里的 `loadResource` 决定。若某个源没有出现在线路列表里，
+> 先确认它确实在 `scripts/build-fw-all.js` 的 `SOURCES` 列表中 —— 该列表是显式维护的，
+> 新增播放源后必须重跑 `npm run build:all`。
+
+## 排查：线路列表为空
+
+播放源依赖片名去搜索资源站。而 Forward 传给 `loadResource` 的字段里**不一定包含片名**
+（官方文档列出的是 `tmdbId / imdbId / id / type / season / episode / link / videoUrl`），
+此时任何依赖片名搜索的播放源都会返回空。
+
+用探针模块可以一次性区分三种情况：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
+```
+
+导入后，它会记录 Forward 传入的**全部字段**（键名、类型、是否有值），
+并返回一条公开测试流。判读：
+
+| 现象 | 结论 |
+| --- | --- |
+| 能看到「探针线路（公开测试流）」 | 模块被正确调用，问题在匹配逻辑（多半是没传片名） |
+| 有 `FW_PROBE` 日志但看不到线路 | 宿主过滤了返回结果 |
+| 连 `FW_PROBE` 日志都没有 | 模块未被调用：检查是否安装、是否开启聚合搜索、当前片源是否触发多源匹配 |
+
+`maccms-source.js` 也会输出 `FW_MACCMS` 日志，包含收到的片名、每站的候选数与匹配质量，
+返回空时会明确写出原因（`no-title` / `no-match`）。
 
 ## 订阅地址
 

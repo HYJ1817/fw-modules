@@ -64,10 +64,14 @@ async function testMetadata() {
   );
   assert.strictEqual(new Set(ids).size, metadata.modules.length);
   assert.strictEqual(metadata.search.functionName, "searchAll");
-  assert.deepStrictEqual(
-    Array.from(metadata.globalParams, (item) => item.name),
-    ["multiSource", "resolverUrl", "sessionToken"]
-  );
+  // 断言结构性要求，而不是整串快照 —— 新增参数不应导致测试失败。
+  const paramNames = Array.from(metadata.globalParams, (item) => item.name);
+  for (const required of ["multiSource", "resolverUrl", "sessionToken"]) {
+    assert.ok(paramNames.includes(required), "globalParams 缺少必需参数 " + required);
+  }
+  assert.strictEqual(new Set(paramNames).size, paramNames.length, "globalParams 名称必须唯一");
+  // 苹果CMS 聚合源已并入总模块，其站点配置参数必须可见
+  assert.ok(paramNames.includes("sites"), "fw-all.js 应包含苹果CMS 源的站点配置参数");
   assert.ok(bundle.FW_HSTREAM_HOME);
   assert.ok(bundle.FW_YIN_HOME);
   assert.ok(bundle.FW_HANIME_HOME);
