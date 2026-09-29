@@ -141,6 +141,13 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.
 
 ## 维护
 
+> **逐站播放源（`*-resource.js`）失效时，看 [`docs/fw-widget-maintenance.md`](docs/fw-widget-maintenance.md)。**
+> 里面有故障分类表、5 步诊断流程、已实测的核验脚本模板、五类常见故障的修法，
+> 以及发布流程与验收标准。
+>
+> 苹果CMS 采集接口类（`maccms-source.js`）不需要那套流程 —— 它依赖公开协议，
+> 站点换内容不影响接口形态。
+
 ### 目录约定
 
 ```
