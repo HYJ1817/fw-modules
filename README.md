@@ -10,11 +10,11 @@ Forward 右上角选择链接导入，只需添加：
 https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
 ```
 
-该 JS 同时包含 HStream、YinHentai、Hanime、MissAV 首页模块，以及 HStream、YinHentai、Hanime、4KVM、MissAV、**苹果CMS 聚合源**六站播放源，不依赖 `.fwd` 集合来源。
+该 JS 同时包含 HStream、YinHentai、Hanime、MissAV 首页模块，以及 HStream、YinHentai、Hanime、4KVM、MissAV 五个站点专用播放源，不依赖 `.fwd` 集合来源。
 
-> 聚合搜索范围由 `WidgetMetadata.modules` 里的 `loadResource` 决定。若某个源没有出现在线路列表里，
-> 先确认它确实在 `scripts/build-fw-all.js` 的 `SOURCES` 列表中 —— 该列表是显式维护的，
-> 新增播放源后必须重跑 `npm run build:all`。
+> **`fw-all.js` 不包含苹果CMS 聚合源。** 该包已 235 KB，而 Forward 对单个模块文件有体积上限，
+> 超限会被截断并以「模块无效或解析失败」拒绝。把聚合源内联进去会涨到 254 KB（实测刷新失败），
+> 因此**苹果CMS 聚合源请单独安装**，见下一节。
 
 ## 排查：线路列表为空
 
@@ -73,16 +73,26 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-modules.fwd
 | Hanime 播放源 | 资源 | `widgets/hanime-resource.js` | 需要配置已认证的自建解析地址 |
 | 4KVM 播放源 | 资源 | `widgets/4kvm-resource.js` | 自动匹配电影、电视剧和动漫，返回未锁定线路 |
 
-## 苹果CMS 聚合源
+## 苹果CMS 聚合源（需要单独安装）
 
 面向**苹果CMS / MacCMS V10 采集接口**（形如 `https://域名/api.php/provide/vod/`）的通用播放源。
 这类接口是公开协议约定，站点换内容不影响接口形态，因此比逐站 HTML 抓取稳定得多。
 
-单个文件即可导入：
+**它不在 `fw-all.js` 里**（原因见上一节），需要单独导入一个 24 KB 的文件：
+
+```text
+https://hyj1817.github.io/fw-modules/widgets/maccms-source.js
+```
+
+备选地址（任选其一，哪个通就用哪个）：
 
 ```text
 https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/maccms-source.js
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/maccms-source.js
 ```
+
+> 三个地址内容完全相同。`raw.githubusercontent.com` 在部分网络下不稳定，
+> 若导入或刷新失败，优先试 `hyj1817.github.io` 那个。
 
 全局参数：
 
@@ -90,7 +100,7 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/maccms-source.
 | --- | --- | --- |
 | 是否启用聚合搜索 | 启用 | 仅当显式选择「禁用」时才返回空 |
 | 资源站列表 | 内置金鹰资源 | 每行一条：`名称,接口地址`；也可填 JSON 数组 |
-| 每站最多搜索页数 | 5 | 精确片名常常不在第 1 页，接口每页固定 20 条 |
+| 每站最多搜索页数 | 5 页 | 精确片名常常不在第 1 页，接口每页固定 20 条 |
 | 严格季匹配 | 关闭 | 开启后季号不一致的条目会被拒绝 |
 | 解析接口 | 空 | 填写后解析型线路会经该接口转换，支持 `{url}` 占位符 |
 

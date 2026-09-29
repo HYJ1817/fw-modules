@@ -8,6 +8,16 @@ const ROOT = path.resolve(__dirname, "..");
 const WIDGETS = path.join(ROOT, "widgets");
 const OUTPUT = path.join(WIDGETS, "fw-all.js");
 
+/**
+ * 体积上限（字节）。Forward 对单个模块文件有体积上限，超限会被截断，
+ * 客户端报「模块无效或解析失败」。实测把苹果CMS 聚合源内联进来后本包涨到 254 KB，
+ * 刷新即失败；回到 230 KB 后正常。
+ *
+ * 这个阈值是保守值，不是精确边界。超过时只警告不中断构建 —— 真实上限未知，
+ * 若你实测更高，请调大 MAX_BYTES；若需要装更多源，请改用独立模块而不是继续撑大本包。
+ */
+const MAX_BYTES = 240 * 1024;
+
 const SOURCES = [
   { key: "hentaimama", namespace: "FW_HENTAI_MAMA_HOME", file: "hentaimama.js", kind: "home", detail: "loadDetail" },
   { key: "hentaimama", namespace: "FW_HENTAI_MAMA_RESOURCE", file: "hentaimama-resource.js", kind: "resource" },
@@ -20,9 +30,6 @@ const SOURCES = [
   { key: "yin", namespace: "FW_YIN_RESOURCE", file: "yinhentai-resource.js", kind: "resource" },
   { key: "hanime", namespace: "FW_HANIME_RESOURCE", file: "hanime-resource.js", kind: "resource" },
   { key: "fourkvm", namespace: "FW_4KVM_RESOURCE", file: "4kvm-resource.js", kind: "resource" },
-  // 苹果CMS 聚合源：主流影视资源。此前遗漏，导致按 README 推荐安装
-  // fw-all.js 的用户拿不到任何影视线路。
-  { key: "maccms", namespace: "FW_MACCMS_RESOURCE", file: "maccms-source.js", kind: "resource" },
 ];
 
 function vmContext() {
@@ -250,7 +257,6 @@ async function resolvePlayback(params) {
     FW_HANIME_RESOURCE.loadResource,
     FW_4KVM_RESOURCE.loadResource,
     FW_MISSAV_RESOURCE.loadResource,
-    FW_MACCMS_RESOURCE.loadResource,
   ];
   return collectPlayback(providers, input, false);
 }
@@ -259,34 +265,17 @@ function build() {
   const entries = SOURCES.map(readSource);
   const resourceEntries = entries.filter((entry) => entry.kind === "resource");
   const hanimeResource = resourceEntries.find((entry) => entry.key === "hanime");
-  const maccmsResource = resourceEntries.find((entry) => entry.key === "maccms");
-
-  // 以 hanime 的全局参数为基础（保持原有行为），再并入 maccms 独有的参数，
-  // 使 fw-all.js 也能配置苹果CMS 源站列表与解析接口。
-  const globalParams = (function () {
-    const base = JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || []));
-    const seen = Object.create(null);
-    for (const param of base) seen[param.name] = true;
-    const extra = maccmsResource ? maccmsResource.metadata.globalParams || [] : [];
-    for (const param of extra) {
-      if (!param || !param.name || seen[param.name]) continue;
-      seen[param.name] = true;
-      base.push(JSON.parse(JSON.stringify(param)));
-    }
-    return base;
-  })();
-
   const metadata = {
     id: "hyj1817.fw.all",
     title: "FW 总模块",
-    description: "HStream、YinHentai、MissAV、Hanime 首页与六站播放源，并含苹果CMS 聚合源",
+    description: "HStream、YinHentai、MissAV、Hanime 首页与五站播放源",
     author: "HYJ1817",
     site: "https://github.com/HYJ1817/fw-modules",
     icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-    version: "1.1.0",
+    version: "1.0.2",
     requiredVersion: "0.0.1",
     detailCacheDuration: 60,
-    globalParams,
+    globalParams: JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || [])),
     modules: homepageModules(entries).concat({
       id: "loadResource",
       title: "统一播放源",
@@ -326,6 +315,16 @@ function build() {
   vm.runInContext(output, verify, { filename: OUTPUT });
   fs.rmSync(OUTPUT, { force: true });
   fs.renameSync(temporary, OUTPUT);
+
+  const bytes = Buffer.byteLength(output);
+  if (bytes > MAX_BYTES) {
+    console.warn(
+      `\n⚠️  fw-all.js 体积 ${(bytes / 1024).toFixed(0)} KB，超过保守阈值 ${(MAX_BYTES / 1024).toFixed(0)} KB。\n` +
+        `    Forward 可能截断该文件并报「模块无效或解析失败」。\n` +
+        `    建议把新增播放源做成独立模块，而不是继续内联进本包。\n`
+    );
+  }
+
   return output;
 }
 
