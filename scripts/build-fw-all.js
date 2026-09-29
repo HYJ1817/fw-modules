@@ -272,7 +272,9 @@ function build() {
     author: "HYJ1817",
     site: "https://github.com/HYJ1817/fw-modules",
     icon: "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-    version: "1.0.2",
+    // 每次改动任何被内联的源都必须手动 bump：客户端只按 version 决定是否重新拉取 fw-all.js，
+    // 版本不变时会一直用缓存的旧内联代码（踩过：missav 改了 fans 域名但没 bump，用户端仍是旧源）。
+    version: "1.0.3",
     requiredVersion: "0.0.1",
     detailCacheDuration: 60,
     globalParams: JSON.parse(JSON.stringify(hanimeResource.metadata.globalParams || [])),

@@ -7,7 +7,7 @@ var WidgetMetadata = {
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "requiredVersion": "0.0.1",
   "detailCacheDuration": 60,
   "globalParams": [
