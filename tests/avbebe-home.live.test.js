@@ -52,9 +52,9 @@ function check(name, condition, detail) {
 
   const categoriesModule = metadata.modules.find((module) => module.id === 'categories');
   const categoryParam = categoriesModule && categoriesModule.params.find((param) => param.name === 'category');
-  const expected = ['13684', '466', '13683', '4380', '13685', '1710', '4737'];
+  const expected = ['13684', '466', '1087', '13683', '4380', '13685', '1710', '4737'];
   check(
-    '分类恰好是 7 个可播放分类',
+    '分类恰好是 8 个可播放分类',
     categoryParam && JSON.stringify(categoryParam.enumOptions.map((option) => option.value)) === JSON.stringify(expected),
     categoryParam && categoryParam.enumOptions.map((option) => option.value).join(',')
   );
@@ -93,6 +93,11 @@ function check(name, condition, detail) {
   check('详情带标题', !!detail.title && detail.title !== latest[0].link, detail.title);
   check('详情带 Referer 头', detail.customHeaders && detail.customHeaders.Referer === 'https://avbebe.com/');
   check('非法链接详情返回 null', (await sandbox.loadDetail('avbebe:not-a-number')) === null);
+
+  const encoded = await sandbox.loadDetail(encodeURIComponent('avbebe:' + latest[0].link.split(':')[1]));
+  check('URL 编码后的 id 也能开详情', encoded && encoded.type === 'detail' && /\.m3u8/i.test(encoded.videoUrl), encoded && encoded.videoUrl);
+  const byUrl = await sandbox.loadDetail('https://avbebe.com/archives/' + latest[0].link.split(':')[1]);
+  check('archives 链接也能开详情', byUrl && byUrl.type === 'detail', byUrl && byUrl.title);
 
   console.log('\nAvbebe 首页模块: ' + passed + ' 项通过');
 })().catch((error) => {

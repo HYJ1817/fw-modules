@@ -64,6 +64,12 @@ async function discoverPlayablePost() {
   const byUrl = await sandbox.loadResource({ link: 'https://avbebe.com/archives/' + post.id });
   check('文章链接同样可用', Array.isArray(byUrl) && byUrl.length > 0, 'len=' + (byUrl && byUrl.length));
 
+  const byEncoded = await sandbox.loadResource({ link: encodeURIComponent('avbebe:' + post.id) });
+  check('URL 编码的 id 也能解析', Array.isArray(byEncoded) && byEncoded.length > 0, 'len=' + (byEncoded && byEncoded.length));
+
+  const byArchiveUrl = await sandbox.loadResource({ videoUrl: 'https://avbebe.com/archives/' + post.id });
+  check('videoUrl 里的文章链接也能解析', Array.isArray(byArchiveUrl) && byArchiveUrl.length > 0, 'len=' + (byArchiveUrl && byArchiveUrl.length));
+
   const ranged = await fetch(streams[0].url, {
     headers: {
       'User-Agent': 'Mozilla/5.0',

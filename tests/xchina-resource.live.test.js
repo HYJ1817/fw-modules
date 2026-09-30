@@ -72,6 +72,20 @@ async function discoverHash() {
   check('线路按约定拼出 master 地址', streams[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', streams[0].url);
   check('线路带详情页 Referer', streams[0].customHeaders && streams[0].customHeaders.Referer === 'https://xchina.co/video/id-' + hash + '.html', JSON.stringify(streams[0].customHeaders));
   console.log('    ' + streams[0].name + ' -> ' + streams[0].url);
+  check(
+    '返回主站与镜像两条线路',
+    streams.length === 2 && streams[1].url === 'https://tw.xchina.co/hls/' + hash + '/master.m3u8',
+    streams.map((item) => item.url).join(',')
+  );
+  check('线路带 Origin 头', streams[0].customHeaders && streams[0].customHeaders.Origin === 'https://xchina.co');
+  await wait(900);
+
+  const byEncoded = await sandbox.loadResource({ link: encodeURIComponent('xchina:' + hash) });
+  check('URL 编码的 id 也能解析', byEncoded.length > 0 && byEncoded[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', byEncoded.length && byEncoded[0].url);
+  await wait(900);
+
+  const byHlsUrl = await sandbox.loadResource({ videoUrl: 'https://xchina.co/hls/' + hash + '/master.m3u8' });
+  check('master 地址也能解析', byHlsUrl.length > 0 && byHlsUrl[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', byHlsUrl.length && byHlsUrl[0].url);
   await wait(900);
 
   const playlist = curlGet(streams[0].url, {

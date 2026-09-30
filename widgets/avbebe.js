@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.avbebe.home",
     title: "Avbebe",
     icon: "https://avbebe.com/wp-content/uploads/2023/12/icon.png",
-    version: "1.0.0",
+    version: "1.0.1",
     requiredVersion: "0.0.2",
     description: "Avbebe 动画与同人影片的列表、分类与搜索",
     author: "HYJ1817",
@@ -34,6 +34,7 @@ WidgetMetadata = {
                     enumOptions: [
                         { title: "同人動畫 (9050)", value: "13684" },
                         { title: "動畫卡通 (2844)", value: "466" },
+                        { title: "中文字幕 (1794)", value: "1087" },
                         { title: "Motion Anime (1262)", value: "13683" },
                         { title: "新番 (591)", value: "4380" },
                         { title: "MMD (330)", value: "13685" },
@@ -57,7 +58,7 @@ WidgetMetadata = {
 
 var B = "https://avbebe.com";
 var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-var PLAYABLE_CATEGORIES = "13684,466,13683,4380,13685,1710,4737";
+var PLAYABLE_CATEGORIES = "13684,466,1087,13683,4380,13685,1710,4737";
 
 function clean(s) {
     return String(s || "")
@@ -172,7 +173,11 @@ function toItems(posts) {
 
 function postId(link) {
     var value = String(link || "");
-    var match = value.match(/^avbebe:(\d+)$/) || value.match(/avbebe\.com\/archives\/(\d+)/);
+    try { value = decodeURIComponent(value); } catch (error) { /* 原样使用 */ }
+    var match = value.match(/^avbebe:(\d+)$/)
+        || value.match(/avbebe\.com\/archives\/(\d+)/)
+        || value.match(/[?&]p=(\d+)/)
+        || value.match(/^\d+$/);
     return match ? match[1] : "";
 }
 
@@ -210,8 +215,10 @@ async function search(params) {
     return toItems(posts);
 }
 
-async function loadDetail(link) {
-    var id = postId(link);
+async function loadDetail(params) {
+    var input = typeof params === "object" && params !== null ? params : { link: params };
+    var link = input.link || input.id || input.url || input.videoUrl || "";
+    var id = postId(link) || postId(input.id) || postId(input.url) || postId(input.videoUrl);
     if (!id) return null;
     var html = "";
     var title = "";

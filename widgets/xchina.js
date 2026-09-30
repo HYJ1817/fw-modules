@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.xchina.home",
     title: "XChina",
     icon: "https://xchina.co/images/sites/favicon/1.png?v=1.0.2",
-    version: "1.0.0",
+    version: "1.0.1",
     requiredVersion: "0.0.2",
     description: "XChina 影片列表、分类与搜索",
     author: "HYJ1817",
@@ -44,9 +44,23 @@ WidgetMetadata = {
                         { title: "全部影片", value: "/videos.html" },
                         { title: "国产", value: "/videos/cat-cn.html" },
                         { title: "日本AV", value: "/videos/cat-jav.html" },
+                        { title: "中文字幕", value: "/videos/tag-sub.html" },
                         { title: "观看最多", value: "/videos/sort-read.html" },
                         { title: "评论最多", value: "/videos/sort-comment.html" },
-                        { title: "时长最长", value: "/videos/sort-length.html" }
+                        { title: "时长最长", value: "/videos/sort-length.html" },
+                        { title: "精选 · 渡边传媒", value: "/videos/xs-1.html" },
+                        { title: "精选 · 杏吧花棍哥", value: "/videos/xs-2.html" },
+                        { title: "精选 · 色情按摩师", value: "/videos/xs-3.html" },
+                        { title: "精选 · 有码", value: "/videos/xs-4.html" },
+                        { title: "精选 · 无码", value: "/videos/xs-5.html" },
+                        { title: "精选 · Caribbean", value: "/videos/xs-6.html" },
+                        { title: "精选 · HEYZO", value: "/videos/xs-7.html" },
+                        { title: "精选 · 香蕉视频", value: "/videos/xs-8.html" },
+                        { title: "精选 · 中国X站", value: "/videos/xs-9.html" },
+                        { title: "精选 · 维度", value: "/videos/xs-10.html" },
+                        { title: "精选 · Pacopacomama", value: "/videos/xs-11.html" },
+                        { title: "精选 · 10musume", value: "/videos/xs-12.html" },
+                        { title: "精选 · 步宾探花", value: "/videos/xs-13.html" }
                     ]
                 },
                 { name: "page", title: "页码", type: "page", description: "页码", value: "1" }
@@ -152,10 +166,19 @@ function parseCards(html) {
     return out;
 }
 
+function decode(value) {
+    var text = String(value || "");
+    try { text = decodeURIComponent(text); } catch (error) { /* 原样使用 */ }
+    return text;
+}
+
 function hashOf(link) {
-    var value = String(link || "");
-    var match = value.match(/^xchina:([a-f0-9]+)$/i) || value.match(/\/video\/id-([a-f0-9]+)\.html/i) || value.match(/^([a-f0-9]{10,})$/);
-    return match ? match[1] : "";
+    var value = decode(link);
+    var match = value.match(/^xchina:([a-f0-9]+)$/i)
+        || value.match(/\/video\/id-([a-f0-9]+)\.html/i)
+        || value.match(/\/hls\/([a-f0-9]+)\//i)
+        || value.match(/\b([a-f0-9]{12,16})\b/i);
+    return match ? match[1].toLowerCase() : "";
 }
 
 async function list(url, page) {
@@ -208,10 +231,13 @@ function cleanTitle(raw) {
     return title.trim();
 }
 
-async function loadDetail(link) {
-    var hash = hashOf(link);
+async function loadDetail(params) {
+    var input = typeof params === "object" && params !== null ? params : { link: params };
+    var link = input.link || input.id || input.url || input.videoUrl || "";
+    var hash = hashOf(link) || hashOf(input.videoUrl) || hashOf(input.url);
     if (!hash) return null;
-    var html = await fetchPage(B + "/video/id-" + hash + ".html");
+    var detailUrl = B + "/video/id-" + hash + ".html";
+    var html = await fetchPage(detailUrl);
     var title = "";
     var source = "";
     var cover = coverOf(hash);

@@ -99,10 +99,14 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 | MissAV 播放源 | 资源 | `widgets/missav-resource.js` | HLS/MP4 播放线路 |
 | Hentaimama | 首页 | `widgets/hentaimama.js` | 首页、分类、搜索、详情和分集 |
 | Hentaimama 播放源 | 资源 | `widgets/hentaimama-resource.js` | 动漫站 HLS 播放线路 |
-| Avbebe | 首页 | `widgets/avbebe.js` | WordPress REST 列表、7 个可播放分类、搜索与详情 |
+| Avbebe | 首页 | `widgets/avbebe.js` | WordPress REST 列表、8 个可播放分类、搜索与详情 |
 | Avbebe 播放源 | 资源 | `widgets/avbebe-resource.js` | 解析文章内嵌 HLS 直链（需 Referer） |
-| XChina | 首页 | `widgets/xchina.js` | 影片列表、分类、搜索与详情 |
-| XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 直接构造 HLS 直链 |
+| XChina | 首页 | `widgets/xchina.js` | 影片列表、20 个分类/精选入口、搜索与详情 |
+| XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 直接构造 HLS 直链（主站 + 镜像备用线路） |
+
+> **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
+> 与 turbonewvid（域名已失效）对应的分类不收录，硬加只会得到点进去播不了的条目。
+> XChina 的分类、精选（`xs-*`）与中文字幕标签全部来自站点自身导航与详情页内链，逐个验证过可打开。
 
 > **Avbebe / XChina 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
 > 且两者对 `avbebe:` / `xchina:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。

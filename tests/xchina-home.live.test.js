@@ -69,11 +69,15 @@ function check(name, condition, detail) {
   const categoriesModule = metadata.modules.find((module) => module.id === 'categories');
   const categoryParam = categoriesModule && categoriesModule.params.find((param) => param.name === 'category');
   const expectedValues = [
-    '/videos.html', '/videos/cat-cn.html', '/videos/cat-jav.html',
+    '/videos.html', '/videos/cat-cn.html', '/videos/cat-jav.html', '/videos/tag-sub.html',
     '/videos/sort-read.html', '/videos/sort-comment.html', '/videos/sort-length.html',
+    '/videos/xs-1.html', '/videos/xs-2.html', '/videos/xs-3.html', '/videos/xs-4.html',
+    '/videos/xs-5.html', '/videos/xs-6.html', '/videos/xs-7.html', '/videos/xs-8.html',
+    '/videos/xs-9.html', '/videos/xs-10.html', '/videos/xs-11.html', '/videos/xs-12.html',
+    '/videos/xs-13.html',
   ];
   check(
-    '分类恰好是确认过的 6 个入口',
+    '分类恰好是扒到的 20 个入口',
     categoryParam && JSON.stringify(categoryParam.enumOptions.map((option) => option.value)) === JSON.stringify(expectedValues),
     categoryParam && categoryParam.enumOptions.map((option) => option.value).join(',')
   );
@@ -119,6 +123,14 @@ function check(name, condition, detail) {
   check('详情封面存在', /^https:/.test(detail.posterPath), detail.posterPath);
   check('详情带 Referer 头', detail.customHeaders && detail.customHeaders.Referer === 'https://xchina.co/video/id-' + latest[0].link.split(':')[1] + '.html');
   check('非法链接详情返回 null', (await sandbox.loadDetail('xchina:zz')) === null);
+
+  const hash = latest[0].link.split(':')[1];
+  await wait(900);
+  const byEncoded = await sandbox.loadDetail(encodeURIComponent('xchina:' + hash));
+  check('URL 编码后的 id 也能开详情', byEncoded && byEncoded.videoUrl === 'https://xchina.co/hls/' + hash + '/master.m3u8', byEncoded && byEncoded.videoUrl);
+  await wait(900);
+  const byHlsUrl = await sandbox.loadDetail('https://xchina.co/hls/' + hash + '/master.m3u8');
+  check('master 地址也能开详情', byHlsUrl && byHlsUrl.videoUrl === 'https://xchina.co/hls/' + hash + '/master.m3u8', byHlsUrl && byHlsUrl.videoUrl);
 
   console.log('\nXChina 首页模块: ' + passed + ' 项通过');
 })().catch((error) => {

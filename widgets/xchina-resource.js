@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.xchina.resource",
     title: "XChina 播放源",
     icon: "https://xchina.co/images/sites/favicon/1.png?v=1.0.2",
-    version: "1.0.0",
+    version: "1.0.1",
     requiredVersion: "0.0.2",
     description: "解析 XChina 影片的 HLS 直链",
     author: "HYJ1817",
@@ -24,63 +24,106 @@ WidgetMetadata = {
 var B = "https://xchina.co";
 var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-function hashOf(link) {
-    var value = String(link || "");
-    var match = value.match(/^xchina:([a-f0-9]+)$/i) || value.match(/\/video\/id-([a-f0-9]+)\.html/i) || value.match(/^([a-f0-9]{10,})$/);
-    return match ? match[1] : "";
+function decode(value) {
+    var text = String(value || "");
+    try { text = decodeURIComponent(text); } catch (error) { /* 原样使用 */ }
+    return text;
 }
 
-function line(url, hash) {
+// Forward 传进来的可能是 xchina:<hash>、详情页 URL、/hls/<hash>/master.m3u8、
+// 纯 hash，也可能是被 encodeURIComponent 转过的 id —— 逐个兜底，
+// 否则拿不到 hash 就会返回空线路（踩过：id 里是 xchina%3A... 时匹配失败）。
+function hashOf(value) {
+    var link = decode(value);
+    var match = link.match(/^xchina:([a-f0-9]+)$/i)
+        || link.match(/\/video\/id-([a-f0-9]+)\.html/i)
+        || link.match(/\/hls\/([a-f0-9]+)\//i)
+        || link.match(/\b([a-f0-9]{12,16})\b/i);
+    return match ? match[1].toLowerCase() : "";
+}
+
+function streamHeaders(hash) {
+    var headers = {
+        "User-Agent": UA,
+        Referer: B + "/video/id-" + hash + ".html",
+        Origin: B,
+        Accept: "*/*",
+        "Accept-Language": "zh-CN,zh;q=0.9"
+    };
+    return headers;
+}
+
+function line(url, hash, label) {
+    var headers = streamHeaders(hash);
     return {
-        name: "XChina · HLS",
+        name: "XChina · HLS" + (label ? " · " + label : ""),
+        description: "HLS",
         url: url,
         playerType: "app",
-        customHeaders: {
-            "User-Agent": UA,
-            Referer: B + "/video/id-" + hash + ".html",
-            Accept: "*/*"
-        }
+        customHeaders: headers,
+        headers: headers
+    };
+}
+
+function requestHeaders(referer) {
+    return {
+        "User-Agent": UA,
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Upgrade-Insecure-Requests": "1",
+        Referer: referer || B + "/"
     };
 }
 
 async function fetchPage(url, referer) {
     try {
-        var response = await Widget.http.get(url, {
-            headers: { "User-Agent": UA, Accept: "text/html,application/xhtml+xml,*/*;q=0.8", Referer: referer || B + "/" },
-            timeout: 15000
-        });
+        var response = await Widget.http.get(url, { headers: requestHeaders(referer), timeout: 15000 });
         return String((response && response.data) || "");
     } catch (error) {
         return "";
     }
 }
 
+// 兜底：只给了片名时按站内搜索取第一条，避免直接返回空线路
+async function hashByTitle(title) {
+    var keyword = decode(title).replace(/[\*"?&<>]/g, "").replace(/\s+/g, " ").trim();
+    if (keyword.length < 2) return "";
+    var encoded = keyword.split(/\s+/).map(encodeURIComponent).join("%20");
+    var html = await fetchPage(B + "/videos/keyword-" + encoded + ".html", B + "/videos.html");
+    var match = html.match(/\/video\/id-([a-f0-9]+)\.html/);
+    return match ? match[1] : "";
+}
+
 async function loadResource(params) {
     var input = params || {};
     if (input.multiSource === "disabled") return [];
-    var hash = hashOf(input.link || input.id || input.url);
+
+    var hash = hashOf(input.link) || hashOf(input.id) || hashOf(input.url) || hashOf(input.videoUrl);
+    if (!hash) hash = await hashByTitle(input.seriesName || input.title || "");
     if (!hash) return [];
 
-    var url = B + "/hls/" + hash + "/master.m3u8";
+    var master = B + "/hls/" + hash + "/master.m3u8";
     var detailUrl = B + "/video/id-" + hash + ".html";
-    var headers = { "User-Agent": UA, Referer: detailUrl, Accept: "*/*" };
+    var headers = streamHeaders(hash);
+
+    // 主域名与镜像域名都提供同一份 HLS，取一条作主线路、一条作备选
+    var lines = [line(master, hash, "主站"), line("https://tw.xchina.co/hls/" + hash + "/master.m3u8", hash, "备用")];
 
     var body = "";
     try {
-        var response = await Widget.http.get(url, { headers: headers, timeout: 15000 });
+        var response = await Widget.http.get(master, { headers: headers, timeout: 15000 });
         body = String((response && response.data) || "");
     } catch (error) {
-        // 网络抖动时仍给出按约定拼出来的地址，交给播放器判断
-        return [line(url, hash)];
+        return lines;
     }
-    if (body.indexOf("#EXTM3U") >= 0) return [line(url, hash)];
-
-    // 播放列表路径变了：回详情页取播放器实际用的地址
-    var page = await fetchPage(detailUrl, B + "/");
-    var source = page.match(/src:\s*'([^']+\.m3u8[^']*)'/i) || page.match(/src:\s*"([^"]+\.m3u8[^"]*)"/i);
-    if (source) {
-        var resolved = source[1].indexOf("http") === 0 ? source[1] : B + source[1];
-        return [line(resolved, hash)];
+    if (body.indexOf("#EXTM3U") < 0) {
+        // 播放列表路径变了：回详情页取播放器实际用的地址
+        var page = await fetchPage(detailUrl, B + "/");
+        var source = page.match(/src:\s*'([^']+\.m3u8[^']*)'/i) || page.match(/src:\s*"([^"]+\.m3u8[^"]*)"/i);
+        if (source) {
+            var resolved = source[1].indexOf("http") === 0 ? source[1] : B + source[1];
+            return [line(resolved, hash, "主站"), line("https://tw.xchina.co/hls/" + hash + "/master.m3u8", hash, "备用")];
+        }
     }
-    return [line(url, hash)];
+    return lines;
 }
