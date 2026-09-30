@@ -30,6 +30,8 @@ const MANIFESTS = [
   { file: 'fw-modules.fwd', host: 'raw.githubusercontent.com', label: 'Raw 清单' },
   { file: 'forward-widgets.fwd', host: null, label: '历史清单', optional: true },
   { file: 'control-main.fwd', host: 'raw.githubusercontent.com', label: '最小校验清单', optional: true, isolated: true },
+  // 两站子集：只含 Avbebe + XChina 四个组件，按设计不参与「三份主清单一致」的比较
+  { file: 'fw-avbebe-xchina.fwd', host: 'cdn.jsdelivr.net', label: '两站子集清单', optional: true, isolated: true },
 ];
 
 const errors = [];

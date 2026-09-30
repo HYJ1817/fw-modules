@@ -62,6 +62,27 @@ Raw 备用地址：
 https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-modules.fwd
 ```
 
+## 只要 Avbebe + XChina（两站子集订阅）
+
+不想装全量模块时，用这一个链接只添加 Avbebe 与 XChina 的 4 个组件
+（两站的首页模块 + 播放源）：
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-avbebe-xchina.fwd
+```
+
+Raw 备用地址（同一份内容）：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
+```
+
+该清单由 `npm run generate:index` 与四份主清单一起生成，只取
+`avbebe.js` / `avbebe-resource.js` / `xchina.js` / `xchina-resource.js`，
+缺件会直接报错；`npm run check:manifests` 也会校验它的 URL 与版本同步。
+
+> 子集与全量清单的组件 id 相同，**不要同时订阅两者**，否则会出现重复模块。
+
 ## 模块列表
 
 | 模块 | 类型 | 文件 | 说明 |

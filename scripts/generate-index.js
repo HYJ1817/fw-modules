@@ -24,6 +24,9 @@ const WIDGETS_DIR = path.join(ROOT, "widgets");
 const RAW_OUTPUT_FILES = [path.join(ROOT, "forward-widgets.fwd"), path.join(ROOT, "fw-modules.fwd")];
 const CDN_OUTPUT_FILE = path.join(ROOT, "fw-modules-cdn.fwd");
 const PAGES_OUTPUT_FILE = path.join(ROOT, "fw-modules.json");
+/** 两站子集清单：只装 Avbebe + XChina 的四个组件，供不想装全量模块的场景单独订阅。 */
+const SUBSET_OUTPUT_FILE = path.join(ROOT, "fw-avbebe-xchina.fwd");
+const SUBSET_FILES = new Set(["avbebe.js", "avbebe-resource.js", "xchina.js", "xchina-resource.js"]);
 
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
@@ -185,11 +188,31 @@ function main() {
   fs.writeFileSync(CDN_OUTPUT_FILE, `${JSON.stringify(cdnOutput, null, 2)}\n`);
   fs.writeFileSync(PAGES_OUTPUT_FILE, `${JSON.stringify(pagesOutput, null, 2)}\n`);
 
-  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE).map((file) => path.relative(ROOT, file));
+  // 两站子集：文件改名或删减时直接报错，避免子集清单悄悄缺件
+  const subsetEntries = entries.filter((entry) => SUBSET_FILES.has(entry.file));
+  if (subsetEntries.length !== SUBSET_FILES.size) {
+    const missing = [...SUBSET_FILES].filter((file) => !subsetEntries.some((entry) => entry.file === file));
+    throw new Error(`两站子集清单缺件：${missing.join(", ")}`);
+  }
+  const subsetOutput = withBase(
+    {
+      title: "Avbebe + XChina",
+      description: "Avbebe 与 XChina 的首页模块与播放源（4 个组件）",
+      icon: `${cdnBase}/icon.png`,
+    },
+    rewriteUrls(
+      subsetEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
+      cdnBase
+    )
+  );
+  fs.writeFileSync(SUBSET_OUTPUT_FILE, `${JSON.stringify(subsetOutput, null, 2)}\n`);
+
+  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE).map((file) => path.relative(ROOT, file));
   const inherited = widgets.filter((widget) => extras.has(widget.id)).length;
   console.log(`Generated ${written.join(", ")}`);
   console.log(`  widgets: ${widgets.length}（继承额外字段 ${inherited} 条）`);
   console.log(`  files:   ${files.join(", ")}`);
+  console.log(`  subset:  ${subsetEntries.map((entry) => entry.file).join(", ")}`);
 }
 
 main();
