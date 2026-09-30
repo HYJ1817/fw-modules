@@ -69,32 +69,43 @@ async function discoverHash() {
 
   const streams = await sandbox.loadResource({ link: 'xchina:' + hash });
   check('链接返回线路', Array.isArray(streams) && streams.length > 0, 'len=' + (streams && streams.length));
-  check('线路按约定拼出 master 地址', streams[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', streams[0].url);
-  check('线路带详情页 Referer', streams[0].customHeaders && streams[0].customHeaders.Referer === 'https://xchina.co/video/id-' + hash + '.html', JSON.stringify(streams[0].customHeaders));
-  console.log('    ' + streams[0].name + ' -> ' + streams[0].url);
+  check('首选是不校验 UA 的通用线路', streams[0].url === 'https://myjav.tv/hls/' + hash + '/master.m3u8', streams[0].url);
+  check('通用线路 Referer 指向托管站', streams[0].customHeaders && streams[0].customHeaders.Referer === 'https://myjav.tv/', JSON.stringify(streams[0].customHeaders));
   check(
-    '返回主站与镜像两条线路',
-    streams.length === 2 && streams[1].url === 'https://tw.xchina.co/hls/' + hash + '/master.m3u8',
+    '同时列出主站与镜像备选',
+    streams.length === 3
+      && streams[1].url === 'https://xchina.co/hls/' + hash + '/master.m3u8'
+      && streams[2].url === 'https://tw.xchina.co/hls/' + hash + '/master.m3u8',
     streams.map((item) => item.url).join(',')
   );
-  check('线路带 Origin 头', streams[0].customHeaders && streams[0].customHeaders.Origin === 'https://xchina.co');
+  console.log('    ' + streams[0].name + ' -> ' + streams[0].url);
   await wait(900);
 
   const byEncoded = await sandbox.loadResource({ link: encodeURIComponent('xchina:' + hash) });
-  check('URL 编码的 id 也能解析', byEncoded.length > 0 && byEncoded[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', byEncoded.length && byEncoded[0].url);
+  check('URL 编码的 id 也能解析', byEncoded.length > 0 && byEncoded[0].url === 'https://myjav.tv/hls/' + hash + '/master.m3u8', byEncoded.length && byEncoded[0].url);
   await wait(900);
 
   const byHlsUrl = await sandbox.loadResource({ videoUrl: 'https://xchina.co/hls/' + hash + '/master.m3u8' });
-  check('master 地址也能解析', byHlsUrl.length > 0 && byHlsUrl[0].url === 'https://xchina.co/hls/' + hash + '/master.m3u8', byHlsUrl.length && byHlsUrl[0].url);
+  check('master 地址也能解析', byHlsUrl.length > 0 && byHlsUrl[0].url === 'https://myjav.tv/hls/' + hash + '/master.m3u8', byHlsUrl.length && byHlsUrl[0].url);
   await wait(900);
 
-  const playlist = curlGet(streams[0].url, {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    Referer: 'https://xchina.co/video/id-' + hash + '.html',
-    Range: 'bytes=0-512',
-  }).data;
-  check('返回的是播放列表', playlist.indexOf('#EXTM3U') === 0, playlist.slice(0, 60));
+  // 端到端按最坏情况验证：播放器自带 okhttp UA、不带任何自定义头。
+  // xchina.co 在这种条件下全链路 403（页面一直转圈），通用线路必须全通。
+  const okhttpUA = 'okhttp/4.12.0';
+  const playlist = curlGet(streams[0].url, { 'User-Agent': okhttpUA }).data;
+  check('播放器 UA(okhttp) 取到播放列表', playlist.indexOf('#EXTM3U') === 0, playlist.slice(0, 60));
   check('播放列表里有分片变体', /index\.m3u8/.test(playlist), playlist.slice(0, 200));
+  await wait(900);
+
+  const variantPath = playlist.split('\n').find((row) => row && row[0] !== '#').trim();
+  const variantUrl = /^https?:/.test(variantPath) ? variantPath : 'https://myjav.tv/hls/' + hash + '/' + variantPath;
+  const variant = curlGet(variantUrl, { 'User-Agent': okhttpUA }).data;
+  check('变体播放列表同样可取', variant.indexOf('#EXTM3U') === 0, variant.slice(0, 60));
+  const keyUrl = (variant.match(/URI="([^"]+)"/) || [])[1];
+  check('变体里带密钥地址', !!keyUrl, variant.slice(0, 240));
+  const keyAbs = /^https?:/.test(keyUrl) ? keyUrl : (keyUrl.charAt(0) === '/' ? 'https://myjav.tv' + keyUrl : 'https://myjav.tv/hls/' + hash + '/' + keyUrl);
+  const keyBody = curlGet(keyAbs, { 'User-Agent': okhttpUA }).data;
+  check('密钥用播放器 UA 也能取到', Buffer.byteLength(keyBody, 'utf8') > 0 && !/^</.test(keyBody), keyBody.slice(0, 40));
 
   check('关闭多源时返回空', (await sandbox.loadResource({ link: 'xchina:' + hash, multiSource: 'disabled' })).length === 0);
   check('非法链接返回空', (await sandbox.loadResource({ link: 'xchina:zz' })).length === 0);

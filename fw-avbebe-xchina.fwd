@@ -26,7 +26,7 @@
       "title": "XChina 播放源",
       "description": "解析 XChina 影片的 HLS 直链",
       "requiredVersion": "0.0.2",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "HYJ1817",
       "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/xchina-resource.js"
     },
@@ -35,7 +35,7 @@
       "title": "XChina",
       "description": "XChina 影片列表、分类与搜索",
       "requiredVersion": "0.0.2",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "author": "HYJ1817",
       "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/xchina.js"
     }

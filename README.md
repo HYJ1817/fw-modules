@@ -102,11 +102,16 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 | Avbebe | 首页 | `widgets/avbebe.js` | WordPress REST 列表、8 个可播放分类、搜索与详情 |
 | Avbebe 播放源 | 资源 | `widgets/avbebe-resource.js` | 解析文章内嵌 HLS 直链（需 Referer） |
 | XChina | 首页 | `widgets/xchina.js` | 影片列表、20 个分类/精选入口、搜索与详情 |
-| XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 直接构造 HLS 直链（主站 + 镜像备用线路） |
+| XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 构造 HLS 直链（不校验 UA 的通用线路优先，主站与镜像备选） |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
 > 与 turbonewvid（域名已失效）对应的分类不收录，硬加只会得到点进去播不了的条目。
 > XChina 的分类、精选（`xs-*`）与中文字幕标签全部来自站点自身导航与详情页内链，逐个验证过可打开。
+>
+> **播放线路按播放器 UA 挑过**：`xchina.co` 对 okhttp / Java / curl 等 UA 的 `master.m3u8`、
+> 变体与密钥全链路 403（表现是播放页一直转圈），只有浏览器、ExoPlayer、Dalvik、VLC 等 UA 能过；
+> 因此 XChina 优先返回同源托管、不校验 UA 的通用线路，`52cute.com`（Avbebe）则必须带
+> `Referer: https://avbebe.com/`，两个播放源模块都已经按这个要求带好了请求头。
 
 > **Avbebe / XChina 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
 > 且两者对 `avbebe:` / `xchina:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。

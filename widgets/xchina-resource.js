@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.xchina.resource",
     title: "XChina 播放源",
     icon: "https://xchina.co/images/sites/favicon/1.png?v=1.0.2",
-    version: "1.0.1",
+    version: "1.0.2",
     requiredVersion: "0.0.2",
     description: "解析 XChina 影片的 HLS 直链",
     author: "HYJ1817",
@@ -42,6 +42,11 @@ function hashOf(value) {
     return match ? match[1].toLowerCase() : "";
 }
 
+// 播放器的 UA 决定能不能取到片子：xchina.co 对 okhttp / curl / Java 等 UA 全部 403，
+// 播放页就会一直转圈。myjav.tv 托管同一套 /hls 内容且不校验 UA，用它当主线；
+// 主站与镜像仍列出，通用线路失效时可手动切换。
+var MIRROR = "https://myjav.tv";
+
 function streamHeaders(hash) {
     var headers = {
         "User-Agent": UA,
@@ -53,16 +58,28 @@ function streamHeaders(hash) {
     return headers;
 }
 
-function line(url, hash, label) {
-    var headers = streamHeaders(hash);
+function mirrorHeaders() {
+    return { "User-Agent": UA, Referer: MIRROR + "/", Accept: "*/*" };
+}
+
+function line(url, hash, label, headers) {
     return {
         name: "XChina · HLS" + (label ? " · " + label : ""),
         description: "HLS",
         url: url,
         playerType: "app",
-        customHeaders: headers,
-        headers: headers
+        customHeaders: headers || streamHeaders(hash),
+        headers: headers || streamHeaders(hash)
     };
+}
+
+async function isPlaylist(url, headers) {
+    try {
+        var response = await Widget.http.get(url, { headers: headers, timeout: 15000 });
+        return String((response && response.data) || "").indexOf("#EXTM3U") >= 0;
+    } catch (error) {
+        return false;
+    }
 }
 
 function requestHeaders(referer) {
@@ -102,27 +119,28 @@ async function loadResource(params) {
     if (!hash) hash = await hashByTitle(input.seriesName || input.title || "");
     if (!hash) return [];
 
+    var generic = MIRROR + "/hls/" + hash + "/master.m3u8";
     var master = B + "/hls/" + hash + "/master.m3u8";
+    var twin = "https://tw.xchina.co/hls/" + hash + "/master.m3u8";
     var detailUrl = B + "/video/id-" + hash + ".html";
     var headers = streamHeaders(hash);
 
-    // 主域名与镜像域名都提供同一份 HLS，取一条作主线路、一条作备选
-    var lines = [line(master, hash, "主站"), line("https://tw.xchina.co/hls/" + hash + "/master.m3u8", hash, "备用")];
+    // 通用线路在前：不挑播放器 UA；主站与镜像同源同一份内容，留作备选
+    var lines = [
+        line(generic, hash, "通用", mirrorHeaders()),
+        line(master, hash, "主站", headers),
+        line(twin, hash, "镜像", headers)
+    ];
 
-    var body = "";
-    try {
-        var response = await Widget.http.get(master, { headers: headers, timeout: 15000 });
-        body = String((response && response.data) || "");
-    } catch (error) {
-        return lines;
-    }
-    if (body.indexOf("#EXTM3U") < 0) {
-        // 播放列表路径变了：回详情页取播放器实际用的地址
+    if (await isPlaylist(generic, mirrorHeaders())) return lines;
+
+    // 通用线路不通时确认主站；播放列表路径变了就回详情页取播放器实际用的地址
+    if (!(await isPlaylist(master, headers))) {
         var page = await fetchPage(detailUrl, B + "/");
         var source = page.match(/src:\s*'([^']+\.m3u8[^']*)'/i) || page.match(/src:\s*"([^"]+\.m3u8[^"]*)"/i);
         if (source) {
             var resolved = source[1].indexOf("http") === 0 ? source[1] : B + source[1];
-            return [line(resolved, hash, "主站"), line("https://tw.xchina.co/hls/" + hash + "/master.m3u8", hash, "备用")];
+            lines[1] = line(resolved, hash, "主站", headers);
         }
     }
     return lines;

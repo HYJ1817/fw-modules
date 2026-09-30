@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.xchina.home",
     title: "XChina",
     icon: "https://xchina.co/images/sites/favicon/1.png?v=1.0.2",
-    version: "1.0.2",
+    version: "1.0.3",
     requiredVersion: "0.0.2",
     description: "XChina 影片列表、分类与搜索",
     author: "HYJ1817",
@@ -79,6 +79,10 @@ WidgetMetadata = {
 var B = "https://xchina.co";
 // 主域名瞬时不通或被限流时依次换镜像域名；四个域名同一套内容与 HTML 结构
 var HOSTS = ["https://xchina.co", "https://tw.xchina.co", "https://en.xchina.co", "https://kr.xchina.co"];
+// 与主站同源同一份 /hls 内容、但不校验 UA 的托管域名：播放器自带 okhttp 等 UA 时
+// xchina.co 全链路 403（播放页一直转圈），这里取片不受 UA 影响。
+var GENERIC_ORIGIN = "https://myjav.tv";
+var GENERIC_MASTER = GENERIC_ORIGIN + "/hls/";
 var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 function requestHeaders() {
@@ -276,19 +280,18 @@ async function loadDetail(params) {
             var og = html.match(/property="og:title"\s+content="([^"]+)"/i);
             title = cleanTitle(og && og[1]);
         }
-        var src = html.match(/src:\s*'([^']+\.m3u8[^']*)'/i) || html.match(/src:\s*"([^"]+\.m3u8[^"]*)"/i);
-        if (src) source = src[1].indexOf("http") === 0 ? src[1] : ACTIVE_HOST + src[1];
         var poster = html.match(/poster:\s*'([^']+)'/i) || html.match(/property="og:image"\s+content="([^"]+)"/i);
         if (poster) cover = poster[1];
     }
-    if (!source) source = ACTIVE_HOST + "/hls/" + hash + "/master.m3u8";
 
-    // Referer 跟播放地址同源：主站不通时线路来自镜像域名
-    var origin = (String(source).match(/^(https:\/\/[^/]+)/) || [])[1] || ACTIVE_HOST;
+    // 播放地址固定走不校验 UA 的通用线路：xchina.co 对 okhttp / Java 等播放器 UA 一律 403，
+    // 详情页会一直转圈；通用线路（myjav.tv）与主站同源同一份 /hls 内容，任何 UA 都能取到。
+    // 主站与镜像线路仍由播放源模块提供，可在播放器里切换。
+    source = GENERIC_MASTER + hash + "/master.m3u8";
+
     var headers = {
         "User-Agent": UA,
-        Referer: origin + detailPath,
-        Origin: origin,
+        Referer: GENERIC_ORIGIN + "/",
         Accept: "*/*"
     };
     return {
