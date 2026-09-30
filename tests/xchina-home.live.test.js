@@ -116,21 +116,26 @@ function check(name, condition, detail) {
 
   await wait(900);
   const detail = await sandbox.loadDetail(latest[0].link);
+  const masterRe = /^https:\/\/(?:tw\.)?xchina\.co\/hls\/[a-f0-9]+\/master\.m3u8$/;
   check('详情可打开', detail && detail.type === 'detail');
-  check('详情直接绑定 master 地址', detail.videoUrl === 'https://xchina.co/hls/' + latest[0].link.split(':')[1] + '/master.m3u8', detail.videoUrl);
+  check('详情直接绑定 master 地址', masterRe.test(detail.videoUrl), detail.videoUrl);
   check('详情播放器为 app', detail.playerType === 'app');
   check('详情带标题', !!detail.title && detail.title !== latest[0].link, detail.title);
   check('详情封面存在', /^https:/.test(detail.posterPath), detail.posterPath);
-  check('详情带 Referer 头', detail.customHeaders && detail.customHeaders.Referer === 'https://xchina.co/video/id-' + latest[0].link.split(':')[1] + '.html');
+  check('详情带 Referer 头', detail.customHeaders && /^https:\/\/(?:tw\.)?xchina\.co\/video\/id-[a-f0-9]+\.html$/.test(detail.customHeaders.Referer), detail.customHeaders && detail.customHeaders.Referer);
   check('非法链接详情返回 null', (await sandbox.loadDetail('xchina:zz')) === null);
+
+  check('成功取页后清空错误标记', sandbox.LAST_ERROR === '', sandbox.LAST_ERROR);
+  check('错误文案带出 HTTP 状态', /403/.test(sandbox.errorText({ status: 403, message: 'blocked' })), sandbox.errorText({ status: 403, message: 'blocked' }));
+  check('错误文案带出原始异常', /boom/.test(sandbox.errorText(new Error('boom'))), sandbox.errorText(new Error('boom')));
 
   const hash = latest[0].link.split(':')[1];
   await wait(900);
   const byEncoded = await sandbox.loadDetail(encodeURIComponent('xchina:' + hash));
-  check('URL 编码后的 id 也能开详情', byEncoded && byEncoded.videoUrl === 'https://xchina.co/hls/' + hash + '/master.m3u8', byEncoded && byEncoded.videoUrl);
+  check('URL 编码后的 id 也能开详情', byEncoded && masterRe.test(byEncoded.videoUrl), byEncoded && byEncoded.videoUrl);
   await wait(900);
   const byHlsUrl = await sandbox.loadDetail('https://xchina.co/hls/' + hash + '/master.m3u8');
-  check('master 地址也能开详情', byHlsUrl && byHlsUrl.videoUrl === 'https://xchina.co/hls/' + hash + '/master.m3u8', byHlsUrl && byHlsUrl.videoUrl);
+  check('master 地址也能开详情', byHlsUrl && masterRe.test(byHlsUrl.videoUrl), byHlsUrl && byHlsUrl.videoUrl);
 
   console.log('\nXChina 首页模块: ' + passed + ' 项通过');
 })().catch((error) => {

@@ -152,7 +152,7 @@
       "title": "XChina",
       "description": "XChina 影片列表、分类与搜索",
       "requiredVersion": "0.0.2",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "HYJ1817",
       "url": "https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/xchina.js"
     }

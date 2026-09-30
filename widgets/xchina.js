@@ -2,7 +2,7 @@ WidgetMetadata = {
     id: "hyj1817.xchina.home",
     title: "XChina",
     icon: "https://xchina.co/images/sites/favicon/1.png?v=1.0.2",
-    version: "1.0.1",
+    version: "1.0.2",
     requiredVersion: "0.0.2",
     description: "XChina 影片列表、分类与搜索",
     author: "HYJ1817",
@@ -77,6 +77,8 @@ WidgetMetadata = {
 };
 
 var B = "https://xchina.co";
+// 主域名瞬时不通或被限流时依次换镜像域名；四个域名同一套内容与 HTML 结构
+var HOSTS = ["https://xchina.co", "https://tw.xchina.co", "https://en.xchina.co", "https://kr.xchina.co"];
 var UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 function requestHeaders() {
@@ -105,13 +107,38 @@ function placeholder(message) {
     };
 }
 
-async function fetchPage(url) {
-    try {
-        var response = await Widget.http.get(url, { headers: requestHeaders(), timeout: 20000 });
-        return String((response && response.data) || "");
-    } catch (error) {
-        return "";
+var LAST_ERROR = "";
+// 最近一次成功取回页面的域名：详情页拿不到播放器地址时，用它拼备用直链
+var ACTIVE_HOST = "https://xchina.co";
+
+// 把异常整理成能看懂的一行：HTTP 状态码优先，其次原始错误文本。
+// 之前失败一律显示"网络请求失败"，分不清是 403 风控还是网络不通。
+function errorText(error) {
+    if (!error) return "unknown";
+    var status = error.status || error.statusCode || (error.response && error.response.status);
+    var message = error.message || String(error);
+    if (status && String(message).indexOf(String(status)) < 0) message = "HTTP " + status + " " + message;
+    return String(message).replace(/\s+/g, " ").slice(0, 90);
+}
+
+// path 形如 /videos.html；依次尝试主站与镜像，主站重试一次
+async function fetchPage(path) {
+    var order = [B, B, HOSTS[1], HOSTS[2], HOSTS[3]];
+    var errors = [];
+    for (var i = 0; i < order.length; i++) {
+        try {
+            var response = await Widget.http.get(order[i] + path, { headers: requestHeaders(), timeout: 20000 });
+            var body = String((response && response.data) || "");
+            if (!body) throw new Error("empty response");
+            LAST_ERROR = "";
+            ACTIVE_HOST = order[i];
+            return body;
+        } catch (error) {
+            errors.push(order[i].replace("https://", "") + " " + errorText(error));
+        }
     }
+    LAST_ERROR = errors[errors.length - 1] || "unknown";
+    return "";
 }
 
 function coverOf(hash) {
@@ -185,9 +212,9 @@ async function list(url, page) {
     // 页码收敛到正整数：page<=0 会让分页链接带脏参数
     page = parseInt(page) || 1;
     if (page < 1) page = 1;
-    var target = B + url + (page > 1 ? (url.indexOf("?") >= 0 ? "&" : "?") + "page=" + page : "");
+    var target = url + (page > 1 ? (url.indexOf("?") >= 0 ? "&" : "?") + "page=" + page : "");
     var html = await fetchPage(target);
-    if (!html) return [placeholder("网络请求失败，请稍后重试")];
+    if (!html) return [placeholder("网络请求失败（" + (LAST_ERROR || "未知错误") + "），稍后重试")];
     var items = parseCards(html);
     if (items === null) return [placeholder("站点风控拦截，稍后重试")];
     if (!items.length) return [placeholder("没有可显示的结果")];
@@ -236,8 +263,8 @@ async function loadDetail(params) {
     var link = input.link || input.id || input.url || input.videoUrl || "";
     var hash = hashOf(link) || hashOf(input.videoUrl) || hashOf(input.url);
     if (!hash) return null;
-    var detailUrl = B + "/video/id-" + hash + ".html";
-    var html = await fetchPage(detailUrl);
+    var detailPath = "/video/id-" + hash + ".html";
+    var html = await fetchPage(detailPath);
     var title = "";
     var source = "";
     var cover = coverOf(hash);
@@ -250,15 +277,18 @@ async function loadDetail(params) {
             title = cleanTitle(og && og[1]);
         }
         var src = html.match(/src:\s*'([^']+\.m3u8[^']*)'/i) || html.match(/src:\s*"([^"]+\.m3u8[^"]*)"/i);
-        if (src) source = src[1].indexOf("http") === 0 ? src[1] : B + src[1];
+        if (src) source = src[1].indexOf("http") === 0 ? src[1] : ACTIVE_HOST + src[1];
         var poster = html.match(/poster:\s*'([^']+)'/i) || html.match(/property="og:image"\s+content="([^"]+)"/i);
         if (poster) cover = poster[1];
     }
-    if (!source) source = B + "/hls/" + hash + "/master.m3u8";
+    if (!source) source = ACTIVE_HOST + "/hls/" + hash + "/master.m3u8";
 
+    // Referer 跟播放地址同源：主站不通时线路来自镜像域名
+    var origin = (String(source).match(/^(https:\/\/[^/]+)/) || [])[1] || ACTIVE_HOST;
     var headers = {
         "User-Agent": UA,
-        Referer: B + "/video/id-" + hash + ".html",
+        Referer: origin + detailPath,
+        Origin: origin,
         Accept: "*/*"
     };
     return {
