@@ -10,7 +10,9 @@ Forward 右上角选择链接导入，只需添加：
 https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
 ```
 
-该 JS 同时包含 HStream、YinHentai、Hanime、MissAV 首页模块，以及 HStream、YinHentai、Hanime、4KVM、MissAV 五个站点专用播放源，不依赖 `.fwd` 集合来源。
+该 JS 同时包含 Hentaimama、HStream、YinHentai、MissAV、Hanime 首页模块，以及 Hentaimama、HStream、YinHentai、Hanime、4KVM、MissAV 六个站点专用播放源，不依赖 `.fwd` 集合来源。
+
+> **Avbebe、XChina 与苹果CMS 聚合源不在 `fw-all.js` 里**（原因见下一节），需要单独导入对应文件。
 
 > **`fw-all.js` 不包含苹果CMS 聚合源。** 该包已 235 KB，而 Forward 对单个模块文件有体积上限，
 > 超限会被截断并以「模块无效或解析失败」拒绝。把聚合源内联进去会涨到 254 KB（实测刷新失败），
@@ -72,6 +74,17 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-modules.fwd
 | Hanime | 首页 | `widgets/hanime.js` | 首页、中文分类、搜索、详情和分集 |
 | Hanime 播放源 | 资源 | `widgets/hanime-resource.js` | 需要配置已认证的自建解析地址 |
 | 4KVM 播放源 | 资源 | `widgets/4kvm-resource.js` | 自动匹配电影、电视剧和动漫，返回未锁定线路 |
+| MissAV | 首页 | `widgets/missav.js` | 首页、分类、搜索、详情 |
+| MissAV 播放源 | 资源 | `widgets/missav-resource.js` | HLS/MP4 播放线路 |
+| Hentaimama | 首页 | `widgets/hentaimama.js` | 首页、分类、搜索、详情和分集 |
+| Hentaimama 播放源 | 资源 | `widgets/hentaimama-resource.js` | 动漫站 HLS 播放线路 |
+| Avbebe | 首页 | `widgets/avbebe.js` | WordPress REST 列表、7 个可播放分类、搜索与详情 |
+| Avbebe 播放源 | 资源 | `widgets/avbebe-resource.js` | 解析文章内嵌 HLS 直链（需 Referer） |
+| XChina | 首页 | `widgets/xchina.js` | 影片列表、分类、搜索与详情 |
+| XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 直接构造 HLS 直链 |
+
+> **Avbebe / XChina 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
+> 且两者对 `avbebe:` / `xchina:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。
 
 ## 苹果CMS 聚合源（需要单独安装）
 
@@ -207,7 +220,14 @@ npm run test:hstream:resource:live
 npm run test:hentaimama:live
 npm run test:missav:live
 npm run test:yinhentai:live
+npm run test:avbebe:home:live
+npm run test:avbebe:resource:live
+npm run test:xchina:home:live
+npm run test:xchina:resource:live
 ```
+
+> XChina 有 CF 限流：突发请求会被拦成 403 `Just a moment...`，
+> 对应测试在请求之间加了约 900ms 间隔，连跑两个 xchina 测试前建议稍等片刻。
 
 站点结构随时可能变化；若模块失效，请先运行 `npm run test:maccms:live` 与源站自检模块，
 区分「代码问题」与「站点问题」，再动手改。

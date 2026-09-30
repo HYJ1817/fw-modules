@@ -20,6 +20,10 @@
     "test:hstream:resource:live": "node tests/hstream-resource.live.test.js",
     "test:missav:live": "node tests/missav-resource.live.test.js",
     "test:yinhentai:live": "node tests/yinhentai-resource.live.test.js",
-    "test:hentaimama:live": "node tests/hentaimama-resource.live.test.js"
+    "test:hentaimama:live": "node tests/hentaimama-resource.live.test.js",
+    "test:avbebe:home:live": "node tests/avbebe-home.live.test.js",
+    "test:avbebe:resource:live": "node tests/avbebe-resource.live.test.js",
+    "test:xchina:home:live": "node tests/xchina-home.live.test.js",
+    "test:xchina:resource:live": "node tests/xchina-resource.live.test.js"
   }
 }

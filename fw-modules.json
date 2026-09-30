@@ -119,6 +119,42 @@
       "version": "1.0.0",
       "author": "HYJ1817",
       "url": "https://hyj1817.github.io/fw-modules/widgets/maccms-source.js"
+    },
+    {
+      "id": "hyj1817.avbebe.resource",
+      "title": "Avbebe 播放源",
+      "description": "解析 Avbebe 文章内嵌的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/avbebe-resource.js"
+    },
+    {
+      "id": "hyj1817.avbebe.home",
+      "title": "Avbebe",
+      "description": "Avbebe 动画与同人影片的列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/avbebe.js"
+    },
+    {
+      "id": "hyj1817.xchina.resource",
+      "title": "XChina 播放源",
+      "description": "解析 XChina 影片的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/xchina-resource.js"
+    },
+    {
+      "id": "hyj1817.xchina.home",
+      "title": "XChina",
+      "description": "XChina 影片列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/xchina.js"
     }
   ]
 }

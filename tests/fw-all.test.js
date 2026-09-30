@@ -171,6 +171,21 @@ async function testResourceDispatch() {
     "未知域名仍然 6 源并发兜底"
   );
 
+  // avbebe / xchina 走独立模块（fw-all 体积超限没有内联它们），
+  // 链接进来时必须立刻返回，不能为了不存在的线路把 6 源全查一遍
+  for (const link of [
+    "avbebe:12345",
+    "https://avbebe.com/archives/12345",
+    "xchina:6abcc9a641d79",
+    "https://xchina.co/video/id-6abcc9a641d79.html",
+  ]) {
+    assert.deepStrictEqual(
+      await missavCalls(link),
+      { missav: 0, hentaimama: 0, hstream: 0, yin: 0, hanime: 0, f4k: 0 },
+      `${link} 不属于内置源，必须直接返回空`
+    );
+  }
+
   Object.assign(bundle.FW_MISSAV_RESOURCE, { loadResource: originals.missav });
   Object.assign(bundle.FW_HENTAI_MAMA_RESOURCE, { loadResource: originals.hentaimama });
   Object.assign(bundle.FW_HSTREAM_RESOURCE, { loadResource: originals.hstream });
