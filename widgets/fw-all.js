@@ -7,7 +7,7 @@ var WidgetMetadata = {
   "author": "HYJ1817",
   "site": "https://github.com/HYJ1817/fw-modules",
   "icon": "https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/icon.png",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "requiredVersion": "0.0.1",
   "detailCacheDuration": 60,
   "globalParams": [
@@ -6410,13 +6410,13 @@ function playbackInput(params) {
   for (var i = 0; i < values.length; i++) {
     var value = String(values[i] || "");
     try { value = decodeURIComponent(value); } catch (e) {}
-    var prefix = value.match(/^(hentaimama|missav|hstream|yinhentai|hanime|4kvm|avbebe|xchina):(.+)$/i);
+    var prefix = value.match(/^(hentaimama|missav|hstream|yinhentai|hanime|4kvm|avbebe|xchina|jable):(.+)$/i);
     if (prefix) { input.link = prefix[1].toLowerCase() + ":" + prefix[2]; return input; }
     // 命中已知站点域名时只查对应的那一个源；漏掉的域名会落到 resolvePlayback 的
     // 6 源并发，慢且互相抢带宽（踩过：missav.fans 不在表里，用户起播要等全量并发）。
-    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|hentaimama\.io|avbebe\.com|xchina\.co|missav\.(?:live|fans|ws|ai))\/([^?#]+)/i);
+    var url = value.match(/^https?:\/\/(?:www\.)?(hstream\.moe|yinhentai\.com|hanime\.tv|4kvm\.net|hentaimama\.io|avbebe\.com|xchina\.co|jable\.tv|fs1\.app|missav\.(?:live|fans|ws|ai))\/([^?#]+)/i);
     if (!url) continue;
-    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "avbebe.com": ["avbebe", /^archives\/(\d+)/], "xchina.co": ["xchina", /^video\/id-([a-f0-9]+)\.html/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.fans": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ws": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ai": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
+    var routes = { "hstream.moe": ["hstream", /^hentai\/(.+?)\/?$/], "yinhentai.com": ["yinhentai", /^(?:(?:watch|video|videos|hentai|anime)\/)?([^/]+)\/?$/], "hanime.tv": ["hanime", /^videos\/hentai\/(.+?)\/?$/], "4kvm.net": ["4kvm", /^play\/(.+?)\/?$/], "hentaimama.io": ["hentaimama", /^(.*)$/], "avbebe.com": ["avbebe", /^archives\/(\d+)/], "xchina.co": ["xchina", /^video\/id-([a-f0-9]+)\.html/], "jable.tv": ["jable", /^videos\/([a-z0-9-]+)\/?$/], "fs1.app": ["jable", /^videos\/([a-z0-9-]+)\/?$/], "missav.live": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.fans": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ws": ["missav", /^(?:cn\/)?(.+?)\/?$/], "missav.ai": ["missav", /^(?:cn\/)?(.+?)\/?$/] };
     var route = routes[url[1].toLowerCase()];
     if (!route) continue;
     var slug = url[2].match(route[1]);
@@ -6427,10 +6427,10 @@ function playbackInput(params) {
 
 async function resolvePlayback(params) {
   var input = params || {};
-  // avbebe / xchina 走各自的独立模块（fw-all 受体积上限约束没有内联它们）。
+  // avbebe / xchina / jable 走各自的独立模块（fw-all 受体积上限约束没有内联它们）。
   // 这里直接返回空，避免为了两条不存在的线路把 6 个内置源全查一遍、
   // 让用户白等几秒（见 README「线路列表为空」）。
-  if (/^(avbebe|xchina):/i.test(String(input.link || ""))) return [];
+  if (/^(avbebe|xchina|jable):/i.test(String(input.link || ""))) return [];
   var direct = resourceProviderForLink(String(input.link || ""));
   if (direct) return collectPlayback([direct], input, true);
   var providers = [

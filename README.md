@@ -4,7 +4,7 @@
 
 ## 单链接总模块（推荐）
 
-Forward 右上角选择链接导入，只需添加（当前 `1.0.5`，约 236 KB）：
+Forward 右上角选择链接导入，只需添加（当前 `1.0.6`，约 237 KB）：
 
 ```text
 https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
@@ -141,6 +141,8 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | Avbebe 播放源 | 资源 | `widgets/avbebe-resource.js` | 解析文章内嵌 HLS 直链（需 Referer） |
 | XChina | 首页 | `widgets/xchina.js` | 影片列表、20 个分类/精选入口、搜索与详情 |
 | XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 构造 HLS 直链（不校验 UA 的通用线路优先，主站与镜像备选） |
+| Jable | 首页 | `widgets/jable.js` | 最近更新、热门、新作、12 个分类、搜索与详情 |
+| Jable 播放源 | 资源 | `widgets/jable-resource.js` | 解析详情页 `hlsUrl`，片源不校验 UA |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
 > 与 turbonewvid（域名已失效）对应的分类不收录，硬加只会得到点进去播不了的条目。
@@ -151,8 +153,8 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 > 因此 XChina 优先返回同源托管、不校验 UA 的通用线路，`52cute.com`（Avbebe）则必须带
 > `Referer: https://avbebe.com/`，两个播放源模块都已经按这个要求带好了请求头。
 
-> **Avbebe / XChina 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
-> 且两者对 `avbebe:` / `xchina:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。
+> **Avbebe / XChina / Jable 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
+> 且三者对 `avbebe:` / `xchina:` / `jable:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。
 
 ### 当前版本
 
@@ -160,7 +162,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 
 | 文件 | 版本 | 文件 | 版本 |
 | --- | --- | --- | --- |
-| `fw-all.js` | 1.0.5 | `maccms-source.js` | 1.0.0 |
+| `fw-all.js` | 1.0.6 | `maccms-source.js` | 1.0.0 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
@@ -168,9 +170,15 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `missav.js` | 1.0.4 | `missav-resource.js` | 1.1.0 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
-| `avbebe-resource.js` | 1.0.1 | | |
+| `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
+| `jable.js` | 1.0.0 | | |
 
 ### 最近变更
+
+- **新增 `jable.js` / `jable-resource.js` 1.0.0**：主域名 `jable.tv` 被 Cloudflare 5 秒 JS 挑战挡住
+  所有非浏览器客户端（列表页连 curl 都要带全套浏览器头才过得去），因此取页统一走官方备用域名
+  `fs1.app`；片源在 `mushroomtrack.com`，实测 okhttp / 浏览器 / ExoPlayer UA、无 Referer
+  都能取到播放列表、AES-128 密钥与分片。`fw-all.js` 同步到 1.0.6（`jable:` 链接短路 + 域名路由）。
 
 - **`xchina.js` 1.0.3 / `xchina-resource.js` 1.0.2**：`xchina.co` 对播放器 UA（okhttp / Java / curl）
   的 master、变体、密钥全链路 403，导致播放页一直转圈。改为优先下发同一套内容但**不校验 UA**
@@ -239,6 +247,9 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-sourcecheck
   手动清一次，或改用 `raw.githubusercontent.com` 地址。
 - 站点有风控时会出现「403 / 一直转圈」两类表现：前者是取页被拦，后者多为播放地址被拦，
   两者都已在下文对应模块里做过针对性处理，改代码前先按「维护」一节的流程确认现象。
+- Jable 的取页依赖官方备用域名（当前 `fs1.app`）：站点页脚的「備用網址」仓库会更新域名，
+  失效时把 `widgets/jable.js` 与 `widgets/jable-resource.js` 里的 `HOSTS` 换成新域名即可，
+  片源域名（`*.mushroomtrack.com`）不用改。
 - 本仓库不提供、存储或分发媒体文件，只提供网页数据适配脚本。
 
 ## 单独导入
@@ -327,6 +338,8 @@ npm run test:avbebe:home:live
 npm run test:avbebe:resource:live
 npm run test:xchina:home:live
 npm run test:xchina:resource:live
+npm run test:jable:home:live
+npm run test:jable:resource:live
 ```
 
 > XChina 有 CF 限流：突发请求会被拦成 403 `Just a moment...`，
@@ -336,6 +349,10 @@ npm run test:xchina:resource:live
 > 拦成 403，用 curl 才能区分「代码问题」与「客户端指纹问题」。
 > `test:xchina:resource:live` 还会用 `okhttp` UA、不带任何自定义头跑一遍
 > master → 变体 → 密钥，确认播放器侧也能取到片子（之前播放页一直转圈就是这个原因）。
+>
+> Jable 两个测试同样走 `curl.exe`：`fs1.app` 会按客户端指纹把 Node 的请求拦成 403，
+> 但 curl 与 Python 的普通 HTTP/1.1 客户端都能正常取页。`test:jable:resource:live`
+> 也用 `okhttp` UA 验证了播放列表 → AES 密钥 → 分片整条链。
 
 站点结构随时可能变化；若模块失效，请先运行 `npm run test:maccms:live` 与源站自检模块，
 区分「代码问题」与「站点问题」，再动手改。

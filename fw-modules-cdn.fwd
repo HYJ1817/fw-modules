@@ -155,6 +155,24 @@
       "version": "1.0.3",
       "author": "HYJ1817",
       "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/xchina.js"
+    },
+    {
+      "id": "hyj1817.jable.resource",
+      "title": "Jable 播放源",
+      "description": "解析 Jable 影片的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/jable-resource.js"
+    },
+    {
+      "id": "hyj1817.jable.home",
+      "title": "Jable",
+      "description": "Jable 影片列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/jable.js"
     }
   ]
 }
