@@ -28,6 +28,12 @@ const PAGES_OUTPUT_FILE = path.join(ROOT, "fw-modules.json");
 const SUBSET_OUTPUT_FILE = path.join(ROOT, "fw-avbebe-xchina.fwd");
 const SUBSET_FILES = new Set(["avbebe.js", "avbebe-resource.js", "xchina.js", "xchina-resource.js"]);
 
+/** 第三方 Rex 模块四合一子集：GetAV / ONE / Perverzija / SupJav，保持上游原样，不进主清单。 */
+const REX_OUTPUT_FILE = path.join(ROOT, "fw-rex-4.fwd");
+const REX_OUTPUT_TITLE = "Rex 四合一";
+const REX_OUTPUT_DESCRIPTION = "GetAV / ONE一个 / Perverzija / SupJav（第三方模块，4 个组件）";
+const REX_FILES = new Set(["getav.js", "one.js", "perverzija.js", "supjav.js"]);
+
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -40,6 +46,10 @@ const EXCLUDED_FILES = new Set([
   "fw-sourcecheck.js",
   "fw-probe.js",
   "control.js",
+  "getav.js",
+  "one.js",
+  "perverzija.js",
+  "supjav.js",
 ]);
 
 /** 生成器负责产出的字段；其余字段从现有清单继承，避免丢失手工配置。 */
@@ -207,7 +217,22 @@ function main() {
   );
   fs.writeFileSync(SUBSET_OUTPUT_FILE, `${JSON.stringify(subsetOutput, null, 2)}\n`);
 
-  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE).map((file) => path.relative(ROOT, file));
+  // 第三方 Rex 模块四合一清单：文件不进主清单，缺件同样直接报错
+  const rexEntries = [...REX_FILES].map((file) => metadataFromFile(file));
+  const rexOutput = withBase(
+    {
+      title: REX_OUTPUT_TITLE,
+      description: REX_OUTPUT_DESCRIPTION,
+      icon: `${cdnBase}/icon.png`,
+    },
+    rewriteUrls(
+      rexEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
+      cdnBase
+    )
+  );
+  fs.writeFileSync(REX_OUTPUT_FILE, `${JSON.stringify(rexOutput, null, 2)}\n`);
+
+  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE, REX_OUTPUT_FILE).map((file) => path.relative(ROOT, file));
   const inherited = widgets.filter((widget) => extras.has(widget.id)).length;
   console.log(`Generated ${written.join(", ")}`);
   console.log(`  widgets: ${widgets.length}（继承额外字段 ${inherited} 条）`);

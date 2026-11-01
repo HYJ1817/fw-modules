@@ -92,6 +92,36 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 
 > 子集与全量清单的组件 id 相同，**不要同时订阅两者**，否则会出现重复模块。
 
+## 第三方 Rex 模块（四合一子集）
+
+GetAV / ONE一个 / Perverzija Tube / SupJav 四个第三方模块（作者 Tiamo、YG），**原样收录**、
+保留上游逻辑，只放在独立清单里分发，不进主清单（避免与全量清单出现重复模块）：
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-rex-4.fwd
+```
+
+Raw 备用（同一份内容）：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-rex-4.fwd
+```
+
+| 模块 | 版本 | 说明 |
+| --- | --- | --- |
+| GetAV | 0.5.0 | 最新/热门/新片/字幕/无码/4K 列表、番号搜索、按画质分线路（RSC 取数，AVIF 封面走 wsrv 转 JPEG） |
+| ONE一个 | 2.2.0 | 接口式模块（游客 token 自动获取、AES/MD5 签名），含最新/热门/分区/连载/演员 |
+| Perverzija Tube | 1.2.0 | 列表/片商/标签/演员作品 + XtremeStream HLS 多画质线路 |
+| SupJav | 1.3.0 | 列表/分类/演员作品 + upload18/helvid 签名 HLS，标题自动机翻中文 |
+
+注意：
+
+- 这 4 个文件**不在** `fw-modules.fwd`、`fw-all.js` 里，也不套用本仓库的 `multiSource` 规范；
+- 上游更新时直接整份替换 `widgets/{getav,one,perverzija,supjav}.js`，
+  `npm run generate:index` 会自动把新版本号写进 `fw-rex-4.fwd`；
+- GetAV 首页取数依赖 `RSC: 1` 请求头，被 Cloudflare 拦时的表现是「网络请求失败」；
+- 清单里的组件 id 是上游命名（`user.*`），与本仓库其它模块不冲突。
+
 ## 里番 / 动漫模块（单独导入地址）
 
 首页模块与播放源成对安装，缺一个就没线路：

@@ -32,7 +32,12 @@ const MANIFESTS = [
   { file: 'control-main.fwd', host: 'raw.githubusercontent.com', label: '最小校验清单', optional: true, isolated: true },
   // 两站子集：只含 Avbebe + XChina 四个组件，按设计不参与「三份主清单一致」的比较
   { file: 'fw-avbebe-xchina.fwd', host: 'cdn.jsdelivr.net', label: '两站子集清单', optional: true, isolated: true },
+  // 第三方 Rex 四合一：保持上游原样，只校验文件存在、id 唯一与 URL 域名
+  { file: 'fw-rex-4.fwd', host: 'cdn.jsdelivr.net', label: 'Rex 四合一子集', optional: true, isolated: true },
 ];
+
+/** 第三方模块按上游原样分发：不套用本仓库的 multiSource / 反模式规范 */
+const THIRD_PARTY_FILES = new Set(['getav.js', 'one.js', 'perverzija.js', 'supjav.js']);
 
 const errors = [];
 const warnings = [];
@@ -276,6 +281,7 @@ const ANTIPATTERNS = [
 ];
 
 for (const [id, info] of fileIndex) {
+  if (THIRD_PARTY_FILES.has(info.name)) continue;
   const modules = Array.isArray(info.meta.modules) ? info.meta.modules : [];
   const streamModule = modules.find((m) => m && (m.type === 'stream' || m.id === 'loadResource'));
 
