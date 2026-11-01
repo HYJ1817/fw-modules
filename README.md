@@ -4,19 +4,28 @@
 
 ## 单链接总模块（推荐）
 
-Forward 右上角选择链接导入，只需添加：
+Forward 右上角选择链接导入，只需添加（当前 `1.0.5`，约 236 KB）：
 
 ```text
 https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
 ```
 
+备用地址：
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/fw-all.js
+```
+
 该 JS 同时包含 Hentaimama、HStream、YinHentai、MissAV、Hanime 首页模块，以及 Hentaimama、HStream、YinHentai、Hanime、4KVM、MissAV 六个站点专用播放源，不依赖 `.fwd` 集合来源。
 
-> **Avbebe、XChina 与苹果CMS 聚合源不在 `fw-all.js` 里**（原因见下一节），需要单独导入对应文件。
+> **它不含 Avbebe、XChina 与苹果CMS 聚合源。** 原因见下一节，这三类需要单独导入。
+>
+> **改动内联源码或路由时必须 bump `scripts/build-fw-all.js` 里的 `version`**：
+> 客户端只按 `version` 判断是否刷新 `fw-all.js`，版本不变就永远用旧代码。
 
-> **`fw-all.js` 不包含苹果CMS 聚合源。** 该包已 235 KB，而 Forward 对单个模块文件有体积上限，
-> 超限会被截断并以「模块无效或解析失败」拒绝。把聚合源内联进去会涨到 254 KB（实测刷新失败），
-> 因此**苹果CMS 聚合源请单独安装**，见下一节。
+> **单个模块文件有体积上限。** 上限为 240 KB（`MAX_BYTES`），超限会被截断并以
+> 「模块无效或解析失败」拒绝。当前 236 KB 已接近上限，因此**苹果CMS 聚合源与两站模块
+> 只能单独安装**（内联实测涨到 254 KB，刷新直接失败）。
 
 ## 排查：线路列表为空
 
@@ -83,6 +92,35 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 
 > 子集与全量清单的组件 id 相同，**不要同时订阅两者**，否则会出现重复模块。
 
+## 里番 / 动漫模块（单独导入地址）
+
+首页模块与播放源成对安装，缺一个就没线路：
+
+| 站点 | 首页模块 | 播放源 |
+| --- | --- | --- |
+| YinHentai（里番/无修，中文分类） | `yinhentai.js` | `yinhentai-resource.js` |
+| Hentaimama（动漫 HLS） | `hentaimama.js` | `hentaimama-resource.js` |
+| Hanime（hanime.tv，**需填自建解析地址**） | `hanime.js` | `hanime-resource.js` |
+| HStream | `hstream.js` | `hstream-resource.js` |
+
+地址把文件名拼到下面任一个前缀后面：
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/
+```
+
+例如 YinHentai 两个文件：
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai.js
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.js
+```
+
+> Hanime 已取消公开播放直链，播放源必须在全局参数里填**已配置账号的自建解析服务地址**，
+> 否则列表能看、播放没线路。
+
+
 ## 模块列表
 
 | 模块 | 类型 | 文件 | 说明 |
@@ -115,6 +153,36 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 
 > **Avbebe / XChina 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
 > 且两者对 `avbebe:` / `xchina:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。
+
+### 当前版本
+
+升级后对不上号，多半是缓存；先核对这个表，再决定是清缓存还是等 CDN 刷新。
+
+| 文件 | 版本 | 文件 | 版本 |
+| --- | --- | --- | --- |
+| `fw-all.js` | 1.0.5 | `maccms-source.js` | 1.0.0 |
+| `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
+| `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
+| `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
+| `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
+| `missav.js` | 1.0.4 | `missav-resource.js` | 1.1.0 |
+| `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
+| `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
+| `avbebe-resource.js` | 1.0.1 | | |
+
+### 最近变更
+
+- **`xchina.js` 1.0.3 / `xchina-resource.js` 1.0.2**：`xchina.co` 对播放器 UA（okhttp / Java / curl）
+  的 master、变体、密钥全链路 403，导致播放页一直转圈。改为优先下发同一套内容但**不校验 UA**
+  的通用线路，另列主站与镜像两条备用；测试用 okhttp UA + 无自定义头端到端验证。
+- **`xchina.js` 1.0.2**：取页失败时依次换 `tw/en/kr` 镜像域名重试，并把失败域名与状态码写进占位提示
+  （原来一律显示「网络请求失败」，无法区分 403 与网络问题）。
+- **`avbebe.js` 1.0.1 / `xchina.js` 1.0.1 / 两个播放源 1.0.1**：入参先 `decodeURIComponent` 再匹配，
+  兼容 `videoUrl`、`archives` 链接、`/hls/<hash>/` 形态；取不到 id 时按片名站内搜索兜底；
+  分类补到 Avbebe 8 个可播放分类、XChina 20 个入口。
+- **新增两站子集清单 `fw-avbebe-xchina.fwd`**：只装 Avbebe + XChina 的 4 个组件。
+- **`fw-all.js` 1.0.5**：命中已知站点链接时单源直查（MissAV / Hentaimama 路由修正），起播更快。
+
 
 ## 苹果CMS 聚合源（需要单独安装）
 
@@ -165,7 +233,12 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-sourcecheck
 - HStream 与 YinHentai 建议同时安装对应的首页模块和播放源。
 - 4KVM 只有播放源，不提供独立首页；请保持“聚合搜索”为“启用”。
 - Hanime 已取消公开播放直链。播放源需要在全局参数中填写已配置账号的自建解析服务地址。
-- 模块升级后如未立即生效，请在 Forward 中清理模块缓存并确认版本号已经更新。
+- 模块升级后如未立即生效，请在 Forward 中清理模块缓存并确认版本号已经更新（对照「当前版本」表）。
+- 走 jsDelivr 的地址有 CDN 缓存：升级后仍拿到旧文件时，打开
+  `https://purge.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/文件名.js`
+  手动清一次，或改用 `raw.githubusercontent.com` 地址。
+- 站点有风控时会出现「403 / 一直转圈」两类表现：前者是取页被拦，后者多为播放地址被拦，
+  两者都已在下文对应模块里做过针对性处理，改代码前先按「维护」一节的流程确认现象。
 - 本仓库不提供、存储或分发媒体文件，只提供网页数据适配脚本。
 
 ## 单独导入
@@ -197,8 +270,8 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.
 lib/maccms.js                 苹果CMS 适配层（源码，不直接分发）
 lib/entries/*.js              入口层（WidgetMetadata + 导出函数）
 scripts/build-maccms.js       把适配层内联进入口层 → widgets/
-scripts/build-fw-all.js       聚合总模块
-scripts/generate-index.js     生成四份订阅清单
+scripts/build-fw-all.js       聚合总模块（改内联源码或路由时记得 bump 其中的 version）
+scripts/generate-index.js     生成订阅清单（三份主清单 + 两站子集 + fw-modules.json）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
@@ -258,6 +331,11 @@ npm run test:xchina:resource:live
 
 > XChina 有 CF 限流：突发请求会被拦成 403 `Just a moment...`，
 > 对应测试在请求之间加了约 900ms 间隔，连跑两个 xchina 测试前建议稍等片刻。
+>
+> XChina 两个测试的传输层走 `curl.exe`：Cloudflare 会把 Node 自带的 HTTP 客户端
+> 拦成 403，用 curl 才能区分「代码问题」与「客户端指纹问题」。
+> `test:xchina:resource:live` 还会用 `okhttp` UA、不带任何自定义头跑一遍
+> master → 变体 → 密钥，确认播放器侧也能取到片子（之前播放页一直转圈就是这个原因）。
 
 站点结构随时可能变化；若模块失效，请先运行 `npm run test:maccms:live` 与源站自检模块，
 区分「代码问题」与「站点问题」，再动手改。
