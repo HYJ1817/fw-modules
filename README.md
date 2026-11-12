@@ -148,10 +148,14 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.3 |
+| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.4 |
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`huangguo.js` 1.0.4**：专题按标题也能匹配。实测宿主会把枚举的**标题**（「百合女同」）而不是值
+  （`baihe-nvtong`）传给模块，站点对标题直接回「专题不存在或已下架」。现在标题、去「专辑」尾、
+  slug 三种写法都能对上；实测 8 种输入全通。
 
 - **`huangguo.js` 1.0.3**：专题全量内置（`/api/topics` 实测 11 个：精品高分 / 家庭伦理 / 灵异诡事 /
   校园青春 / 末世重生 / 百合 / 乡村 / 古风 / 仙侠 / 男同 / 欧美），不再手填 slug；专题接口的影片列表
