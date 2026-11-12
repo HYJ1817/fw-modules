@@ -34,6 +34,11 @@ const MANIFESTS = [
   { file: 'fw-avbebe-xchina.fwd', host: 'cdn.jsdelivr.net', label: '两站子集清单', optional: true, isolated: true },
   // 第三方 Rex 四合一：保持上游原样，只校验文件存在、id 唯一与 URL 域名
   { file: 'fw-rex-4.fwd', host: 'cdn.jsdelivr.net', label: 'Rex 四合一子集', optional: true, isolated: true },
+  // 按内容分组的三份订阅：各自独立，组间不重叠，不参与「三份主清单一致」的比较
+  { file: 'fw-hentai.fwd', host: 'cdn.jsdelivr.net', label: '分组：里番', optional: true, isolated: true },
+  { file: 'fw-drama.fwd', host: 'cdn.jsdelivr.net', label: '分组：短剧', optional: true, isolated: true },
+  { file: 'fw-av.fwd', host: 'cdn.jsdelivr.net', label: '分组：AV', optional: true, isolated: true },
+  { file: 'fw-movie.fwd', host: 'cdn.jsdelivr.net', label: '分组：影视', optional: true, isolated: true },
 ];
 
 /** 第三方模块按上游原样分发：不套用本仓库的 multiSource / 反模式规范 */

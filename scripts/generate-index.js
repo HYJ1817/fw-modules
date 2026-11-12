@@ -34,6 +34,34 @@ const REX_OUTPUT_TITLE = "FW 四合一（第三方）";
 const REX_OUTPUT_DESCRIPTION = "GetAV / ONE一个 / Perverzija / SupJav（第三方模块，4 个组件）";
 const REX_FILES = new Set(["getav.js", "one.js", "perverzija.js", "supjav.js"]);
 
+/** 按内容分组的三份订阅：彼此不重叠，合起来等于「主清单 21 个 + 四合一 4 个」。 */
+const GROUP_OUTPUTS = [
+  {
+    file: path.join(ROOT, "fw-hentai.fwd"),
+    title: "里番",
+    description: "Hentaimama / HStream / YinHentai / Hanime 的首页与播放源（8 个组件）",
+    files: ["hentaimama.js", "hentaimama-resource.js", "hstream.js", "hstream-resource.js", "yinhentai.js", "yinhentai-resource.js", "hanime.js", "hanime-resource.js"],
+  },
+  {
+    file: path.join(ROOT, "fw-drama.fwd"),
+    title: "短剧",
+    description: "黄果短剧的首页与播放源（2 个组件）",
+    files: ["huangguo.js", "huangguo-resource.js"],
+  },
+  {
+    file: path.join(ROOT, "fw-av.fwd"),
+    title: "AV",
+    description: "MissAV / Jable / XChina / Avbebe / SupJav 与四合一第三方模块（13 个组件）",
+    files: ["missav.js", "missav-resource.js", "jable.js", "jable-resource.js", "xchina.js", "xchina-resource.js", "avbebe.js", "avbebe-resource.js", "supjav-webox.js", "getav.js", "one.js", "perverzija.js", "supjav.js"],
+  },
+  {
+    file: path.join(ROOT, "fw-movie.fwd"),
+    title: "影视",
+    description: "4KVM 播放源与苹果CMS 聚合源（2 个组件）",
+    files: ["4kvm-resource.js", "maccms-source.js"],
+  },
+];
+
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -232,7 +260,30 @@ function main() {
   );
   fs.writeFileSync(REX_OUTPUT_FILE, `${JSON.stringify(rexOutput, null, 2)}\n`);
 
-  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE, REX_OUTPUT_FILE).map((file) => path.relative(ROOT, file));
+  // 内容分组订阅：缺件直接报错，避免分组悄悄少组件；组间不允许重叠
+  const groupFiles = new Set();
+  const groupWritten = [];
+  for (const group of GROUP_OUTPUTS) {
+    const groupEntries = group.files.map((file) => {
+      if (groupFiles.has(file)) throw new Error(`分组清单文件重复：${file}`);
+      groupFiles.add(file);
+      return metadataFromFile(file);
+    });
+    if (groupEntries.length !== group.files.length) {
+      throw new Error(`分组「${group.title}」有文件无法解析元信息`);
+    }
+    const output = withBase(
+      { title: group.title, description: group.description, icon: `${cdnBase}/icon.png` },
+      rewriteUrls(
+        groupEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
+        cdnBase
+      )
+    );
+    fs.writeFileSync(group.file, `${JSON.stringify(output, null, 2)}\n`);
+    groupWritten.push(path.relative(ROOT, group.file));
+  }
+
+  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE, REX_OUTPUT_FILE).concat(groupWritten.map((file) => path.join(ROOT, file))).map((file) => path.relative(ROOT, file));
   const inherited = widgets.filter((widget) => extras.has(widget.id)).length;
   console.log(`Generated ${written.join(", ")}`);
   console.log(`  widgets: ${widgets.length}（继承额外字段 ${inherited} 条）`);

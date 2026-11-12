@@ -1,0 +1,126 @@
+{
+  "title": "AV",
+  "description": "MissAV / Jable / XChina / Avbebe / SupJav 与四合一第三方模块（13 个组件）",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  "widgets": [
+    {
+      "id": "hyj1817.missav.home",
+      "title": "MissAV",
+      "description": "获取 MissAV 推荐",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.4",
+      "author": "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/missav.js",
+      "type": "url"
+    },
+    {
+      "id": "hyj1817.missav.resource",
+      "title": "MissAV 播放源",
+      "description": "MissAV HLS/MP4 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward Widgets",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/missav-resource.js",
+      "type": "url"
+    },
+    {
+      "id": "hyj1817.jable.home",
+      "title": "Jable",
+      "description": "Jable 影片列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/jable.js"
+    },
+    {
+      "id": "hyj1817.jable.resource",
+      "title": "Jable 播放源",
+      "description": "解析 Jable 影片的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/jable-resource.js"
+    },
+    {
+      "id": "hyj1817.xchina.home",
+      "title": "XChina",
+      "description": "XChina 影片列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.3",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/xchina.js"
+    },
+    {
+      "id": "hyj1817.xchina.resource",
+      "title": "XChina 播放源",
+      "description": "解析 XChina 影片的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.2",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/xchina-resource.js"
+    },
+    {
+      "id": "hyj1817.avbebe.home",
+      "title": "Avbebe",
+      "description": "Avbebe 动画与同人影片的列表、分类与搜索",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.1",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/avbebe.js"
+    },
+    {
+      "id": "hyj1817.avbebe.resource",
+      "title": "Avbebe 播放源",
+      "description": "解析 Avbebe 文章内嵌的 HLS 直链",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.1",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/avbebe-resource.js"
+    },
+    {
+      "id": "hyj1817.supjav.webox",
+      "title": "SupJav 新版",
+      "description": "supjav.blog 列表、分类、搜索、详情与多线路播放（WeBox 插件移植：多镜像、embed 接口探测、packer 解包、广告过滤）",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.2",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/supjav-webox.js"
+    },
+    {
+      "id": "user.getav",
+      "title": "GetAV",
+      "description": "GetAV 最新、热门、字幕、无码、4K 列表和番号搜索",
+      "requiredVersion": "0.0.1",
+      "version": "0.5.0",
+      "author": "Tiamo",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/getav.js"
+    },
+    {
+      "id": "user.one",
+      "title": "ONE一个",
+      "description": "ONE 一个 · 影视类内容（直连官方接口，游客 token 自动获取）",
+      "requiredVersion": "0.0.1",
+      "version": "2.2.0",
+      "author": "YG",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/one.js"
+    },
+    {
+      "id": "user.perverzija",
+      "title": "Perverzija Tube",
+      "description": "tube.perverzija.com 列表、片商、标签、搜索与 XtremeStream 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.2.0",
+      "author": "Tiamo",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/perverzija.js"
+    },
+    {
+      "id": "user.supjav",
+      "title": "SupJav",
+      "description": "supjav.blog 列表、分类、搜索与 upload18 HLS 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.3.0",
+      "author": "Tiamo",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/supjav.js"
+    }
+  ]
+}

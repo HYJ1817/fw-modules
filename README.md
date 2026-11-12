@@ -51,6 +51,37 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
 `maccms-source.js` 也会输出 `FW_MACCMS` 日志，包含收到的片名、每站的候选数与匹配质量，
 返回空时会明确写出原因（`no-title` / `no-match`）。
 
+## 分组订阅（推荐）
+
+按内容拆成四份，**互不重叠，合起来正好是全量**。只订阅你要的，列表里就不会混进别的类型：
+
+| 分组 | 清单 | 组件数 | 包含 |
+| --- | --- | --- | --- |
+| 里番 | `fw-hentai.fwd` | 8 | Hentaimama / HStream / YinHentai / Hanime |
+| 短剧 | `fw-drama.fwd` | 2 | 黄果短剧 |
+| AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
+| 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
+
+```text
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-hentai.fwd
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-drama.fwd
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-av.fwd
+https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-movie.fwd
+```
+
+Raw 备用（同一份内容，路径换成 `https://raw.githubusercontent.com/HYJ1817/fw-modules/main/`）：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-hentai.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-drama.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-av.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-movie.fwd
+```
+
+> **别和全量清单 / 四合一同时装。** `fw-modules.fwd` 是 21 个组件的合集，`fw-rex-4.fwd` 的四个
+> 已经并进 AV 分组；同时订阅会出现同一个模块两份，列表里重复、更新也会打架。
+> 分组清单由 `npm run generate:index` 生成，组间重叠会直接报错。
+
 ## 订阅地址
 
 在 Forward 中优先添加以下 GitHub Pages JSON 清单：
@@ -216,6 +247,9 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 
 ### 最近变更
+
+- **新增四份分组订阅**（`fw-hentai` / `fw-drama` / `fw-av` / `fw-movie`）：按内容拆分，互不重叠，
+  合起来正好等于「主清单 21 个 + 四合一 4 个」。生成器对组间重叠与缺件都直接报错。
 
 - **`supjav-webox.js` 1.0.2**：起播与拖动。master 只有一路变体时直接下发变体地址（本站实际只有 480p 一路），
   省掉播放器启动时的一次往返；站点偶发超时自动重试一次。实测母带 → 变体 → 分片链路：master 1.6s、变体 1.1s、

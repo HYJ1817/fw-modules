@@ -1,0 +1,26 @@
+{
+  "title": "影视",
+  "description": "4KVM 播放源与苹果CMS 聚合源（2 个组件）",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  "widgets": [
+    {
+      "id": "hyj1817.4kvm.resource",
+      "title": "4KVM 播放源",
+      "description": "4KVM 电影、电视剧与动漫的 HLS 播放源",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.1",
+      "author": "Forward Widgets",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/4kvm-resource.js",
+      "type": "url"
+    },
+    {
+      "id": "hyj1817.maccms.resource",
+      "title": "苹果CMS 聚合源",
+      "description": "苹果CMS/MacCMS 通用聚合播放源：多站可配、自动翻页、片名归一化匹配、解析型线路可选",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/maccms-source.js"
+    }
+  ]
+}
