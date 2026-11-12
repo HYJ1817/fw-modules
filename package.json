@@ -28,6 +28,7 @@
     "test:jable:home:live": "node tests/jable-home.live.test.js",
     "test:jable:resource:live": "node tests/jable-resource.live.test.js",
     "build:huangguo": "node scripts/build-huangguo.js",
-    "test:huangguo": "node tests/huangguo.test.js"
+    "test:huangguo": "node tests/huangguo.test.js",
+    "test:huangguo:live": "node tests/huangguo-live.js"
   }
 }

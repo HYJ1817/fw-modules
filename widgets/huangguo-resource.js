@@ -85,6 +85,19 @@ function hgB64FromHex(hex) {
   }
   return out;
 }
+function hgStdB64(text) {
+  var bytes = hgBytes(hgUtf8Hex(text));
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var out = "", i, a, c;
+  for (i = 0; i + 2 < bytes.length; i += 3) {
+    var n = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + chars[(n >> 6) & 63] + chars[n & 63];
+  }
+  var left = bytes.length - i;
+  if (left === 1) { a = bytes[i] << 16; out += chars[(a >> 18) & 63] + chars[(a >> 12) & 63] + "=="; }
+  else if (left === 2) { c = (bytes[i] << 16) | (bytes[i + 1] << 8); out += chars[(c >> 18) & 63] + chars[(c >> 12) & 63] + chars[(c >> 6) & 63] + "="; }
+  return out;
+}
 function hgHexFromB64(value) {
   var s = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -324,7 +337,7 @@ function hgCtx(params) {
     site: String(params.site || "").trim(),
     cookie: String(params.cookie || "").trim(),
     timeout: Math.max(5, Math.min(30, Number(params.timeout) || 15)),
-    cover: String(params.cover || "original"),
+    cover: String(params.cover || "off"),
   };
 }
 function hgBase(ctx) {
@@ -558,19 +571,13 @@ function hgCard(ctx, base, row) {
   else if (row.description) item.description = hgText(row.description, 300);
   return item;
 }
-function hgNextPage(value, page, count) {
-  var pagination = value && value.pagination;
-  if (!count || !pagination) return null;
-  if (Number(pagination.page) === page && Number(pagination.pages) > page) return String(page + 1);
-  return null;
-}
-async function hgVideoPage(ctx, value, page) {
+function hgVideoPage(ctx, value) {
   var base = hgBase(ctx), rows = hgItems(value), seen = {}, items = [];
   for (var i = 0; i < rows.length; i++) {
     var item = hgCard(ctx, base, rows[i] || {});
     if (item && !seen[item.link]) { seen[item.link] = true; items.push(item); }
   }
-  return { items: items, nextCursor: hgNextPage(value, page, items.length) };
+  return items;
 }
 function hgPageOf(params) {
   var page = parseInt(params && params.page, 10);
@@ -661,7 +668,7 @@ async function hgPlayback(ctx, id, ep) {
   var value = await hgEncrypted(ctx, "playback", {
     method: "POST",
     path: "/api/videos/" + id + "/episodes/" + ep + "/playback",
-    body: hgB64FromHex(hgUtf8Hex("{}")),
+    body: hgStdB64("{}"),
     content_type: "application/json",
   });
   if (!value || String(value.id) !== id || Number(value.ep) !== ep || !value.streams) throw hgFail("播放接口返回的影片或选集不匹配");
@@ -727,7 +734,7 @@ WidgetMetadata = {
   id: "hyj1817.huangguo.resource",
   title: "黄果短剧 播放源",
   icon: "https://huangguoai.com/apple-touch-icon.png",
-  version: "1.0.0",
+  version: "1.0.1",
   requiredVersion: "0.0.2",
   description: "黄果短剧 HLS/MP4 播放线路；默认线路与 HEVC 线路，播放前校验 CDN 鉴权头",
   author: "HYJ1817",

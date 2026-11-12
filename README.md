@@ -203,10 +203,22 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.0 |
-| `huangguo-resource.js` | 1.0.0 | | |
+| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
+| `huangguo-resource.js` | 1.0.1 | | |
 
 ### 最近变更
+
+- **`huangguo.js` / `huangguo-resource.js` 1.0.1**：站点 2026-11-12 可达后补做了真机链路验证，修了三个只有跑真站才会暴露的问题：
+  首页模块原来返回 `{items, nextCursor}`，而 Forward 的首页模块要求**直接返回数组**，界面只会显示「没有内容」；
+  播放请求体里的 `body` 要用**标准 base64**（`e30=`），去掉 padding 会被站点判 400；
+  分类枚举改成站点真实栏目（`ai-duanju` / `ai-manju` / `ai-huanlian` / `ai-mogai`），
+  `ai-huanlian`、`ai-mogai` 目前站点回 410「内容已下线」。另外封面默认改为**不加载**：
+  站点封面是 AES-128-CBC 密文（`decryptKey` / `decryptIV` 由 `crypto-image-protocol.js` 下发），
+  Forward 没有解码器，拉回来也只是占位，一页还白拉数 MB。
+
+- **新增 `huangguo.js` / `huangguo-resource.js` 1.0.0**：黄果短剧。该站的搜索与播放接口是自研加密通道
+  （ECDH P-256 握手 + HMAC-SHA256 派生 + AES-256-GCM 双向加密），Forward 运行时没有 WebCrypto，
+  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。**不在 `fw-all.js` 里**，原因见下节。
 
 - **新增 `huangguo.js` / `huangguo-resource.js` 1.0.0**：黄果短剧。该站的搜索与播放接口是自研加密通道
   （ECDH P-256 握手 + HMAC-SHA256 派生 + AES-256-GCM 双向加密），Forward 运行时没有 WebCrypto，
@@ -248,15 +260,18 @@ GHASH（含 GF(2^128) 乘法）、P-256 点运算全部是纯 JS 实现，`tests
 
 已知限制，按重要性排：
 
-- **封面可能是密文**。站点详情页封面走同一套加密协议，由原生解码器解密；Forward 没有等价能力，
-  拿到的原图 URL 会显示成占位。列表不受影响，若在意可在全局参数里把封面关掉。
+- **封面是密文**。站点封面由 `crypto-image-protocol.js` 下发的 AES-128-CBC 密钥解密（key `f5d9…3670`，
+  IV `97b6…fbe1`，无 padding），Forward 没有解码器，原图 URL 拉回来是几十万字节的乱码。
+  因此封面默认关闭（也省流量，一页 30 条原本要白拉约 5 MB）。真要封面只能做「客户端解密 + data URI」，
+  那是另一件事，且列表体积会爆。
 - **播放头是静态的**。WeBox 那套能在播放期按请求逐个判断同源/跨域再补 `Referer`、`Origin` 和
   CDN 鉴权头（`authKey` / `authValue` / `x-cdn-app`）；Forward 只能给播放器一份固定头。
   因此 `huangguo-resource.js` 在返回线路前先用鉴权头探一次 master（`probing` 默认开），
   通过才带鉴权头下发，未通过则标注「未校验」并退回不带凭据的公开头，避免把凭据发给第三方 CDN。
-- **没有 live 测试**。主站 `huangguoai.com` 在部分网络环境下连不上（CloudFront 前置，TLS 握手被拒），
-  备用站 `huangguoai.ai` 只是「官方最新地址入口」页，不是同一套接口。所以 `tests/huangguo.test.js`
-  只能覆盖加密层、解析与传输（用 mock 服务端），站点结构变化仍需在真机上验证。
+- **live 状态**：2026-11-12 对 `huangguoai.com` 实测通过 —— 首页推荐 / 最近上新 / 排行榜 / 分类 / 加密搜索
+  均返回 30 条，详情页 21 集，`playback` 握手解密成功并返回默认 + HEVC 两条线路，master.m3u8 与
+  `crypt.key` 均 200。`npm run test:huangguo` 仍用 mock 服务端跑加密层，不依赖网络；真站回归请手动跑
+  `node tests/huangguo-live.js`（该文件不在 `verify` 里，需要外网）。
 - **栏目是半枚举的**。分类目录是运行时接口，`WidgetMetadata` 里只能静态声明；已知短剧 / 漫剧两个
   历史栏目（`ai-duanju` / `ai-manju`，站点目录仍挂着但接口返回 410）已做别名，其余栏目请在
   「自定义栏目 route」里手填，专题在「专题标识」里填 slug。

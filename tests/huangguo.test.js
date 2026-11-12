@@ -219,16 +219,16 @@ async function testParsing() {
   assert.deepStrictEqual(Array.from(h.hgEpisodes("", "12345", data)), [1, 2]);
   assert.deepStrictEqual(Array.from(h.hgEpisodes("", "12345", {})), [1]);
 
-  const card = h.hgCard(h.hgCtx({}), "https://huangguoai.com", { id: "777", title: "某短剧", cover: "/c.jpg", episode_count: 12, is_finished: true });
+  const card = h.hgCard(h.hgCtx({ cover: "original" }), "https://huangguoai.com", { id: "777", title: "某短剧", cover: "/c.jpg", episode_count: 12, is_finished: true });
   assert.strictEqual(card.link, "huangguo:777:1@huangguoai.com");
   assert.strictEqual(card.posterPath, "https://huangguoai.com/c.jpg");
   assert.strictEqual(card.description, "全 12 集");
   assert.strictEqual(h.hgCard(h.hgCtx({}), "https://huangguoai.com", { id: "0", title: "x" }), null);
 
-  // 分页
-  const page = await h.hgVideoPage(h.hgCtx({}), { items: [{ id: "1", title: "A" }, { id: "1", title: "A" }], pagination: { page: 1, pages: 3 } }, 1);
-  assert.strictEqual(page.items.length, 1);
-  assert.strictEqual(page.nextCursor, "2");
+  // 列表：必须直接返回数组（Forward 首页模块的约定），且按 link 去重
+  const list = h.hgVideoPage(h.hgCtx({}), { items: [{ id: "1", title: "A" }, { id: "1", title: "A" }, { id: "2", title: "B" }] });
+  assert.ok(Array.isArray(list), "首页模块必须返回数组");
+  assert.strictEqual(list.length, 2);
 }
 
 async function testDetail() {
@@ -247,7 +247,7 @@ async function testDetail() {
   assert.strictEqual(detail.episodeItems.length, 2);
   assert.strictEqual(detail.episodeItems[1].episode, 2);
   assert.strictEqual(detail.episodeItems[1].link, "huangguo:12345:2@huangguoai.com");
-  assert.strictEqual(detail.posterPath, "https://cdn.example/cover.jpg");
+  assert.strictEqual(detail.posterPath, undefined, "封面默认关闭，不应下发密文 URL");
   assert.strictEqual(await h.loadDetail("bad:link"), null);
 }
 
@@ -259,8 +259,9 @@ async function testSearch() {
     return ok({ items: [{ id: "4210", title: "命中短剧" }], pagination: { page: 1, pages: 1 } });
   });
   const page = await h.search({ keyword: "命中", page: "1" });
-  assert.strictEqual(page.items.length, 1);
-  assert.strictEqual(page.items[0].link, "huangguo:4210:1@huangguoai.com");
+  assert.ok(Array.isArray(page));
+  assert.strictEqual(page.length, 1);
+  assert.strictEqual(page[0].link, "huangguo:4210:1@huangguoai.com");
   assert.strictEqual(calls.dynamic, 2, "首次搜索应完成一次握手 + 一次调用");
   // 会话复用：第二次不应重新握手
   await h.search({ keyword: "命中", page: "2" });

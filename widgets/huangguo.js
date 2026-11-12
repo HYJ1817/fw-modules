@@ -85,6 +85,19 @@ function hgB64FromHex(hex) {
   }
   return out;
 }
+function hgStdB64(text) {
+  var bytes = hgBytes(hgUtf8Hex(text));
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var out = "", i, a, c;
+  for (i = 0; i + 2 < bytes.length; i += 3) {
+    var n = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+    out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + chars[(n >> 6) & 63] + chars[n & 63];
+  }
+  var left = bytes.length - i;
+  if (left === 1) { a = bytes[i] << 16; out += chars[(a >> 18) & 63] + chars[(a >> 12) & 63] + "=="; }
+  else if (left === 2) { c = (bytes[i] << 16) | (bytes[i + 1] << 8); out += chars[(c >> 18) & 63] + chars[(c >> 12) & 63] + chars[(c >> 6) & 63] + "="; }
+  return out;
+}
 function hgHexFromB64(value) {
   var s = String(value || "").replace(/-/g, "+").replace(/_/g, "/");
   var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -324,7 +337,7 @@ function hgCtx(params) {
     site: String(params.site || "").trim(),
     cookie: String(params.cookie || "").trim(),
     timeout: Math.max(5, Math.min(30, Number(params.timeout) || 15)),
-    cover: String(params.cover || "original"),
+    cover: String(params.cover || "off"),
   };
 }
 function hgBase(ctx) {
@@ -558,19 +571,13 @@ function hgCard(ctx, base, row) {
   else if (row.description) item.description = hgText(row.description, 300);
   return item;
 }
-function hgNextPage(value, page, count) {
-  var pagination = value && value.pagination;
-  if (!count || !pagination) return null;
-  if (Number(pagination.page) === page && Number(pagination.pages) > page) return String(page + 1);
-  return null;
-}
-async function hgVideoPage(ctx, value, page) {
+function hgVideoPage(ctx, value) {
   var base = hgBase(ctx), rows = hgItems(value), seen = {}, items = [];
   for (var i = 0; i < rows.length; i++) {
     var item = hgCard(ctx, base, rows[i] || {});
     if (item && !seen[item.link]) { seen[item.link] = true; items.push(item); }
   }
-  return { items: items, nextCursor: hgNextPage(value, page, items.length) };
+  return items;
 }
 function hgPageOf(params) {
   var page = parseInt(params && params.page, 10);
@@ -661,7 +668,7 @@ async function hgPlayback(ctx, id, ep) {
   var value = await hgEncrypted(ctx, "playback", {
     method: "POST",
     path: "/api/videos/" + id + "/episodes/" + ep + "/playback",
-    body: hgB64FromHex(hgUtf8Hex("{}")),
+    body: hgStdB64("{}"),
     content_type: "application/json",
   });
   if (!value || String(value.id) !== id || Number(value.ep) !== ep || !value.streams) throw hgFail("播放接口返回的影片或选集不匹配");
@@ -724,8 +731,10 @@ async function hgProbe(url, headers) {
  */
 
 var HG_CATEGORIES = [
-  { title: "AI 短剧", value: "drama" },
-  { title: "AI 漫剧", value: "comic" },
+  { title: "短剧", value: "ai-duanju" },
+  { title: "漫剧", value: "ai-manju" },
+  { title: "AI 换脸", value: "ai-huanlian" },
+  { title: "AI 魔改", value: "ai-mogai" },
   { title: "自定义栏目", value: "custom" },
 ];
 
@@ -733,7 +742,7 @@ WidgetMetadata = {
   id: "hyj1817.huangguo.home",
   title: "黄果短剧",
   icon: "https://huangguoai.com/apple-touch-icon.png",
-  version: "1.0.0",
+  version: "1.0.1",
   requiredVersion: "0.0.2",
   description: "黄果短剧首页推荐、最近上新、排行榜、分类、专题、搜索与分集",
   author: "HYJ1817",
@@ -767,10 +776,10 @@ WidgetMetadata = {
       name: "cover",
       title: "封面显示",
       type: "enumeration",
-      value: "original",
+      value: "off",
       enumOptions: [
-        { title: "站点原图（站点加密封面会显示为占位）", value: "original" },
-        { title: "不显示封面", value: "off" },
+        { title: "不加载封面（默认：站点封面是密文，Forward 无法解码）", value: "off" },
+        { title: "尝试站点原图 URL（多半显示为占位，且每页多拉数 MB）", value: "original" },
       ],
     },
   ],
@@ -806,7 +815,7 @@ WidgetMetadata = {
       type: "video",
       cacheDuration: 600,
       params: [
-        { name: "category", title: "分类", type: "enumeration", value: "drama", enumOptions: HG_CATEGORIES },
+        { name: "category", title: "分类", type: "enumeration", value: "ai-duanju", enumOptions: HG_CATEGORIES },
         {
           name: "route",
           title: "自定义栏目 route",
@@ -840,88 +849,91 @@ WidgetMetadata = {
 
 function hgHomeCtx(params) { return hgCtx(params || {}); }
 
+// Forward 首页模块的函数必须直接返回条目数组；出错时返回一条占位条目，
+// 否则界面上只会显示「没有内容」，无从判断是网络、参数还是解析的问题。
+function hgNotice(message, ctx) {
+  var host = "huangguoai.com";
+  try { host = hgHostOf(hgBase(ctx)); } catch (_) {}
+  return [{
+    id: "huangguo:notice",
+    type: "video",
+    title: "黄果短剧：" + hgText(message, 120),
+    seriesName: "黄果短剧",
+    description: "这只是提示，点开没有内容；修好后刷新即可恢复。",
+    mediaType: "tv",
+    link: "huangguo:0:1@" + host,
+  }];
+}
+
 async function loadHome(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params);
+  var ctx = hgHomeCtx(params);
   try {
-    var value = await hgPublic(ctx, hgQuery("/api/videos", { page: page, size: 30 }));
-    return await hgVideoPage(ctx, value, page);
+    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/videos", { page: hgPageOf(params), size: 30 })));
   } catch (error) {
-    hgLog("首页推荐失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("首页推荐失败 - " + ((error && error.message) || error));
+    return hgNotice("首页推荐加载失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
 async function loadLatest(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params);
+  var ctx = hgHomeCtx(params);
   try {
-    var value = await hgPublic(ctx, hgQuery("/api/videos", { page: page, size: 30, sort: "new" }));
-    return await hgVideoPage(ctx, value, page);
+    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/videos", { page: hgPageOf(params), size: 30, sort: "new" })));
   } catch (error) {
-    hgLog("最近上新失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("最近上新失败 - " + ((error && error.message) || error));
+    return hgNotice("最近上新加载失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
 async function loadRank(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params);
+  var ctx = hgHomeCtx(params);
   try {
-    var value = await hgPublic(ctx, hgQuery("/api/ranks/hot", { page: page, size: 30 }));
-    return await hgVideoPage(ctx, value, page);
+    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/ranks/hot", { page: hgPageOf(params), size: 30 })));
   } catch (error) {
-    hgLog("排行榜失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("排行榜失败 - " + ((error && error.message) || error));
+    return hgNotice("排行榜加载失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
 async function loadCategory(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params), category = String((params && params.category) || "drama");
-  var route;
-  if (category === "drama") route = "ai-duanju";
-  else if (category === "comic") route = "ai-manju";
-  else route = String((params && params.route) || "").replace(/^\/+|\/+$/g, "");
-  if (!/^[A-Za-z0-9_-]{1,64}$/.test(route)) {
-    hgLog("分类 route 无效");
-    return { items: [], nextCursor: null };
-  }
+  var ctx = hgHomeCtx(params);
+  var category = hgText(params && params.category, 40) || "ai-duanju";
+  var route = category === "custom" ? hgText(params && params.route, 64).replace(/^\/+|\/+$/g, "") : category;
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(route)) return hgNotice("请先填写自定义栏目 route", ctx);
   try {
-    var value = await hgPublic(ctx, hgQuery("/api/videos/category/" + route, { page: page, size: 30 }));
-    return await hgVideoPage(ctx, value, page);
+    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/videos/category/" + route, { page: hgPageOf(params), size: 30 })));
   } catch (error) {
-    hgLog("分类 " + route + " 失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("分类 " + route + " 失败 - " + ((error && error.message) || error));
+    return hgNotice("分类「" + route + "」加载失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
 async function loadTopic(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params), slug = String((params && params.slug) || "").trim();
-  if (!/^[A-Za-z0-9_-]{1,200}$/.test(slug)) {
-    hgLog("请先填写专题标识");
-    return { items: [], nextCursor: null };
-  }
+  var ctx = hgHomeCtx(params);
+  var slug = hgText(params && params.slug, 200);
+  if (!/^[A-Za-z0-9_-]{1,200}$/.test(slug)) return hgNotice("请先填写专题标识", ctx);
   try {
-    var value = await hgPublic(ctx, hgQuery("/api/topics/" + encodeURIComponent(slug), { page: page, size: 30 }));
-    return await hgVideoPage(ctx, value, page);
+    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/topics/" + encodeURIComponent(slug), { page: hgPageOf(params), size: 30 })));
   } catch (error) {
-    hgLog("专题 " + slug + " 失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("专题 " + slug + " 失败 - " + ((error && error.message) || error));
+    return hgNotice("专题「" + slug + "」加载失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
 async function search(params) {
-  var ctx = hgHomeCtx(params), page = hgPageOf(params);
+  var ctx = hgHomeCtx(params);
   var keyword = hgText(params && params.keyword, 200);
-  if (!keyword) return { items: [], nextCursor: null };
+  if (!keyword) return [];
   try {
-    var value = await hgEncrypted(ctx, "dynamic", {
+    return hgVideoPage(ctx, await hgEncrypted(ctx, "dynamic", {
       method: "GET",
-      path: hgQuery("/api/search", { q: keyword, type: "video", page: page, size: 30 }),
+      path: hgQuery("/api/search", { q: keyword, type: "video", page: hgPageOf(params), size: 30 }),
       body: "",
       content_type: "",
-    });
-    return await hgVideoPage(ctx, value, page);
+    }));
   } catch (error) {
-    hgLog("搜索失败 - " + error.message);
-    return { items: [], nextCursor: null };
+    hgLog("搜索失败 - " + ((error && error.message) || error));
+    return hgNotice("搜索「" + keyword + "」失败：" + ((error && error.message) || "未知错误"), ctx);
   }
 }
 
@@ -933,7 +945,7 @@ async function loadDetail(input) {
   try {
     return await hgDetail(ctx, link);
   } catch (error) {
-    hgLog("详情失败 - " + error.message);
+    hgLog("详情失败 - " + ((error && error.message) || error));
     return null;
   }
 }
