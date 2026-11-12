@@ -37,7 +37,16 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
 | AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
 
-CDN（推荐）：
+**订阅地址（推荐 raw，5 分钟内生效）**
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-hentai.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-drama.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-av.fwd
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-movie.fwd
+```
+
+**CDN 备用**（jsdelivr 对 @main 的滚动缓存可能滞后数小时，清单本身可能旧；组件 URL 已锁定 commit，不受影响）：
 
 ```text
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-hentai.fwd
@@ -46,14 +55,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-av.fwd
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-movie.fwd
 ```
 
-Raw 备用（路径换成 `https://raw.githubusercontent.com/HYJ1817/fw-modules/main/`）：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-hentai.fwd
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-drama.fwd
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-av.fwd
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-movie.fwd
-```
+> 清单里的组件 URL 形如 cdn.jsdelivr.net/gh/HYJ1817/fw-modules@<commit-sha>/widgets/…，锁定到提交时刻的不可变版本：订阅一更新就能拿到新组件，不会再被 jsdelivr 的滚动缓存卡住（此前 @main 缓存曾把 one.js、girigiri 的旧版压了数小时）。raw 清单 5 分钟内生效，优先用它。
 
 > **全量清单与四合一子集已下线。** `fw-modules.fwd`、`fw-modules-cdn.fwd`、`fw-modules.json`、
 > `forward-widgets.fwd`、`fw-rex-4.fwd`、`fw-avbebe-xchina.fwd` 都不再生成 —— 它们的内容已经全部

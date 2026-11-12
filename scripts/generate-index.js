@@ -53,6 +53,7 @@ const GROUP_OUTPUTS = [
   },
 ];
 
+const { execFileSync } = require("child_process");
 const OWNER = "HYJ1817";
 const REPOSITORY = "fw-modules";
 const BRANCH = "main";
@@ -200,7 +201,15 @@ function main() {
     );
   }
 
-  const cdnBase = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPOSITORY}@${BRANCH}`;
+  // 组件 URL 锁定到当前 commit：jsdelivr 对 @main 的滚动缓存可能滞后数小时，
+  // 锁 sha 后每次都是不可变地址，订阅一更新就能拿到新组件，不会再被缓存卡住。
+  let commit = BRANCH;
+  try {
+    commit = execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT }).toString().trim() || BRANCH;
+  } catch (error) {
+    console.log("  ⚠ 取不到 commit sha，组件 URL 退回 @main（jsdelivr 可能有缓存延迟）");
+  }
+  const cdnBase = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPOSITORY}@${commit}`;
 
   // 四份分组清单：组间不允许重叠，缺件直接报错
   const seen = new Set();
@@ -212,7 +221,7 @@ function main() {
       return metadataFromFile(file);
     });
     const output = withBase(
-      { title: group.title, description: group.description, icon: `${cdnBase}/icon.png` },
+      { title: group.title, description: group.description, icon: `https://cdn.jsdelivr.net/gh/${OWNER}/${REPOSITORY}@${commit}/icon.png` },
       rewriteUrls(groupEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })), cdnBase)
     );
     fs.writeFileSync(group.file, `${JSON.stringify(output, null, 2)}\n`);

@@ -59,7 +59,7 @@ async function testManifestCompatibility() {
     assert.ok(/\.(?:png|jpe?g|webp)(?:[?#].*)?$/i.test(manifest.icon), `${file} icon 必须是位图`);
     assert.ok(Array.isArray(manifest.widgets) && manifest.widgets.length > 0, `${file} 必须含组件`);
     for (const widget of manifest.widgets) {
-      assert.ok(widget.url.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/"), `${file} 的 URL 必须走 CDN：${widget.url}`);
+      assert.ok(/^https:\/\/cdn\.jsdelivr\.net\/gh\/HYJ1817\/fw-modules@[0-9a-f]{7,40}\/widgets\//.test(widget.url), `${file} 的 URL 必须走 CDN：${widget.url}`);
       assert.ok(!seen.has(widget.id), `组件在多个分组里重复：${widget.id}（${file} 与 ${seen.get(widget.id)}）`);
       seen.set(widget.id, file);
     }
