@@ -2,31 +2,6 @@
 
 个人整理的 Forward 首页模块与播放源。仓库中的模块均为独立 JavaScript 文件，可单独导入，也可以通过订阅清单一次添加。
 
-## 单文件总模块（可选）
-
-Forward 右上角选择链接导入，只需添加（当前 `1.0.6`，约 237 KB）：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-all.js
-```
-
-备用地址：
-
-```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/fw-all.js
-```
-
-该 JS 把多个站点内联成单个文件，适合只想装一个模块的场景；它与分组订阅二选一，**不要同时装**，否则会出现重复模块。
-
-> **它不含 Avbebe、XChina 与苹果CMS 聚合源。** 原因见下一节，这三类需要单独导入。
->
-> **改动内联源码或路由时必须 bump `scripts/build-fw-all.js` 里的 `version`**：
-> 客户端只按 `version` 判断是否刷新 `fw-all.js`，版本不变就永远用旧代码。
-
-> **单个模块文件有体积上限。** 上限为 240 KB（`MAX_BYTES`），超限会被截断并以
-> 「模块无效或解析失败」拒绝。当前 236 KB 已接近上限，因此**苹果CMS 聚合源与两站模块
-> 只能单独安装**（内联实测涨到 254 KB，刷新直接失败）。
-
 ## 排查：线路列表为空
 
 播放源依赖片名去搜索资源站。而 Forward 传给 `loadResource` 的字段里**不一定包含片名**
@@ -150,8 +125,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 > 因此 XChina 优先返回同源托管、不校验 UA 的通用线路，`52cute.com`（Avbebe）则必须带
 > `Referer: https://avbebe.com/`，两个播放源模块都已经按这个要求带好了请求头。
 
-> **Avbebe / XChina / Jable 不在 `fw-all.js` 里**：总模块受单文件体积上限约束（`MAX_BYTES = 240 KB`），
-> 且三者对 `avbebe:` / `xchina:` / `jable:` 链接已做短路处理，不会触发内置源的 6 源并发兜底。
+> 三者对 `avbebe:` / `xchina:` / `jable:` 链接都做了短路处理，不会触发别的源的聚合兜底。
 
 ### 当前版本
 
@@ -159,7 +133,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 
 | 文件 | 版本 | 文件 | 版本 |
 | --- | --- | --- | --- |
-| `fw-all.js` | 1.0.6 | `maccms-source.js` | 1.0.0 |
+| `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
@@ -209,16 +183,16 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 
 - **新增 `huangguo.js` / `huangguo-resource.js` 1.0.0**：黄果短剧。该站的搜索与播放接口是自研加密通道
   （ECDH P-256 握手 + HMAC-SHA256 派生 + AES-256-GCM 双向加密），Forward 运行时没有 WebCrypto，
-  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。**不在 `fw-all.js` 里**，原因见下节。
+  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。它只在「短剧」分组里。
 
 - **新增 `huangguo.js` / `huangguo-resource.js` 1.0.0**：黄果短剧。该站的搜索与播放接口是自研加密通道
   （ECDH P-256 握手 + HMAC-SHA256 派生 + AES-256-GCM 双向加密），Forward 运行时没有 WebCrypto，
-  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。**不在 `fw-all.js` 里**，原因见下节。
+  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。它只在「短剧」分组里。
 
 - **新增 `jable.js` / `jable-resource.js` 1.0.0**：主域名 `jable.tv` 被 Cloudflare 5 秒 JS 挑战挡住
   所有非浏览器客户端（列表页连 curl 都要带全套浏览器头才过得去），因此取页统一走官方备用域名
   `fs1.app`；片源在 `mushroomtrack.com`，实测 okhttp / 浏览器 / ExoPlayer UA、无 Referer
-  都能取到播放列表、AES-128 密钥与分片。`fw-all.js` 同步到 1.0.6（`jable:` 链接短路 + 域名路由）。
+  都能取到播放列表、AES-128 密钥与分片。当时的 `fw-all.js` 同步到 1.0.6（`jable:` 链接短路 + 域名路由），该文件现已下线。
 
 - **`xchina.js` 1.0.3 / `xchina-resource.js` 1.0.2**：`xchina.co` 对播放器 UA（okhttp / Java / curl）
   的 master、变体、密钥全链路 403，导致播放页一直转圈。改为优先下发同一套内容但**不校验 UA**
@@ -229,7 +203,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
   兼容 `videoUrl`、`archives` 链接、`/hls/<hash>/` 形态；取不到 id 时按片名站内搜索兜底；
   分类补到 Avbebe 8 个可播放分类、XChina 20 个入口。
 - **新增两站子集清单 `fw-avbebe-xchina.fwd`**：只装 Avbebe + XChina 的 4 个组件。
-- **`fw-all.js` 1.0.5**：命中已知站点链接时单源直查（MissAV / Hentaimama 路由修正），起播更快。
+- **`fw-all.js` 1.0.5**（已下线）：命中已知站点链接时单源直查（MissAV / Hentaimama 路由修正），起播更快。
 
 
 ## 黄果短剧（需要单独安装）
@@ -246,8 +220,7 @@ GHASH（含 GF(2^128) 乘法）、P-256 点运算全部是纯 JS 实现，`tests
 当服务端跑了一遍完整握手 + 加密调用（`npm run test:huangguo`）。要改这个源，请改 `lib/` 再
 `npm run build:huangguo`。
 
-**它不在 `fw-all.js` 里**：总模块已 242 KB，逼近 `MAX_BYTES = 240 KB` 的保守上限，再塞两个 36 KB
-的文件会让客户端直接报「模块无效或解析失败」。
+`fw-all.js` 时代它进不了总模块（体积上限 240 KB）；总模块下线后，它只出现在「短剧」分组里。
 
 已知限制，按重要性排：
 
@@ -272,7 +245,7 @@ GHASH（含 GF(2^128) 乘法）、P-256 点运算全部是纯 JS 实现，`tests
 面向**苹果CMS / MacCMS V10 采集接口**（形如 `https://域名/api.php/provide/vod/`）的通用播放源。
 这类接口是公开协议约定，站点换内容不影响接口形态，因此比逐站 HTML 抓取稳定得多。
 
-**它不在 `fw-all.js` 里**（原因见上一节），需要单独导入一个 24 KB 的文件：
+它在「影视」分组里；也可以单独导入这一个 24 KB 的文件：
 
 ```text
 https://hyj1817.github.io/fw-modules/widgets/maccms-source.js
@@ -367,7 +340,6 @@ lib/vendor/*.js               第三方上游原文（逐字保留，不直接�
 scripts/build-maccms.js       把适配层内联进入口层 → widgets/
 scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
 scripts/build-supjav-webox.js 桥接层 + 上游 WeBox 原文 → widgets/supjav-webox.js
-scripts/build-fw-all.js       聚合总模块（改内联源码或路由时记得 bump 其中的 version）
 scripts/generate-index.js     生成四份分组订阅清单（里番 / 短剧 / AV / 影视）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
@@ -384,7 +356,7 @@ npm run generate:index    # 重新生成四份订阅清单
 npm run verify:fast       # 构建 + 单元测试 + 清单一致性校验
 ```
 
-完整校验（含聚合总模块）：
+完整校验（含单测）：
 
 ```bash
 npm run verify

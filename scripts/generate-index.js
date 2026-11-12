@@ -59,8 +59,6 @@ const BRANCH = "main";
 
 /** 不进入正式清单的文件：构建产物与独立诊断模块，按设计走单独的 Raw 链接。 */
 const EXCLUDED_FILES = new Set([
-  "fw-all.js",
-  "fw-trace.js",
   "fw-diagnostics.js",
   "fw-sourcecheck.js",
   "fw-probe.js",
