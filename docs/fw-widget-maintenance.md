@@ -125,7 +125,7 @@ check /tmp/detail.html "播放器配置键"   'userlink\s*:'
 **只有「模块依赖但站点上找不到了」才是故障。**
 
 
-### 第 5 步：改代码 + 加实网测试
+### 第 4 步：改代码 + 加实网测试
 
 改完必须加一个实网测试，照抄 `tests/hstream-resource.live.test.js` 的结构：
 
