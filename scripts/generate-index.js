@@ -1,7 +1,8 @@
 "use strict";
 /**
- * 生成三份订阅清单：forward-widgets.fwd / fw-modules.fwd（Raw）、
- * fw-modules-cdn.fwd（jsDelivr）、fw-modules.json（GitHub Pages）。
+ * 生成四份按内容分组的订阅清单：
+ *   fw-hentai.fwd（里番）/ fw-drama.fwd（短剧）/ fw-av.fwd（AV）/ fw-movie.fwd（影视）
+ * 全量清单与四合一子集已下线；分组之间互不重叠，合起来等于全部可分发组件。
  * ---------------------------------------------------------------------------
  * 相比早期版本的三处修正：
  *   1. 自动发现 widgets/*.js，不再维护硬编码文件列表。
@@ -21,18 +22,8 @@ const vm = require("vm");
 const ROOT = path.resolve(__dirname, "..");
 const WIDGETS_DIR = path.join(ROOT, "widgets");
 
-const RAW_OUTPUT_FILES = [path.join(ROOT, "forward-widgets.fwd"), path.join(ROOT, "fw-modules.fwd")];
-const CDN_OUTPUT_FILE = path.join(ROOT, "fw-modules-cdn.fwd");
-const PAGES_OUTPUT_FILE = path.join(ROOT, "fw-modules.json");
-/** 两站子集清单：只装 Avbebe + XChina 的四个组件，供不想装全量模块的场景单独订阅。 */
-const SUBSET_OUTPUT_FILE = path.join(ROOT, "fw-avbebe-xchina.fwd");
-const SUBSET_FILES = new Set(["avbebe.js", "avbebe-resource.js", "xchina.js", "xchina-resource.js"]);
-
-/** 第三方 Rex 模块四合一子集：GetAV / ONE / Perverzija / SupJav，保持上游原样，不进主清单。 */
-const REX_OUTPUT_FILE = path.join(ROOT, "fw-rex-4.fwd");
-const REX_OUTPUT_TITLE = "FW 四合一（第三方）";
-const REX_OUTPUT_DESCRIPTION = "GetAV / ONE一个 / Perverzija / SupJav（第三方模块，4 个组件）";
-const REX_FILES = new Set(["getav.js", "one.js", "perverzija.js", "supjav.js"]);
+ /** 已下线的清单：它们的内容已经全部并入分组，保留常量只为迁移时提示。 */
+const RETIRED_FILES = ["fw-modules.fwd", "fw-modules-cdn.fwd", "fw-modules.json", "forward-widgets.fwd", "fw-rex-4.fwd", "fw-avbebe-xchina.fwd"];
 
 /** 按内容分组的三份订阅：彼此不重叠，合起来等于「主清单 21 个 + 四合一 4 个」。 */
 const GROUP_OUTPUTS = [
@@ -136,30 +127,34 @@ function metadataFromFile(filename) {
 /** 读取现有清单中生成器不负责的字段（例如 type: "url"），按 id 保留。 */
 function readInheritedExtras() {
   const extras = new Map();
-  let current;
-  try {
-    current = JSON.parse(fs.readFileSync(PAGES_OUTPUT_FILE, "utf8"));
-  } catch (error) {
-    return extras;
-  }
-  for (const widget of current.widgets || []) {
-    const extra = {};
-    for (const key of Object.keys(widget)) {
-      if (!GENERATED_FIELDS.has(key)) extra[key] = widget[key];
+  for (const group of GROUP_OUTPUTS) {
+    let current;
+    try {
+      current = JSON.parse(fs.readFileSync(group.file, "utf8"));
+    } catch (error) {
+      continue;
     }
-    if (Object.keys(extra).length) extras.set(widget.id, extra);
+    for (const widget of current.widgets || []) {
+      if (extras.has(widget.id)) continue;
+      const extra = {};
+      for (const key of Object.keys(widget)) {
+        if (!GENERATED_FIELDS.has(key)) extra[key] = widget[key];
+      }
+      if (Object.keys(extra).length) extras.set(widget.id, extra);
+    }
   }
   return extras;
 }
 
 /** 沿用现有清单的顺序，新增文件追加在后，保证 diff 最小。 */
 function readExistingOrder() {
-  try {
-    const current = JSON.parse(fs.readFileSync(PAGES_OUTPUT_FILE, "utf8"));
-    return (current.widgets || []).map((widget) => widget.id);
-  } catch (error) {
-    return [];
+  for (const group of GROUP_OUTPUTS) {
+    try {
+      const current = JSON.parse(fs.readFileSync(group.file, "utf8"));
+      if (Array.isArray(current.widgets) && current.widgets.length) return current.widgets.map((widget) => widget.id);
+    } catch (error) {}
   }
+  return [];
 }
 
 function orderEntries(entries, existingOrder) {
@@ -207,88 +202,36 @@ function main() {
     );
   }
 
-  const base = {
-    title: "fw模块",
-    description: "Forward 自用首页模块与播放源",
-    icon: `https://raw.githubusercontent.com/${OWNER}/${REPOSITORY}/refs/heads/${BRANCH}/icon.png`,
-  };
-
   const cdnBase = `https://cdn.jsdelivr.net/gh/${OWNER}/${REPOSITORY}@${BRANCH}`;
-  const pagesBase = `https://${OWNER.toLowerCase()}.github.io/${REPOSITORY}`;
 
-  const rawOutput = withBase(base, widgets);
-  const cdnOutput = withBase({ ...base, icon: `${cdnBase}/icon.png` }, rewriteUrls(widgets, cdnBase));
-  const pagesOutput = withBase({ ...base, icon: `${pagesBase}/icon.png` }, rewriteUrls(widgets, pagesBase));
-
-  for (const outputFile of RAW_OUTPUT_FILES) {
-    fs.writeFileSync(outputFile, `${JSON.stringify(rawOutput, null, 2)}\n`);
-  }
-  fs.writeFileSync(CDN_OUTPUT_FILE, `${JSON.stringify(cdnOutput, null, 2)}\n`);
-  fs.writeFileSync(PAGES_OUTPUT_FILE, `${JSON.stringify(pagesOutput, null, 2)}\n`);
-
-  // 两站子集：文件改名或删减时直接报错，避免子集清单悄悄缺件
-  const subsetEntries = entries.filter((entry) => SUBSET_FILES.has(entry.file));
-  if (subsetEntries.length !== SUBSET_FILES.size) {
-    const missing = [...SUBSET_FILES].filter((file) => !subsetEntries.some((entry) => entry.file === file));
-    throw new Error(`两站子集清单缺件：${missing.join(", ")}`);
-  }
-  const subsetOutput = withBase(
-    {
-      title: "Avbebe + XChina",
-      description: "Avbebe 与 XChina 的首页模块与播放源（4 个组件）",
-      icon: `${cdnBase}/icon.png`,
-    },
-    rewriteUrls(
-      subsetEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
-      cdnBase
-    )
-  );
-  fs.writeFileSync(SUBSET_OUTPUT_FILE, `${JSON.stringify(subsetOutput, null, 2)}\n`);
-
-  // 第三方 Rex 模块四合一清单：文件不进主清单，缺件同样直接报错
-  const rexEntries = [...REX_FILES].map((file) => metadataFromFile(file));
-  const rexOutput = withBase(
-    {
-      title: REX_OUTPUT_TITLE,
-      description: REX_OUTPUT_DESCRIPTION,
-      icon: `${cdnBase}/icon.png`,
-    },
-    rewriteUrls(
-      rexEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
-      cdnBase
-    )
-  );
-  fs.writeFileSync(REX_OUTPUT_FILE, `${JSON.stringify(rexOutput, null, 2)}\n`);
-
-  // 内容分组订阅：缺件直接报错，避免分组悄悄少组件；组间不允许重叠
-  const groupFiles = new Set();
-  const groupWritten = [];
+  // 四份分组清单：组间不允许重叠，缺件直接报错
+  const seen = new Set();
+  const written = [];
   for (const group of GROUP_OUTPUTS) {
     const groupEntries = group.files.map((file) => {
-      if (groupFiles.has(file)) throw new Error(`分组清单文件重复：${file}`);
-      groupFiles.add(file);
+      if (seen.has(file)) throw new Error(`分组清单文件重复：${file}`);
+      seen.add(file);
       return metadataFromFile(file);
     });
-    if (groupEntries.length !== group.files.length) {
-      throw new Error(`分组「${group.title}」有文件无法解析元信息`);
-    }
     const output = withBase(
       { title: group.title, description: group.description, icon: `${cdnBase}/icon.png` },
-      rewriteUrls(
-        groupEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })),
-        cdnBase
-      )
+      rewriteUrls(groupEntries.map(({ entry }) => ({ ...entry, ...(extras.get(entry.id) || {}) })), cdnBase)
     );
     fs.writeFileSync(group.file, `${JSON.stringify(output, null, 2)}\n`);
-    groupWritten.push(path.relative(ROOT, group.file));
+    written.push(path.relative(ROOT, group.file));
   }
 
-  const written = RAW_OUTPUT_FILES.concat(CDN_OUTPUT_FILE, PAGES_OUTPUT_FILE, SUBSET_OUTPUT_FILE, REX_OUTPUT_FILE).concat(groupWritten.map((file) => path.join(ROOT, file))).map((file) => path.relative(ROOT, file));
+  // 分组应覆盖全部可分发组件
+  const missing = files.filter((file) => !seen.has(file));
+  if (missing.length) throw new Error(`以下组件没有归入任何分组：${missing.join(", ")}`);
+  const retired = RETIRED_FILES.filter((file) => fs.existsSync(path.join(ROOT, file)));
+
   const inherited = widgets.filter((widget) => extras.has(widget.id)).length;
   console.log(`Generated ${written.join(", ")}`);
   console.log(`  widgets: ${widgets.length}（继承额外字段 ${inherited} 条）`);
   console.log(`  files:   ${files.join(", ")}`);
-  console.log(`  subset:  ${subsetEntries.map((entry) => entry.file).join(", ")}`);
+  console.log(`  groups:  ${GROUP_OUTPUTS.map((group) => `${group.title} ${group.files.length}`).join(" / ")}`);
+  if (retired.length) console.log(`  ⚠ 已下线但仍存在：${retired.join(", ")}（可安全删除）`);
 }
 
 main();

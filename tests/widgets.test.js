@@ -50,18 +50,32 @@ async function testMetadata() {
 }
 
 async function testManifestCompatibility() {
-  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, "forward-widgets.fwd"), "utf8"));
-  const freshManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules.fwd"), "utf8"));
-  const cdnManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules-cdn.fwd"), "utf8"));
-  const pagesManifest = JSON.parse(fs.readFileSync(path.join(ROOT, "fw-modules.json"), "utf8"));
-  assert.deepStrictEqual(freshManifest, manifest, "fresh subscription manifest must match the canonical manifest");
-  assert.ok(cdnManifest.icon.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/"));
-  assert.ok(cdnManifest.widgets.every((widget) => widget.url.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/")));
-  assert.ok(pagesManifest.icon.startsWith("https://hyj1817.github.io/fw-modules/"));
-  assert.ok(pagesManifest.widgets.every((widget) => widget.url.startsWith("https://hyj1817.github.io/fw-modules/widgets/")));
-  assert.ok(/^https:\/\//.test(manifest.icon), "manifest icon must be an absolute HTTPS URL");
-  assert.ok(/\.(?:png|jpe?g|webp)(?:[?#].*)?$/i.test(manifest.icon), "Forward source icon must use a raster image format");
-  assert.ok(Array.isArray(manifest.widgets) && manifest.widgets.length > 0, "manifest must contain widgets");
+  // 只保留四份内容分组清单：互不重叠、URL 走 CDN、覆盖全部可分发组件
+  const groups = ["fw-hentai.fwd", "fw-drama.fwd", "fw-av.fwd", "fw-movie.fwd"];
+  const seen = new Map();
+  for (const file of groups) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8"));
+    assert.ok(/^https:\/\//.test(manifest.icon), `${file} icon 必须是绝对地址`);
+    assert.ok(/\.(?:png|jpe?g|webp)(?:[?#].*)?$/i.test(manifest.icon), `${file} icon 必须是位图`);
+    assert.ok(Array.isArray(manifest.widgets) && manifest.widgets.length > 0, `${file} 必须含组件`);
+    for (const widget of manifest.widgets) {
+      assert.ok(widget.url.startsWith("https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/"), `${file} 的 URL 必须走 CDN：${widget.url}`);
+      assert.ok(!seen.has(widget.id), `组件在多个分组里重复：${widget.id}（${file} 与 ${seen.get(widget.id)}）`);
+      seen.set(widget.id, file);
+    }
+  }
+  // widget 文件必须与清单声明一一对应：文件内 version 与清单一致
+  for (const [id, file] of seen) {
+    const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, file), "utf8"));
+    const entry = manifest.widgets.find((widget) => widget.id === id);
+    const name = entry.url.split("/").pop();
+    const widget = load(name);
+    assert.strictEqual(widget.WidgetMetadata.version, entry.version, `${name} 的 version 与清单不同步`);
+  }
+  // 已下线的清单不应再出现
+  for (const retired of ["fw-modules.fwd", "fw-modules-cdn.fwd", "fw-modules.json", "fw-rex-4.fwd", "fw-avbebe-xchina.fwd", "forward-widgets.fwd"]) {
+    assert.ok(!fs.existsSync(path.join(ROOT, retired)), `${retired} 已下线，不应再存在`);
+  }
 }
 
 async function test4kvmParsing() {

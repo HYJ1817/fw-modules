@@ -2,7 +2,7 @@
 
 个人整理的 Forward 首页模块与播放源。仓库中的模块均为独立 JavaScript 文件，可单独导入，也可以通过订阅清单一次添加。
 
-## 单链接总模块（推荐）
+## 单文件总模块（可选）
 
 Forward 右上角选择链接导入，只需添加（当前 `1.0.6`，约 237 KB）：
 
@@ -16,7 +16,7 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/refs/heads/main/widgets/fw-
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/fw-all.js
 ```
 
-该 JS 同时包含 Hentaimama、HStream、YinHentai、MissAV、Hanime 首页模块，以及 Hentaimama、HStream、YinHentai、Hanime、4KVM、MissAV 六个站点专用播放源，不依赖 `.fwd` 集合来源。
+该 JS 把多个站点内联成单个文件，适合只想装一个模块的场景；它与分组订阅二选一，**不要同时装**，否则会出现重复模块。
 
 > **它不含 Avbebe、XChina 与苹果CMS 聚合源。** 原因见下一节，这三类需要单独导入。
 >
@@ -51,16 +51,18 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
 `maccms-source.js` 也会输出 `FW_MACCMS` 日志，包含收到的片名、每站的候选数与匹配质量，
 返回空时会明确写出原因（`no-title` / `no-match`）。
 
-## 分组订阅（推荐）
+## 订阅（按内容分组）
 
-按内容拆成四份，**互不重叠，合起来正好是全量**。只订阅你要的，列表里就不会混进别的类型：
+按内容拆成四份，**互不重叠，合起来等于全部 25 个组件**。只订阅你要的类型，列表里就不会混进别的：
 
-| 分组 | 清单 | 组件数 | 包含 |
+| 分组 | 清单 | 组件 | 包含 |
 | --- | --- | --- | --- |
-| 里番 | `fw-hentai.fwd` | 8 | Hentaimama / HStream / YinHentai / Hanime |
+| 里番 | `fw-hentai.fwd` | 8 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源） |
 | 短剧 | `fw-drama.fwd` | 2 | 黄果短剧 |
 | AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
+
+CDN（推荐）：
 
 ```text
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-hentai.fwd
@@ -69,7 +71,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-av.fwd
 https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-movie.fwd
 ```
 
-Raw 备用（同一份内容，路径换成 `https://raw.githubusercontent.com/HYJ1817/fw-modules/main/`）：
+Raw 备用（路径换成 `https://raw.githubusercontent.com/HYJ1817/fw-modules/main/`）：
 
 ```text
 https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-hentai.fwd
@@ -78,88 +80,11 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-av.fwd
 https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-movie.fwd
 ```
 
-> **别和全量清单 / 四合一同时装。** `fw-modules.fwd` 是 21 个组件的合集，`fw-rex-4.fwd` 的四个
-> 已经并进 AV 分组；同时订阅会出现同一个模块两份，列表里重复、更新也会打架。
-> 分组清单由 `npm run generate:index` 生成，组间重叠会直接报错。
-
-## 订阅地址
-
-在 Forward 中优先添加以下 GitHub Pages JSON 清单：
-
-```text
-https://hyj1817.github.io/fw-modules/fw-modules.json
-```
-
-CDN 备用地址：
-
-```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-modules-cdn.fwd
-```
-
-Raw 备用地址：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-modules.fwd
-```
-
-## 只要 Avbebe + XChina（两站子集订阅）
-
-不想装全量模块时，用这一个链接只添加 Avbebe 与 XChina 的 4 个组件
-（两站的首页模块 + 播放源）：
-
-```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-avbebe-xchina.fwd
-```
-
-Raw 备用地址（同一份内容）：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
-```
-
-该清单由 `npm run generate:index` 与四份主清单一起生成，只取
-`avbebe.js` / `avbebe-resource.js` / `xchina.js` / `xchina-resource.js`，
-缺件会直接报错；`npm run check:manifests` 也会校验它的 URL 与版本同步。
-
-> 子集与全量清单的组件 id 相同，**不要同时订阅两者**，否则会出现重复模块。
-
-## 第三方 Rex 模块（四合一子集）
-
-> **清单标题里不能出现独立的「Rex」一词。** Rex 客户端会把清单 JSON 的 `title`、以及每个模块条目的
-> `title` / `description` / `author` 里独立的 `Rex` 当成违规字样，**整包**报「模块信息校验失败，请修改后重试」，
-> 且不告诉你是哪一条。所以这份清单叫「FW 四合一（第三方）」，`npm run check:manifests` 也会拦住这个写法。
-> 注意它只查清单 JSON，不查 `.js` 内部（`.js` 里的 `WidgetMetadata` 写什么都不影响）。
-
-GetAV / ONE一个 / Perverzija Tube / SupJav 四个第三方模块（作者 Tiamo、YG），**原样收录**、
-保留上游逻辑，只放在独立清单里分发，不进主清单（避免与全量清单出现重复模块）：
-
-```text
-https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/fw-rex-4.fwd
-```
-
-Raw 备用（同一份内容）：
-
-```text
-https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-rex-4.fwd
-```
-
-| 模块 | 版本 | 说明 |
-| --- | --- | --- |
-| GetAV | 0.5.0 | 最新/热门/新片/字幕/无码/4K 列表、番号搜索、按画质分线路（RSC 取数，AVIF 封面走 wsrv 转 JPEG） |
-| ONE一个 | 2.2.0 | 接口式模块（游客 token 自动获取、AES/MD5 签名），含最新/热门/分区/连载/演员 |
-| Perverzija Tube | 1.2.0 | 列表/片商/标签/演员作品 + XtremeStream HLS 多画质线路 |
-| SupJav | 1.3.0 | 列表/分类/演员作品 + upload18/helvid 签名 HLS，标题自动机翻中文 |
-
-注意：
-
-- 这 4 个文件**不在** `fw-modules.fwd`、`fw-all.js` 里，也不套用本仓库的 `multiSource` 规范；
-- **本仓库只改了一处**：给四个文件的列表模块补了 `type: "video"`（上游没写这个字段，
-  Forward 校验模块信息时会因此整份拒绝，表现是「模块信息校验失败」）。其余逐字保留；
-  上游更新后请跑 `node scripts/patch-rex-type.js` 重新补字段，或手工确认每个 module 都有 `type`。
-- 上游更新时直接整份替换 `widgets/{getav,one,perverzija,supjav}.js`，
-  `npm run generate:index` 会自动把新版本号写进 `fw-rex-4.fwd`；
-- GetAV 首页取数依赖 `RSC: 1` 请求头，被 Cloudflare 拦时的表现是「网络请求失败」；
-- 清单里的组件 id 是上游命名（`user.*`），与本仓库其它模块不冲突。
+> **全量清单与四合一子集已下线。** `fw-modules.fwd`、`fw-modules-cdn.fwd`、`fw-modules.json`、
+> `forward-widgets.fwd`、`fw-rex-4.fwd`、`fw-avbebe-xchina.fwd` 都不再生成 —— 它们的内容已经全部
+> 并入上面四份分组。原来订阅全量的，删掉那条来源、改成订阅需要的分组即可。
+>
+> 分组清单由 `npm run generate:index` 生成：组间出现同一个组件、或有文件没归入任何分组，都会直接报错。
 
 ## 里番 / 动漫模块（单独导入地址）
 
@@ -247,6 +172,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 
 ### 最近变更
+
+- **下线全量清单与四合一子集**：`fw-modules.fwd` / `fw-modules-cdn.fwd` / `fw-modules.json` /
+  `forward-widgets.fwd` / `fw-rex-4.fwd` / `fw-avbebe-xchina.fwd` 全部删除，只保留里番 / 短剧 / AV / 影视
+  四份分组清单。四合一那四个模块已并进 AV 分组，`generate-index` 现在只产分组，
+  `check:manifests` 与 `npm test` 改为校验「四组互不重叠 + 覆盖全部组件 + 版本同步」。
 
 - **新增四份分组订阅**（`fw-hentai` / `fw-drama` / `fw-av` / `fw-movie`）：按内容拆分，互不重叠，
   合起来正好等于「主清单 21 个 + 四合一 4 个」。生成器对组间重叠与缺件都直接报错。
@@ -438,7 +368,7 @@ scripts/build-maccms.js       把适配层内联进入口层 → widgets/
 scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
 scripts/build-supjav-webox.js 桥接层 + 上游 WeBox 原文 → widgets/supjav-webox.js
 scripts/build-fw-all.js       聚合总模块（改内联源码或路由时记得 bump 其中的 version）
-scripts/generate-index.js     生成订阅清单（三份主清单 + 两站子集 + fw-modules.json）
+scripts/generate-index.js     生成四份分组订阅清单（里番 / 短剧 / AV / 影视）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
@@ -464,7 +394,7 @@ npm run verify
 
 早期版本的 `generate-index.js` 维护了一份**硬编码的文件列表**，比实际清单少 4 条。
 跑一次 `npm run generate:index` 就会把这 4 条从清单里删掉，且不会有任何报错 ——
-`fw-modules-cdn.fwd` 长期只有 7 条而主清单有 11 条，就是这么来的。
+早期三份主清单长期条数不一致，就是这么来的；现在只保留分组清单，组间重叠与漏收都会报错。
 
 现在生成器会自动发现 `widgets/*.js`，并且：
 
