@@ -37,6 +37,7 @@ WidgetMetadata = {
       title: "搜索",
       description: "关键词 / 演员 / 片商搜索",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 60,
       functionName: "searchVideos",
       params: [
@@ -49,6 +50,7 @@ WidgetMetadata = {
       title: "最新",
       description: "按发布时间排序",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -61,6 +63,7 @@ WidgetMetadata = {
       title: "最多播放",
       description: "按播放量排序",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -73,6 +76,7 @@ WidgetMetadata = {
       title: "最多点赞",
       description: "按点赞排序",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -85,6 +89,7 @@ WidgetMetadata = {
       title: "演员作品",
       description: "填入演员名，列出本站她的全部作品",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadActorList",
       params: [
@@ -97,6 +102,7 @@ WidgetMetadata = {
       title: "精选场景",
       description: "Featured scenes",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -109,6 +115,7 @@ WidgetMetadata = {
       title: "完整影片",
       description: "Full movie",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -121,6 +128,7 @@ WidgetMetadata = {
       title: "VR",
       description: "VR 专区",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -133,6 +141,7 @@ WidgetMetadata = {
       title: "Brazzers",
       description: "片商 Brazzers",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -145,6 +154,7 @@ WidgetMetadata = {
       title: "RealityKings",
       description: "片商 RealityKings",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -157,6 +167,7 @@ WidgetMetadata = {
       title: "BangBros",
       description: "片商 BangBros",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -169,6 +180,7 @@ WidgetMetadata = {
       title: "TeamSkeet",
       description: "片商 TeamSkeet",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -181,6 +193,7 @@ WidgetMetadata = {
       title: "NaughtyAmerica",
       description: "片商 NaughtyAmerica",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -193,6 +206,7 @@ WidgetMetadata = {
       title: "标签热门",
       description: "Anal / MILF / Teen 等",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [

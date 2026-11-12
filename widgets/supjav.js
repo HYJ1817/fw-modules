@@ -38,6 +38,7 @@ WidgetMetadata = {
       title: "搜索",
       description: "关键词 / 番号 / 演员搜索",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 60,
       functionName: "searchVideos",
       params: [
@@ -50,6 +51,7 @@ WidgetMetadata = {
       title: "最新",
       description: "首页最新更新",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -62,6 +64,7 @@ WidgetMetadata = {
       title: "无码",
       description: "Uncensored",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -74,6 +77,7 @@ WidgetMetadata = {
       title: "无码流出",
       description: "Uncensored Leaked",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -86,6 +90,7 @@ WidgetMetadata = {
       title: "有码",
       description: "Censored",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -98,6 +103,7 @@ WidgetMetadata = {
       title: "中文字幕",
       description: "Chinese AV",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -110,6 +116,7 @@ WidgetMetadata = {
       title: "素人",
       description: "Amateur",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -122,6 +129,7 @@ WidgetMetadata = {
       title: "演员作品",
       description: "填入演员名，列出本站她的全部作品",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadActorList",
       params: [
@@ -134,6 +142,7 @@ WidgetMetadata = {
       title: "分类标签",
       description: "填入标签名，如 censored / amateur / anal",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [

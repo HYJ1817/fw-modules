@@ -30,6 +30,7 @@ WidgetMetadata = {
       title: "搜索",
       description: "输入番号、演员或关键词",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 60,
       functionName: "searchVideos",
       params: [
@@ -42,6 +43,7 @@ WidgetMetadata = {
       title: "最新",
       description: "GetAV 最新",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -54,6 +56,7 @@ WidgetMetadata = {
       title: "热门",
       description: "GetAV 热门",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -66,6 +69,7 @@ WidgetMetadata = {
       title: "新片上市",
       description: "GetAV 新片上市",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -78,6 +82,7 @@ WidgetMetadata = {
       title: "字幕影片",
       description: "GetAV 字幕影片",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -90,6 +95,7 @@ WidgetMetadata = {
       title: "无码影片",
       description: "GetAV 无码影片",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -102,6 +108,7 @@ WidgetMetadata = {
       title: "4K",
       description: "GetAV 4K",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [

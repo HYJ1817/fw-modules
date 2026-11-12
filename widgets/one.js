@@ -17,6 +17,7 @@ WidgetMetadata = {
       title: "播放资源",
       description: "按需解析 ONE 播放地址（详情页调用）",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 0,
       functionName: "loadResource",
       type: "stream",
@@ -30,6 +31,7 @@ WidgetMetadata = {
       title: "搜索",
       description: "搜索 ONE 的片/图/文/音",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 60,
       functionName: "searchVideos",
       params: [{ name: "keyword", title: "关键词", type: "input", value: "" }]
@@ -39,6 +41,7 @@ WidgetMetadata = {
       title: "最新视频",
       description: "全库最新上传（长视频 + 视频），按月自动回溯",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -51,6 +54,7 @@ WidgetMetadata = {
       title: "热门视频",
       description: "全库热门榜（按当月点赞排序，逐月往前）",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -63,6 +67,7 @@ WidgetMetadata = {
       title: "日本",
       description: "日本分区 · 按月自动回溯全部视频",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -77,6 +82,7 @@ WidgetMetadata = {
       title: "国产",
       description: "国产分区 · 按月自动回溯全部视频",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -91,6 +97,7 @@ WidgetMetadata = {
       title: "欧美",
       description: "欧美分区 · 按月自动回溯全部视频",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [
@@ -105,6 +112,7 @@ WidgetMetadata = {
       title: "ONE 直播",
       description: "ONE 直播回放合集 · 按月自动回溯，点进合集看全部场次",
       requiresWebView: false,
+      type: "video",
       cacheDuration: 120,
       functionName: "loadList",
       params: [

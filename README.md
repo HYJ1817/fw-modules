@@ -117,6 +117,9 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-rex-4.fwd
 注意：
 
 - 这 4 个文件**不在** `fw-modules.fwd`、`fw-all.js` 里，也不套用本仓库的 `multiSource` 规范；
+- **本仓库只改了一处**：给四个文件的列表模块补了 `type: "video"`（上游没写这个字段，
+  Forward 校验模块信息时会因此整份拒绝，表现是「模块信息校验失败」）。其余逐字保留；
+  上游更新后请跑 `node scripts/patch-rex-type.js` 重新补字段，或手工确认每个 module 都有 `type`。
 - 上游更新时直接整份替换 `widgets/{getav,one,perverzija,supjav}.js`，
   `npm run generate:index` 会自动把新版本号写进 `fw-rex-4.fwd`；
 - GetAV 首页取数依赖 `RSC: 1` 请求头，被 Cloudflare 拦时的表现是「网络请求失败」；
