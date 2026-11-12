@@ -94,6 +94,11 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/fw-avbebe-xchina.fwd
 
 ## 第三方 Rex 模块（四合一子集）
 
+> **清单标题里不能出现独立的「Rex」一词。** Rex 客户端会把清单 JSON 的 `title`、以及每个模块条目的
+> `title` / `description` / `author` 里独立的 `Rex` 当成违规字样，**整包**报「模块信息校验失败，请修改后重试」，
+> 且不告诉你是哪一条。所以这份清单叫「FW 四合一（第三方）」，`npm run check:manifests` 也会拦住这个写法。
+> 注意它只查清单 JSON，不查 `.js` 内部（`.js` 里的 `WidgetMetadata` 写什么都不影响）。
+
 GetAV / ONE一个 / Perverzija Tube / SupJav 四个第三方模块（作者 Tiamo、YG），**原样收录**、
 保留上游逻辑，只放在独立清单里分发，不进主清单（避免与全量清单出现重复模块）：
 
@@ -210,6 +215,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | | |
 
 ### 最近变更
+
+- **`fw-rex-4.fwd` 改名「FW 四合一（第三方）」**：四合一子集一直「添加失败：模块信息校验失败」，真因不是模块字段，
+  而是清单标题里的独立单词 `Rex` 触发了客户端的违规字样过滤（只查清单 JSON 的 title / 条目的 title、
+  description、author，不查 `.js`）。同时给四个模块补了 `type` 与 `icon`/`site` 字段，纯为对齐本仓库风格。
+  `check:manifests` 现在会直接拦下含独立 `Rex` 的写法，避免再踩。
 
 - **`huangguo.js` / `huangguo-resource.js` 1.0.1**：站点 2026-11-12 可达后补做了真机链路验证，修了三个只有跑真站才会暴露的问题：
   首页模块原来返回 `{items, nextCursor}`，而 Forward 的首页模块要求**直接返回数组**，界面只会显示「没有内容」；

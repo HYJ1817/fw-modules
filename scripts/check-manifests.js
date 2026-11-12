@@ -163,6 +163,22 @@ for (const spec of MANIFESTS) {
     }
   }
 
+  // G：Rex 客户端会把清单里「独立的 Rex 一词」当成违规内容，整包报「模块信息校验失败」。
+  // 它只检查清单 JSON 的 title 与每个模块条目的 title / description / author，不检查 .js 内部；
+  // 报错也不会指出是哪一条，所以这里直接拦下来。
+  const REX_WORD = /\brex\b/i;
+  const rexHits = [];
+  if (REX_WORD.test(String(data.title || ''))) rexHits.push(['清单 title', data.title]);
+  for (const widget of data.widgets) {
+    for (const field of ['title', 'description', 'author']) {
+      const value = String(widget[field] || '');
+      if (REX_WORD.test(value)) rexHits.push([`${widget.id || '(无 id)'}.${field}`, value]);
+    }
+  }
+  for (const [where, value] of rexHits) {
+    error(spec.file, `${where} 含独立的「Rex」——Rex 客户端会整包报「模块信息校验失败」：${value}`);
+  }
+
   loaded.push({ spec, data });
   note(`${spec.label}（${spec.file}）：${data.widgets.length} 个组件`);
 }

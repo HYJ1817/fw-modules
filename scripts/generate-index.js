@@ -30,7 +30,7 @@ const SUBSET_FILES = new Set(["avbebe.js", "avbebe-resource.js", "xchina.js", "x
 
 /** 第三方 Rex 模块四合一子集：GetAV / ONE / Perverzija / SupJav，保持上游原样，不进主清单。 */
 const REX_OUTPUT_FILE = path.join(ROOT, "fw-rex-4.fwd");
-const REX_OUTPUT_TITLE = "Rex 四合一";
+const REX_OUTPUT_TITLE = "FW 四合一（第三方）";
 const REX_OUTPUT_DESCRIPTION = "GetAV / ONE一个 / Perverzija / SupJav（第三方模块，4 个组件）";
 const REX_FILES = new Set(["getav.js", "one.js", "perverzija.js", "supjav.js"]);
 
