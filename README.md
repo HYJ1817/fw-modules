@@ -379,6 +379,10 @@ npm run build:maccms      # 内联适配层，生成单文件组件
 npm run generate:index    # 重新生成四份订阅清单
 npm run verify:fast       # 构建 + 单元测试 + 清单一致性校验
 ```
+> **组件 URL 锁定了 commit sha**，锁的是「生成那一刻的 HEAD」。所以改完 widget 的正确顺序是：
+> 提交代码 → `npm run generate:index` → 把清单变更再提交一次（或 amend）。
+> 漏了第二步，清单会指向不含新代码的旧提交，用户拿到的就是旧组件 —— 这个坑已经踩过一次
+> （清单指向 8493c76，那里面的 huangguo.js 还是 1.0.1）。
 
 完整校验（含单测）：
 
