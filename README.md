@@ -213,9 +213,13 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
 | `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
-| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.0 |
+| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.1 |
 
 ### 最近变更
+
+- **`supjav-webox.js` 1.0.1**：起播优化。详情与播放解析各自加了内存缓存（详情 30 分钟、线路 10 分钟），
+  打开详情后用零延时预取首集线路，点多线路时并发测首字节并按快慢排序。实测同一部片：线路解析 5.2s → 6ms，
+  详情 1.8s → 1ms。预取可在全局参数里关掉。
 
 - **新增 `supjav-webox.js` 1.0.0**：把 WeBox 的 SupJav 插件（`blog.supjav.webox` 1.0.2）移植成 Forward 模块。
   不重写上游逻辑，只补一层运行时桥接（`ctx.*` → `Widget.*`），上游原文逐字放在 `lib/vendor/`，
