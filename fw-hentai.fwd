@@ -1,6 +1,6 @@
 {
   "title": "里番",
-  "description": "Hentaimama / HStream / YinHentai / Hanime 的首页与播放源（8 个组件）",
+  "description": "Hentaimama / HStream / YinHentai / Hanime / girigiri 动漫的首页与播放源（9 个组件）",
   "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
   "widgets": [
     {
@@ -80,6 +80,15 @@
       "author": "Forward Widgets",
       "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/hanime-resource.js",
       "type": "url"
+    },
+    {
+      "id": "hyj1817.girigiri.home",
+      "title": "girigiri 动漫",
+      "description": "girigiri 动漫首页、日番、搜索、详情与分集（WeBox 插件移植）",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/girigiri.js"
     }
   ]
 }

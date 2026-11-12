@@ -30,8 +30,8 @@ const GROUP_OUTPUTS = [
   {
     file: path.join(ROOT, "fw-hentai.fwd"),
     title: "里番",
-    description: "Hentaimama / HStream / YinHentai / Hanime 的首页与播放源（8 个组件）",
-    files: ["hentaimama.js", "hentaimama-resource.js", "hstream.js", "hstream-resource.js", "yinhentai.js", "yinhentai-resource.js", "hanime.js", "hanime-resource.js"],
+    description: "Hentaimama / HStream / YinHentai / Hanime / girigiri 动漫的首页与播放源（9 个组件）",
+    files: ["hentaimama.js", "hentaimama-resource.js", "hstream.js", "hstream-resource.js", "yinhentai.js", "yinhentai-resource.js", "hanime.js", "hanime-resource.js", "girigiri.js"],
   },
   {
     file: path.join(ROOT, "fw-drama.fwd"),

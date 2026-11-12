@@ -28,11 +28,11 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
 
 ## 订阅（按内容分组）
 
-按内容拆成四份，**互不重叠，合起来等于全部 25 个组件**。只订阅你要的类型，列表里就不会混进别的：
+按内容拆成四份，**互不重叠，合起来等于全部 26 个组件**。只订阅你要的类型，列表里就不会混进别的：
 
 | 分组 | 清单 | 组件 | 包含 |
 | --- | --- | --- | --- |
-| 里番 | `fw-hentai.fwd` | 8 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源） |
+| 里番 | `fw-hentai.fwd` | 9 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源）+ girigiri 动漫 |
 | 短剧 | `fw-drama.fwd` | 2 | 黄果短剧 |
 | AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
@@ -114,6 +114,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | Jable 播放源 | 资源 | `widgets/jable-resource.js` | 解析详情页 `hlsUrl`，片源不校验 UA |
 | 黄果短剧 | 首页 | `widgets/huangguo.js` | 首页推荐、最近上新、排行榜、分类、专题、搜索与分集 |
 | 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
+| girigiri 动漫 | 首页 + 资源 | `widgets/girigiri.js` | 动漫站首页、日番、搜索、详情与分集（WeBox 插件移植） |
 | SupJav 新版 | 首页 + 资源 | `widgets/supjav-webox.js` | WeBox 插件移植：多镜像、语言目录、embed 接口探测、packer 解包、广告过滤 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
@@ -134,6 +135,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 文件 | 版本 | 文件 | 版本 |
 | --- | --- | --- | --- |
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
+| `girigiri.js` | 1.0.0 | | |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
@@ -146,6 +148,10 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 
 ### 最近变更
+
+- **新增 `girigiri.js` 1.0.0**：动漫站 `anime.girigirilove.icu` 的 WeBox 插件移植，放进「里番」分组。
+  站点是普通 HTML + `player_aaaa` 脚本，没有加密通道或媒体改写，所以只需要桥接层；
+  播放地址的 `encrypt=1/2`（%u 转义 / base64）也一并沿用。分页按游标向后走，最多缓存 10 页。
 
 - **下线全量清单与四合一子集**：`fw-modules.fwd` / `fw-modules-cdn.fwd` / `fw-modules.json` /
   `forward-widgets.fwd` / `fw-rex-4.fwd` / `fw-avbebe-xchina.fwd` 全部删除，只保留里番 / 短剧 / AV / 影视
@@ -340,12 +346,13 @@ lib/vendor/*.js               第三方上游原文（逐字保留，不直接�
 scripts/build-maccms.js       把适配层内联进入口层 → widgets/
 scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
 scripts/build-supjav-webox.js 桥接层 + 上游 WeBox 原文 → widgets/supjav-webox.js
+scripts/build-girigiri.js    同上，girigiri 动漫 → widgets/girigiri.js
 scripts/generate-index.js     生成四份分组订阅清单（里番 / 短剧 / AV / 影视）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
 
-`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js`、`widgets/supjav-webox.js` 是**生成物**，
+`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js`、`widgets/supjav-webox.js`、`widgets/girigiri.js` 是**生成物**，
 文件头带 `Do not edit directly` 标记。要改逻辑请改 `lib/`，然后重新构建。
 
 ### 标准流程
