@@ -137,7 +137,9 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 文件 | 版本 | 文件 | 版本 |
 | --- | --- | --- | --- |
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
-| `girigiri.js` | 1.0.1 | | |
+| `girigiri.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
+| `getav.js` | 0.5.0 | `one.js` | 2.2.0 |
+| `perverzija.js` | 1.2.0 | `supjav.js` | 1.3.0 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
@@ -147,9 +149,14 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
 | `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
-| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
+| `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **组件 URL 锁定 commit sha**：jsdelivr 对 `@main` 的滚动缓存会把旧组件压住数小时
+  （one.js、girigiri 都中过招，`purge` 也不一定生效）。清单里的组件地址改为
+  `cdn.jsdelivr.net/gh/HYJ1817/fw-modules@<commit-sha>/widgets/…`，不可变内容永远新鲜；
+  订阅地址本身改推 raw（缓存 5 分钟）。`check:manifests` 的域名校验不受影响。
 
 - **`girigiri.js` 1.0.1**：补 `atob` / `TextDecoder` 兜底。Forward 的 widget 运行时没有保证提供这两个，
   上游插件解码 `encrypt=2` 的播放地址时两者都用，缺了就报「播放地址编码无效」。修完后实测：
