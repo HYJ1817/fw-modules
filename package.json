@@ -6,13 +6,13 @@
   "scripts": {
     "build:maccms": "node scripts/build-maccms.js",
     "build:all": "node scripts/build-fw-all.js",
-    "build": "npm run build:maccms && npm run build:all",
+    "build": "npm run build:maccms && npm run build:huangguo && npm run build:all",
     "generate:index": "node scripts/generate-index.js",
     "check:manifests": "node scripts/check-manifests.js",
     "test": "node tests/widgets.test.js",
     "test:maccms": "node tests/maccms.test.js",
     "test:all": "node tests/fw-all.test.js",
-    "verify:fast": "npm run build:maccms && npm run test:maccms && npm run check:manifests",
+    "verify:fast": "npm run build:maccms && npm run build:huangguo && npm run test:maccms && npm run test:huangguo && npm run check:manifests",
     "verify": "npm run verify:fast && npm run build:all && npm run test:all && npm test",
     "test:maccms:live": "node tests/maccms-live.test.js",
     "test:4kvm:live": "node tests/4kvm-live.test.js",
@@ -26,6 +26,8 @@
     "test:xchina:home:live": "node tests/xchina-home.live.test.js",
     "test:xchina:resource:live": "node tests/xchina-resource.live.test.js",
     "test:jable:home:live": "node tests/jable-home.live.test.js",
-    "test:jable:resource:live": "node tests/jable-resource.live.test.js"
+    "test:jable:resource:live": "node tests/jable-resource.live.test.js",
+    "build:huangguo": "node scripts/build-huangguo.js",
+    "test:huangguo": "node tests/huangguo.test.js"
   }
 }

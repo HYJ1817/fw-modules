@@ -173,6 +173,8 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 构造 HLS 直链（不校验 UA 的通用线路优先，主站与镜像备选） |
 | Jable | 首页 | `widgets/jable.js` | 最近更新、热门、新作、12 个分类、搜索与详情 |
 | Jable 播放源 | 资源 | `widgets/jable-resource.js` | 解析详情页 `hlsUrl`，片源不校验 UA |
+| 黄果短剧 | 首页 | `widgets/huangguo.js` | 首页推荐、最近上新、排行榜、分类、专题、搜索与分集 |
+| 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
 > 与 turbonewvid（域名已失效）对应的分类不收录，硬加只会得到点进去播不了的条目。
@@ -201,9 +203,14 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | | |
+| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.0 |
+| `huangguo-resource.js` | 1.0.0 | | |
 
 ### 最近变更
+
+- **新增 `huangguo.js` / `huangguo-resource.js` 1.0.0**：黄果短剧。该站的搜索与播放接口是自研加密通道
+  （ECDH P-256 握手 + HMAC-SHA256 派生 + AES-256-GCM 双向加密），Forward 运行时没有 WebCrypto，
+  因此加密层以纯 JS 手写并逐项对 `node:crypto` 校验。**不在 `fw-all.js` 里**，原因见下节。
 
 - **新增 `jable.js` / `jable-resource.js` 1.0.0**：主域名 `jable.tv` 被 Cloudflare 5 秒 JS 挑战挡住
   所有非浏览器客户端（列表页连 curl 都要带全套浏览器头才过得去），因此取页统一走官方备用域名
@@ -221,6 +228,38 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 - **新增两站子集清单 `fw-avbebe-xchina.fwd`**：只装 Avbebe + XChina 的 4 个组件。
 - **`fw-all.js` 1.0.5**：命中已知站点链接时单源直查（MissAV / Hentaimama 路由修正），起播更快。
 
+
+## 黄果短剧（需要单独安装）
+
+站点 `huangguoai.com` 的搜索与播放接口不是公开 REST，而是一条自研加密通道：
+
+1. 客户端每次会话临时生成 ECDH P-256 密钥对，`POST /api/{scope}/request` 发 `hello` 完成握手；
+2. 用共享点做 HKDF 风格派生（`HMAC-SHA256`）拆出 `req` / `res` 两把密钥；
+3. 请求与响应均 AES-256-GCM，12 字节 IV 里编码序列号，AAD 绑定 `info + 方向 + seq + 时间戳`，
+   服务端回包的 `kid` / `sid` / `seq` / `ts` 必须逐项对上；会话过期自动重握一次。
+
+Forward 的 widget 运行时**没有 WebCrypto**，所以 `lib/huangguo.js` 里 SHA-256、HMAC、AES-256-CTR、
+GHASH（含 GF(2^128) 乘法）、P-256 点运算全部是纯 JS 实现，`tests/huangguo.test.js` 用 `node:crypto`
+当服务端跑了一遍完整握手 + 加密调用（`npm run test:huangguo`）。要改这个源，请改 `lib/` 再
+`npm run build:huangguo`。
+
+**它不在 `fw-all.js` 里**：总模块已 242 KB，逼近 `MAX_BYTES = 240 KB` 的保守上限，再塞两个 36 KB
+的文件会让客户端直接报「模块无效或解析失败」。
+
+已知限制，按重要性排：
+
+- **封面可能是密文**。站点详情页封面走同一套加密协议，由原生解码器解密；Forward 没有等价能力，
+  拿到的原图 URL 会显示成占位。列表不受影响，若在意可在全局参数里把封面关掉。
+- **播放头是静态的**。WeBox 那套能在播放期按请求逐个判断同源/跨域再补 `Referer`、`Origin` 和
+  CDN 鉴权头（`authKey` / `authValue` / `x-cdn-app`）；Forward 只能给播放器一份固定头。
+  因此 `huangguo-resource.js` 在返回线路前先用鉴权头探一次 master（`probing` 默认开），
+  通过才带鉴权头下发，未通过则标注「未校验」并退回不带凭据的公开头，避免把凭据发给第三方 CDN。
+- **没有 live 测试**。主站 `huangguoai.com` 在部分网络环境下连不上（CloudFront 前置，TLS 握手被拒），
+  备用站 `huangguoai.ai` 只是「官方最新地址入口」页，不是同一套接口。所以 `tests/huangguo.test.js`
+  只能覆盖加密层、解析与传输（用 mock 服务端），站点结构变化仍需在真机上验证。
+- **栏目是半枚举的**。分类目录是运行时接口，`WidgetMetadata` 里只能静态声明；已知短剧 / 漫剧两个
+  历史栏目（`ai-duanju` / `ai-manju`，站点目录仍挂着但接口返回 410）已做别名，其余栏目请在
+  「自定义栏目 route」里手填，专题在「专题标识」里填 slug。
 
 ## 苹果CMS 聚合源（需要单独安装）
 
@@ -296,6 +335,13 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/文件名.js
 https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.js
 ```
 
+黄果短剧需要首页 + 播放源两个文件（同样是 Raw 地址替换文件名）：
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/huangguo.js
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/huangguo-resource.js
+```
+
 ## 维护
 
 > **逐站播放源（`*-resource.js`）失效时，看 [`docs/fw-widget-maintenance.md`](docs/fw-widget-maintenance.md)。**
@@ -310,14 +356,16 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/4kvm-resource.
 ```
 lib/maccms.js                 苹果CMS 适配层（源码，不直接分发）
 lib/entries/*.js              入口层（WidgetMetadata + 导出函数）
+lib/huangguo.js               黄果短剧适配层（加密会话、解析、播放线路）
 scripts/build-maccms.js       把适配层内联进入口层 → widgets/
+scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
 scripts/build-fw-all.js       聚合总模块（改内联源码或路由时记得 bump 其中的 version）
 scripts/generate-index.js     生成订阅清单（三份主清单 + 两站子集 + fw-modules.json）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
 
-`widgets/maccms-source.js` 与 `widgets/fw-sourcecheck.js` 是**生成物**，
+`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js` 是**生成物**，
 文件头带 `Do not edit directly` 标记。要改逻辑请改 `lib/`，然后重新构建。
 
 ### 标准流程

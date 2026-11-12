@@ -173,6 +173,24 @@
       "version": "1.0.0",
       "author": "HYJ1817",
       "url": "https://hyj1817.github.io/fw-modules/widgets/jable.js"
+    },
+    {
+      "id": "hyj1817.huangguo.resource",
+      "title": "黄果短剧 播放源",
+      "description": "黄果短剧 HLS/MP4 播放线路；默认线路与 HEVC 线路，播放前校验 CDN 鉴权头",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/huangguo-resource.js"
+    },
+    {
+      "id": "hyj1817.huangguo.home",
+      "title": "黄果短剧",
+      "description": "黄果短剧首页推荐、最近上新、排行榜、分类、专题、搜索与分集",
+      "requiredVersion": "0.0.2",
+      "version": "1.0.0",
+      "author": "HYJ1817",
+      "url": "https://hyj1817.github.io/fw-modules/widgets/huangguo.js"
     }
   ]
 }
