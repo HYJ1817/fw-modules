@@ -183,6 +183,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | Jable 播放源 | 资源 | `widgets/jable-resource.js` | 解析详情页 `hlsUrl`，片源不校验 UA |
 | 黄果短剧 | 首页 | `widgets/huangguo.js` | 首页推荐、最近上新、排行榜、分类、专题、搜索与分集 |
 | 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
+| SupJav 新版 | 首页 + 资源 | `widgets/supjav-webox.js` | WeBox 插件移植：多镜像、语言目录、embed 接口探测、packer 解包、广告过滤 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
 > 与 turbonewvid（域名已失效）对应的分类不收录，硬加只会得到点进去播不了的条目。
@@ -212,9 +213,14 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
 | `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
-| `huangguo-resource.js` | 1.0.1 | | |
+| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.0 |
 
 ### 最近变更
+
+- **新增 `supjav-webox.js` 1.0.0**：把 WeBox 的 SupJav 插件（`blog.supjav.webox` 1.0.2）移植成 Forward 模块。
+  不重写上游逻辑，只补一层运行时桥接（`ctx.*` → `Widget.*`），上游原文逐字放在 `lib/vendor/`，
+  由 `npm run build:supjav-webox` 拼接。比现有的 `user.supjav` 多了多镜像、语言目录、
+  embed 接口自动探测、packer 解包与广告过滤，实测最新 / 分类 / 搜索 / 详情 / master.m3u8 全通。
 
 - **`fw-rex-4.fwd` 改名「FW 四合一（第三方）」**：四合一子集一直「添加失败：模块信息校验失败」，真因不是模块字段，
   而是清单标题里的独立单词 `Rex` 触发了客户端的违规字样过滤（只查清单 JSON 的 title / 条目的 title、
@@ -385,15 +391,17 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/huangguo-resou
 lib/maccms.js                 苹果CMS 适配层（源码，不直接分发）
 lib/entries/*.js              入口层（WidgetMetadata + 导出函数）
 lib/huangguo.js               黄果短剧适配层（加密会话、解析、播放线路）
+lib/vendor/*.js               第三方上游原文（逐字保留，不直接分发）
 scripts/build-maccms.js       把适配层内联进入口层 → widgets/
 scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
+scripts/build-supjav-webox.js 桥接层 + 上游 WeBox 原文 → widgets/supjav-webox.js
 scripts/build-fw-all.js       聚合总模块（改内联源码或路由时记得 bump 其中的 version）
 scripts/generate-index.js     生成订阅清单（三份主清单 + 两站子集 + fw-modules.json）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
 
-`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js` 是**生成物**，
+`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js`、`widgets/supjav-webox.js` 是**生成物**，
 文件头带 `Do not edit directly` 标记。要改逻辑请改 `lib/`，然后重新构建。
 
 ### 标准流程
@@ -446,6 +454,8 @@ npm run test:xchina:home:live
 npm run test:xchina:resource:live
 npm run test:jable:home:live
 npm run test:jable:resource:live
+npm run test:huangguo:live
+npm run test:supjav-webox:live     # 需要 npm i（jsdom + jquery）
 ```
 
 > XChina 有 CF 限流：突发请求会被拦成 403 `Just a moment...`，
