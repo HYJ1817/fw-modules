@@ -213,9 +213,13 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
 | `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
-| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.1 |
+| `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 
 ### 最近变更
+
+- **`supjav-webox.js` 1.0.2**：起播与拖动。master 只有一路变体时直接下发变体地址（本站实际只有 480p 一路），
+  省掉播放器启动时的一次往返；站点偶发超时自动重试一次。实测母带 → 变体 → 分片链路：master 1.6s、变体 1.1s、
+  中段分片（模拟拖动）2.8s，其中绝大部分是往返时延而非带宽。
 
 - **`supjav-webox.js` 1.0.1**：起播优化。详情与播放解析各自加了内存缓存（详情 30 分钟、线路 10 分钟），
   打开详情后用零延时预取首集线路，点多线路时并发测首字节并按快慢排序。实测同一部片：线路解析 5.2s → 6ms，

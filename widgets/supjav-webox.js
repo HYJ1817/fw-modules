@@ -22,7 +22,7 @@ WidgetMetadata = {
   author: "HYJ1817",
   icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
   site: "https://supjav.blog",
-  version: "1.0.1",
+  version: "1.0.2",
   requiredVersion: "0.0.2",
   detailCacheDuration: 30,
   globalParams: [
@@ -302,6 +302,53 @@ function fwCacheSet(key, value, ttlMs) {
   FWV_MEM_CACHE[key] = { value: value, expires: Date.now() + ttlMs };
   return value;
 }
+/** 站点偶发超时/拒绝，重试一次能省掉用户手动再来一遍 */
+async function fwWithRetry(task, attempts) {
+  var lastError = null;
+  for (var i = 0; i < (attempts || 2); i++) {
+    try {
+      return await task();
+    } catch (error) {
+      lastError = error;
+      var code = String((error && error.code) || "");
+      if (code && code !== "NETWORK" && code !== "TIMEOUT" && code !== "RATE_LIMITED") throw error;
+      if (i + 1 < (attempts || 2)) await new Promise(function (resolve) { setTimeout(resolve, 800); });
+    }
+  }
+  throw lastError;
+}
+
+/** master 只有一路变体时直接下发它：省掉播放器启动时的一次往返（本站实际只有 480p 一路） */
+async function fwUnwrapSingleVariant(sources) {
+  var output = [];
+  for (var i = 0; i < sources.length; i++) {
+    var source = sources[i];
+    if (!/\.m3u8|\/m\//i.test(source.url) && !/mpegurl/i.test(String(source.description || ""))) {
+      output.push(source);
+      continue;
+    }
+    try {
+      var response = await Widget.http.get(source.url, { headers: source.customHeaders || {}, timeout: 4000 });
+      var text = fwPayload(response);
+      var variants = String(text).split(/\r?\n/).filter(function (line) {
+        return /^https?:\/\//.test(line.trim());
+      });
+      var infos = String(text).match(/#EXT-X-STREAM-INF:[^\n]*/g) || [];
+      if (infos.length === 1 && variants.length === 1) {
+        var copy = {};
+        for (var key in source) if (Object.prototype.hasOwnProperty.call(source, key)) copy[key] = source[key];
+        copy.url = variants[0].trim();
+        var name = /NAME="([^"]+)"/.exec(infos[0]);
+        if (name) copy.description = (copy.description || "HLS") + " · " + name[1];
+        output.push(copy);
+        continue;
+      }
+    } catch (_) {}
+    output.push(source);
+  }
+  return output;
+}
+
 /** 并发探测各线路首字节耗时；只有一条线路时不测，省掉这段时间 */
 async function fwProbeSources(sources) {
   if (sources.length < 2) return sources;
@@ -437,7 +484,9 @@ async function loadDetail(input) {
   var cached = fwCacheGet(cacheKey);
   if (cached) return cached;
   try {
-    var detail = await SUPJAV_PLUGIN.detail(ctx, { id: parsed.contentId });
+    var detail = await fwWithRetry(function () {
+      return SUPJAV_PLUGIN.detail(ctx, { id: parsed.contentId });
+    }, 2);
     if (!detail || !detail.groups || !detail.groups.length) return null;
     var title = detail.title || parsed.contentId;
     var episodeItems = [], index = 0;
@@ -501,11 +550,13 @@ async function loadResource(params) {
   var cached = fwCacheGet(cacheKey);
   if (cached) return cached;
   try {
-    var result = await SUPJAV_PLUGIN.play(ctx, {
-      contentId: parsed.contentId,
-      groupId: parsed.groupId,
-      episodeId: parsed.episodeId,
-    });
+    var result = await fwWithRetry(function () {
+      return SUPJAV_PLUGIN.play(ctx, {
+        contentId: parsed.contentId,
+        groupId: parsed.groupId,
+        episodeId: parsed.episodeId,
+      });
+    }, 2);
     var sources = (result && result.sources) || [], output = [];
     for (var i = 0; i < sources.length; i++) {
       var source = sources[i];
@@ -522,7 +573,8 @@ async function loadResource(params) {
       });
     }
     if (!output.length) console.log("FW supjav-webox 没有解析到可播放线路");
-    return fwCacheSet(cacheKey, await fwProbeSources(output), 10 * 60 * 1000);
+    var unwrapped = await fwUnwrapSingleVariant(output);
+    return fwCacheSet(cacheKey, await fwProbeSources(unwrapped), 10 * 60 * 1000);
   } catch (error) {
     console.log("FW supjav-webox 播放失败: " + ((error && error.message) || error));
     return [];
