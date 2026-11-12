@@ -148,10 +148,14 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.1 |
+| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.2 |
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`huangguo.js` 1.0.2**：分类修复。站点把「AI 换脸」「AI 魔改」两个栏目下线了（接口回 410），
+  从枚举里移除并给死栏目明确提示；分类参数现在同时认 value 和标题（短剧 / 漫剧 / AI换脸）；
+  公开接口偶发 5xx / 超时自动重试一次（实测 502 重试后恢复 30 条）。
 
 - **组件 URL 锁定 commit sha**：jsdelivr 对 `@main` 的滚动缓存会把旧组件压住数小时
   （one.js、girigiri 都中过招，`purge` 也不一定生效）。清单里的组件地址改为

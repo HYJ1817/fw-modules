@@ -445,10 +445,22 @@ function hgBusiness(json) {
 
 /* ============================== 公开接口 ============================== */
 
-async function hgPublic(ctx, path) {
-  var response = await hgRequest(ctx, "POST", "/api/public/request",
-    { method: "GET", path: path, body: "", content_type: "" }, { "X-HG-Public-JSON": "1" });
-  return hgBusiness(response.json);
+function hgRetryable(message) {
+  return /HTTP 5\d\d|超时|无法连接站点/.test(String(message || ""));
+}
+async function hgPublic(ctx, path, attempt) {
+  // 站点前置了 CloudFront，偶发 5xx / 超时；重试一次能省掉用户手动刷新
+  try {
+    var response = await hgRequest(ctx, "POST", "/api/public/request",
+      { method: "GET", path: path, body: "", content_type: "" }, { "X-HG-Public-JSON": "1" });
+    return hgBusiness(response.json);
+  } catch (error) {
+    if ((attempt || 0) < 1 && hgRetryable(error && error.message)) {
+      await new Promise(function (resolve) { setTimeout(resolve, 900); });
+      return hgPublic(ctx, path, 1);
+    }
+    throw error;
+  }
 }
 async function hgHtml(ctx, path) {
   var response = await hgRequest(ctx, "GET", path, null, { Accept: "text/html,application/xhtml+xml,*/*" });
