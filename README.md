@@ -148,10 +148,15 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.2 |
+| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.3 |
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`huangguo.js` 1.0.3**：专题全量内置（`/api/topics` 实测 11 个：精品高分 / 家庭伦理 / 灵异诡事 /
+  校园青春 / 末世重生 / 百合 / 乡村 / 古风 / 仙侠 / 男同 / 欧美），不再手填 slug；专题接口的影片列表
+  在 `videos.{items,pagination}` 里（之前直接把外层传给解析器，永远返回空）；slug 放行站点自带的
+  长破折号（`xiaoyuan—qingcun`）；业务层偶发失败也重试（实测两轮 11/11 全通，漫剧 30 条）。
 
 - **`huangguo.js` 1.0.2**：分类修复。站点把「AI 换脸」「AI 魔改」两个栏目下线了（接口回 410），
   从枚举里移除并给死栏目明确提示；分类参数现在同时认 value 和标题（短剧 / 漫剧 / AI换脸）；

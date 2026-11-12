@@ -446,7 +446,9 @@ function hgBusiness(json) {
 /* ============================== 公开接口 ============================== */
 
 function hgRetryable(message) {
-  return /HTTP 5\d\d|超时|无法连接站点/.test(String(message || ""));
+  message = String(message || "");
+  if (/拒绝访问|限制访问|Cookie|不存在|已下线|请重新/.test(message)) return false;
+  return /HTTP 5\d\d|超时|无法连接站点|失败|繁忙|稍后/.test(message);
 }
 async function hgPublic(ctx, path, attempt) {
   // 站点前置了 CloudFront，偶发 5xx / 超时；重试一次能省掉用户手动刷新
@@ -455,9 +457,9 @@ async function hgPublic(ctx, path, attempt) {
       { method: "GET", path: path, body: "", content_type: "" }, { "X-HG-Public-JSON": "1" });
     return hgBusiness(response.json);
   } catch (error) {
-    if ((attempt || 0) < 1 && hgRetryable(error && error.message)) {
-      await new Promise(function (resolve) { setTimeout(resolve, 900); });
-      return hgPublic(ctx, path, 1);
+    if ((attempt || 0) < 2 && hgRetryable(error && error.message)) {
+      await new Promise(function (resolve) { setTimeout(resolve, 600 + 600 * (attempt || 0)); });
+      return hgPublic(ctx, path, (attempt || 0) + 1);
     }
     throw error;
   }

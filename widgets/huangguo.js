@@ -446,7 +446,9 @@ function hgBusiness(json) {
 /* ============================== 公开接口 ============================== */
 
 function hgRetryable(message) {
-  return /HTTP 5\d\d|超时|无法连接站点/.test(String(message || ""));
+  message = String(message || "");
+  if (/拒绝访问|限制访问|Cookie|不存在|已下线|请重新/.test(message)) return false;
+  return /HTTP 5\d\d|超时|无法连接站点|失败|繁忙|稍后/.test(message);
 }
 async function hgPublic(ctx, path, attempt) {
   // 站点前置了 CloudFront，偶发 5xx / 超时；重试一次能省掉用户手动刷新
@@ -455,9 +457,9 @@ async function hgPublic(ctx, path, attempt) {
       { method: "GET", path: path, body: "", content_type: "" }, { "X-HG-Public-JSON": "1" });
     return hgBusiness(response.json);
   } catch (error) {
-    if ((attempt || 0) < 1 && hgRetryable(error && error.message)) {
-      await new Promise(function (resolve) { setTimeout(resolve, 900); });
-      return hgPublic(ctx, path, 1);
+    if ((attempt || 0) < 2 && hgRetryable(error && error.message)) {
+      await new Promise(function (resolve) { setTimeout(resolve, 600 + 600 * (attempt || 0)); });
+      return hgPublic(ctx, path, (attempt || 0) + 1);
     }
     throw error;
   }
@@ -748,13 +750,28 @@ var HG_CATEGORIES = [
   { title: "自定义栏目", value: "custom" },
 ];
 /* 站点目录接口仍挂着但接口回 410「内容已下线」的栏目，选了只会看到失败提示 */
+/* 站点 /api/topics 实测的专题全量（2026-11-13，11 个）；站点加新专题时用「自定义」填 slug */
+var HG_TOPICS = [
+  { title: "精品高分", value: "hot-aiduanju" },
+  { title: "家庭伦理", value: "luanlun-aiduanju" },
+  { title: "灵异诡事", value: "paranormal-aiduanju" },
+  { title: "校园青春", value: "xiaoyuan—qingcun" },
+  { title: "末世重生成人", value: "AImori-chongsheng" },
+  { title: "百合女同", value: "baihe-nvtong" },
+  { title: "乡村AI成人", value: "xiangcun-AIchengren" },
+  { title: "古风穿越", value: "gufen-wuxiachuanyue" },
+  { title: "仙侠奇幻", value: "xianxia-qihuanyaoxiai" },
+  { title: "天菜男同", value: "tiancai-nantong" },
+  { title: "欧美精选", value: "oumei-duanju" },
+  { title: "自定义专题", value: "custom" },
+];
 var HG_DEAD_ROUTES = { "ai-huanlian": true, "ai-mogai": true };
 
 WidgetMetadata = {
   id: "hyj1817.huangguo.home",
   title: "黄果短剧",
   icon: "https://huangguoai.com/apple-touch-icon.png",
-  version: "1.0.2",
+  version: "1.0.3",
   requiredVersion: "0.0.2",
   description: "黄果短剧首页推荐、最近上新、排行榜、分类、专题、搜索与分集",
   author: "HYJ1817",
@@ -844,7 +861,14 @@ WidgetMetadata = {
       type: "video",
       cacheDuration: 1800,
       params: [
-        { name: "slug", title: "专题标识", type: "input", description: "站点专题地址尾段，如 nveru" },
+        {
+          name: "slug",
+          title: "专题",
+          type: "enumeration",
+          value: "hot-aiduanju",
+          enumOptions: HG_TOPICS,
+        },
+        { name: "custom", title: "自定义专题 slug", type: "input", description: "专题选「自定义」时生效" },
         { name: "page", title: "页码", type: "page", value: "1" },
       ],
     },
@@ -931,10 +955,15 @@ async function loadCategory(params) {
 
 async function loadTopic(params) {
   var ctx = hgHomeCtx(params);
-  var slug = hgText(params && params.slug, 200);
-  if (!/^[A-Za-z0-9_-]{1,200}$/.test(slug)) return hgNotice("请先填写专题标识", ctx);
+  var slug = String((params && params.slug) || "").trim();
+  if (slug === "custom") slug = hgText(params && params.custom, 200);
+  if (!slug) return hgNotice("请先选择专题或填写自定义 slug", ctx);
+  // 站点自己的 slug 里就有长破折号（xiaoyuan—qingcun），不能按纯 ASCII 校验
+  if (!/^[^\u0000-\u001f\u007f]{1,200}$/.test(slug)) return hgNotice("专题 slug 无效", ctx);
   try {
-    return hgVideoPage(ctx, await hgPublic(ctx, hgQuery("/api/topics/" + encodeURIComponent(slug), { page: hgPageOf(params), size: 30 })));
+    var value = await hgPublic(ctx, hgQuery("/api/topics/" + encodeURIComponent(slug), { page: hgPageOf(params), size: 30 }));
+    // 专题接口的影片列表在 value.videos.{items,pagination} 里
+    return hgVideoPage(ctx, (value && value.videos) || value);
   } catch (error) {
     hgLog("专题 " + slug + " 失败 - " + ((error && error.message) || error));
     return hgNotice("专题「" + slug + "」加载失败：" + ((error && error.message) || "未知错误"), ctx);
