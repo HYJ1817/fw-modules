@@ -135,7 +135,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 文件 | 版本 | 文件 | 版本 |
 | --- | --- | --- | --- |
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
-| `girigiri.js` | 1.0.0 | | |
+| `girigiri.js` | 1.0.1 | | |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
@@ -148,6 +148,10 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 
 ### 最近变更
+
+- **`girigiri.js` 1.0.1**：补 `atob` / `TextDecoder` 兜底。Forward 的 widget 运行时没有保证提供这两个，
+  上游插件解码 `encrypt=2` 的播放地址时两者都用，缺了就报「播放地址编码无效」。修完后实测：
+  首页 92 条、详情 9 集、线路解析出 `akua.girigirilove.com` 的 m3u8 且 200。
 
 - **新增 `girigiri.js` 1.0.0**：动漫站 `anime.girigirilove.icu` 的 WeBox 插件移植，放进「里番」分组。
   站点是普通 HTML + `player_aaaa` 脚本，没有加密通道或媒体改写，所以只需要桥接层；

@@ -22,7 +22,7 @@ WidgetMetadata = {
   author: "HYJ1817",
   icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
   site: "https://anime.girigirilove.icu",
-  version: "1.0.0",
+  version: "1.0.1",
   requiredVersion: "0.0.2",
   detailCacheDuration: 60,
   globalParams: [
@@ -76,6 +76,42 @@ WidgetMetadata = {
 };
 
 /* ============================ 运行时桥接 ============================ */
+
+/* ============================ 运行时兜底 ============================ */
+/* Forward 的 widget 运行时没有保证提供 atob / TextDecoder（4kvm 的单测里就断言过没有 TextEncoder）。
+ * 上游插件解码播放地址时两者都用，所以这里补一份等价实现，有原生就用原生。 */
+function ggAtob(value) {
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var text = String(value || "").replace(/[^A-Za-z0-9+/=]/g, "").replace(/=+$/, "");
+  var out = "", buffer = 0, bits = 0, i, index;
+  for (i = 0; i < text.length; i++) {
+    index = chars.indexOf(text.charAt(i));
+    if (index < 0) throw new Error("invalid base64");
+    buffer = ((buffer << 6) | index) & 0xffffff;
+    bits += 6;
+    if (bits >= 8) { bits -= 8; out += String.fromCharCode((buffer >> bits) & 255); }
+  }
+  return out;
+}
+function ggTextDecoder() {
+  this.decode = function (bytes) {
+    var input = bytes || [], out = "", i = 0, code;
+    while (i < input.length) {
+      var b = input[i++];
+      if (b < 0x80) code = b;
+      else if (b >= 0xf0) code = ((b & 7) << 18) | ((input[i++] & 63) << 12) | ((input[i++] & 63) << 6) | (input[i++] & 63);
+      else if (b >= 0xe0) code = ((b & 15) << 12) | ((input[i++] & 63) << 6) | (input[i++] & 63);
+      else code = ((b & 31) << 6) | (input[i++] & 63);
+      if (code > 0xffff) {
+        code -= 0x10000;
+        out += String.fromCharCode(0xd800 + (code >> 10), 0xdc00 + (code & 1023));
+      } else out += String.fromCharCode(code);
+    }
+    return out;
+  };
+}
+var atob = (typeof globalThis !== "undefined" && typeof globalThis.atob === "function") ? globalThis.atob : ggAtob;
+var TextDecoder = (typeof globalThis !== "undefined" && typeof globalThis.TextDecoder === "function") ? globalThis.TextDecoder : ggTextDecoder;
 
 function ggOrigin(url) {
   var match = /^(https?):\/\/([^/?#]+)/i.exec(String(url || ""));

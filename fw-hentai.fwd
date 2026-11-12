@@ -86,7 +86,7 @@
       "title": "girigiri 动漫",
       "description": "girigiri 动漫首页、日番、搜索、详情与分集（WeBox 插件移植）",
       "requiredVersion": "0.0.2",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "HYJ1817",
       "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/girigiri.js"
     }
