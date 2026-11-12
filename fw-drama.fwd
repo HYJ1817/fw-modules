@@ -1,16 +1,16 @@
 {
   "title": "短剧",
   "description": "黄果短剧的首页与播放源（2 个组件）",
-  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/icon.png",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/icon.png",
   "widgets": [
     {
       "id": "hyj1817.huangguo.home",
       "title": "黄果短剧",
       "description": "黄果短剧首页推荐、最近上新、排行榜、分类、专题、搜索与分集",
       "requiredVersion": "0.0.2",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/huangguo.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/huangguo.js"
     },
     {
       "id": "hyj1817.huangguo.resource",
@@ -19,7 +19,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.1",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/huangguo-resource.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/huangguo-resource.js"
     }
   ]
 }

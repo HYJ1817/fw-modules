@@ -1,7 +1,7 @@
 {
   "title": "里番",
   "description": "Hentaimama / HStream / YinHentai / Hanime / girigiri 动漫的首页与播放源（9 个组件）",
-  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/icon.png",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/icon.png",
   "widgets": [
     {
       "id": "hyj1817.hentaimama.home",
@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.2.0",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hentaimama.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hentaimama.js"
     },
     {
       "id": "hyj1817.hentaimama.resource",
@@ -19,7 +19,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.3.1",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hentaimama-resource.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hentaimama-resource.js"
     },
     {
       "id": "hyj1817.hstream.home",
@@ -28,7 +28,7 @@
       "requiredVersion": "0.0.1",
       "version": "2.1.1",
       "author": "hstream",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hstream.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hstream.js",
       "type": "url"
     },
     {
@@ -38,7 +38,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "hstream",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hstream-resource.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hstream-resource.js",
       "type": "url"
     },
     {
@@ -48,7 +48,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/yinhentai.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/yinhentai.js",
       "type": "url"
     },
     {
@@ -58,7 +58,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.2.0",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/yinhentai-resource.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/yinhentai-resource.js",
       "type": "url"
     },
     {
@@ -68,7 +68,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hanime.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hanime.js",
       "type": "url"
     },
     {
@@ -78,7 +78,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/hanime-resource.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/hanime-resource.js",
       "type": "url"
     },
     {
@@ -88,7 +88,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.1",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@a435eaa/widgets/girigiri.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@3a4fef6/widgets/girigiri.js"
     }
   ]
 }
