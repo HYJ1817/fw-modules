@@ -5,6 +5,8 @@ WidgetMetadata = {
   title: "GetAV",
   description: "GetAV 最新、热门、字幕、无码、4K 列表和番号搜索",
   author: "Tiamo",
+  icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  site: "https://getav.net",
   version: "0.5.0",
   requiredVersion: "0.0.1",
   detailCacheDuration: 30,

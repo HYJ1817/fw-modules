@@ -12,6 +12,8 @@ WidgetMetadata = {
   title: "Perverzija Tube",
   description: "tube.perverzija.com 列表、片商、标签、搜索与 XtremeStream 播放源",
   author: "Tiamo",
+  icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  site: "https://tube.perverzija.com",
   version: "1.2.0",
   requiredVersion: "0.0.1",
   detailCacheDuration: 30,

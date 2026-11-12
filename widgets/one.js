@@ -3,6 +3,8 @@ WidgetMetadata = {
   title: "ONE一个",
   description: "ONE 一个 · 影视类内容（直连官方接口，游客 token 自动获取）",
   author: "YG",
+  icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  site: "https://wufazhuce.com",
   version: "2.2.0",
   requiredVersion: "0.0.1",
   detailCacheDuration: 30,

@@ -13,6 +13,8 @@ WidgetMetadata = {
   title: "SupJav",
   description: "supjav.blog 列表、分类、搜索与 upload18 HLS 播放源",
   author: "Tiamo",
+  icon: "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/icon.png",
+  site: "https://supjav.blog",
   version: "1.3.0",
   requiredVersion: "0.0.1",
   detailCacheDuration: 30,
