@@ -144,7 +144,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
 | `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
-| `missav.js` | 1.2.0 | `missav-resource.js` | 1.2.1 |
+| `missav.js` | 1.2.1 | `missav-resource.js` | 1.2.1 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
@@ -153,6 +153,8 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 
 ### 最近变更
 
+- **`missav.js` 1.2.1**：女优排行改列表式。之前给条目带了头像，宿主按竖版影片卡渲染，一屏只能塞三张脸；
+  现在不给封面，宿主按无海报条目排成紧凑列表；点进去仍是该女优的影片列表，每部片一集。
 - **`missav.js` 1.2.0**：新增「女优排行 TOP50」模块。排行名次、女优链接与头像直接内置
   （2026-11 从 `/actresses/ranking` 抓的前 50 名），点进去是一个人一页的影片列表，每部片作为一集，
   播放走同一条 missav 播放源；不依赖排行页实时抓取，也不受 CF 挑战影响。

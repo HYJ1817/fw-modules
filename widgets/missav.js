@@ -98,7 +98,7 @@ var WidgetMetadata = {
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.2.0",
+    version: "1.2.1",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
     globalParams: [
@@ -1115,16 +1115,16 @@ function buildStreamHeaders(pageLink) {
 function loadActressRanking(params = {}) {
     const page = parseInt(params.page) || 1;
     if (page > 1) return [];   // 榜单只有 50 位，不做翻页
+    // 列表式：不给封面，宿主就会按「无海报条目」排成紧凑的列表，
+    // 而不是一屏三张撕不开的竖版头像卡。
     return MISSAAV_ACTRESSES.map(function (item, index) {
         return {
             id: MISSAAV_ACTRESS_PREFIX + item.name,
             type: "video",
-            title: (index + 1) + ". " + item.name,
+            title: item.name,
             seriesName: item.name,
             mediaType: "tv",
-            posterPath: item.img,
-            backdropPath: item.img,
-            description: "第 " + (index + 1) + " 名",
+            description: "第 " + (index + 1) + " 名 · 点开看她的影片",
             link: MISSAAV_ACTRESS_PREFIX + item.name
         };
     });

@@ -20,9 +20,10 @@ function load(responses){
   const w=load({});
   const list=w.loadActressRanking({page:"1"});
   assert.strictEqual(list.length,50,"应内置 50 位女优");
-  assert.strictEqual(list[0].title,"1. 瀬戶環奈");
+  assert.strictEqual(list[0].title,"瀬戶環奈");
+  assert.ok(!list[0].posterPath,"列表式不应再带封面");
   assert.ok(list.every(x=>/^missavactress:/.test(x.link)));
-  assert.ok(list.every(x=>/^https:\/\/fourhoi\.com\/actress\//.test(x.posterPath)));
+  
   assert.strictEqual(w.loadActressRanking({page:"2"}).length,0,"榜单不翻页");
 
   const name=list[0].seriesName;
