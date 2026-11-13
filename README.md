@@ -144,7 +144,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
 | `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
-| `missav.js` | 1.1.0 | `missav-resource.js` | 1.2.1 |
+| `missav.js` | 1.2.0 | `missav-resource.js` | 1.2.1 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
@@ -152,6 +152,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`missav.js` 1.2.0**：新增「女优排行 TOP50」模块。排行名次、女优链接与头像直接内置
+  （2026-11 从 `/actresses/ranking` 抓的前 50 名），点进去是一个人一页的影片列表，每部片作为一集，
+  播放走同一条 missav 播放源；不依赖排行页实时抓取，也不受 CF 挑战影响。
+  `npm run test:missav-actress` 覆盖榜单结构与女优页解析。
 
 - **`missav.js` 1.1.0 / `missav-resource.js` 1.2.1**：站点可切。MissAV 换域名是常态
   （`missav.fans` / `missav.ws` / `missav.live` 共用同一套 `/dm{id}/cn/...` 路径，实测 ws 会把 dm265

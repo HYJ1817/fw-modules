@@ -11,6 +11,70 @@ function missavSite(params) {
 function missavRehost(url) {
     return String(url || "").replace(/^https?:\/\/(?:missav\.(?:fans|ws|live|123|tv))/i, MISSAV_SITE);
 }
+/* 女优排行 TOP50（2026-11 实测 /actresses/ranking，名次、链接与头像一并内置，不依赖排行页实时抓取） */
+var MISSAAV_ACTRESSES = [
+    { name: "瀬戶環奈", href: "/dm24/actresses/%E7%80%AC%E6%88%B8%E7%92%B0%E5%A5%88", img: "https://fourhoi.com/actress/1099472-t.jpg" },
+    { name: "松本一香", href: "/dm389/actresses/%E6%9D%BE%E6%9C%AC%E3%81%84%E3%81%A1%E3%81%8B", img: "https://fourhoi.com/actress/1054998-t.jpg" },
+    { name: "逢澤みゆ", href: "/dm3/actresses/%E9%80%A2%E6%B2%A2%E3%81%BF%E3%82%86", img: "https://fourhoi.com/actress/1088602-t.jpg" },
+    { name: "河北彩花", href: "/dm565/actresses/%E6%B2%B3%E5%8C%97%E5%BD%A9%E8%8A%B1", img: "https://fourhoi.com/actress/1044864-t.jpg" },
+    { name: "美園和花", href: "/dm178/actresses/%E7%BE%8E%E5%9C%92%E5%92%8C%E8%8A%B1", img: "https://fourhoi.com/actress/1044099-t.jpg" },
+    { name: "波多野結衣", href: "/dm289/actresses/%E6%B3%A2%E5%A4%9A%E9%87%8E%E7%B5%90%E8%A1%A3", img: "https://fourhoi.com/actress/26225-t.jpg" },
+    { name: "北岡果林", href: "/dm5/actresses/%E5%8C%97%E5%B2%A1%E6%9E%9C%E6%9E%97", img: "https://fourhoi.com/actress/1092427-t.jpg" },
+    { name: "倉本すみれ", href: "/dm100/actresses/%E5%80%89%E6%9C%AC%E3%81%99%E3%81%BF%E3%82%8C", img: "https://fourhoi.com/actress/1072360-t.jpg" },
+    { name: "彌生美月", href: "/dm126/actresses/%E5%BC%A5%E7%94%9F%E3%81%BF%E3%81%A5%E3%81%8D", img: "https://fourhoi.com/actress/1054168-t.jpg" },
+    { name: "木下日葵", href: "/dm248/actresses/%E6%9C%A8%E4%B8%8B%E3%81%B2%E3%81%BE%E3%82%8A", img: "https://fourhoi.com/actress/1060141-t.jpg" },
+    { name: "森澤佳奈 (飯岡佳奈子)", href: "/dm195/actresses/%E6%A3%AE%E6%B2%A2%E3%81%8B%E3%81%AA%EF%BC%88%E9%A3%AF%E5%B2%A1%E3%81%8B%E3%81%AA%E3%81%93%EF%BC%89", img: "https://fourhoi.com/actress/1020685-t.jpg" },
+    { name: "鷲尾芽衣", href: "/dm117/actresses/%E9%B7%B2%E5%B0%BE%E3%82%81%E3%81%84", img: "https://fourhoi.com/actress/1060824-t.jpg" },
+    { name: "篠田優", href: "/dm352/actresses/%E7%AF%A0%E7%94%B0%E3%82%86%E3%81%86", img: "https://fourhoi.com/actress/1008785-t.jpg" },
+    { name: "沙月惠奈", href: "/dm710/actresses/%E6%B2%99%E6%9C%88%E6%81%B5%E5%A5%88", img: "https://fourhoi.com/actress/1064143-t.jpg" },
+    { name: "miru", href: "/dm89/actresses/miru", img: "https://fourhoi.com/actress/1069632-t.jpg" },
+    { name: "夢乃愛佳", href: "/dm114/actresses/%E5%A4%A2%E4%B9%83%E3%81%82%E3%81%84%E3%81%8B", img: "https://fourhoi.com/actress/1019323-t.jpg" },
+    { name: "三上悠亞", href: "/dm218/actresses/%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C", img: "https://fourhoi.com/actress/1030262-t.jpg" },
+    { name: "石原希望", href: "/dm44/actresses/%E7%9F%B3%E5%8E%9F%E5%B8%8C%E6%9C%9B", img: "https://fourhoi.com/actress/1061063-t.jpg" },
+    { name: "森日向子", href: "/dm129/actresses/%E6%A3%AE%E6%97%A5%E5%90%91%E5%AD%90", img: "https://fourhoi.com/actress/1061586-t.jpg" },
+    { name: "柏木こなつ", href: "/dm57/actresses/%E6%9F%8F%E6%9C%A8%E3%81%93%E3%81%AA%E3%81%A4", img: "https://fourhoi.com/actress/1075302-t.jpg" },
+    { name: "石川澪", href: "/dm74/actresses/%E7%9F%B3%E5%B7%9D%E6%BE%AA", img: "https://fourhoi.com/actress/1072127-t.jpg" },
+    { name: "小宵虎南", href: "/dm83/actresses/%E5%B0%8F%E5%AE%B5%E3%81%93%E3%81%AA%E3%82%93", img: "https://fourhoi.com/actress/1069330-t.jpg" },
+    { name: "清原みゆう", href: "/dm30/actresses/%E6%B8%85%E5%8E%9F%E3%81%BF%E3%82%86%E3%81%86", img: "https://fourhoi.com/actress/1084111-t.jpg" },
+    { name: "神宮寺奈緒", href: "/dm160/actresses/%E7%A5%9E%E5%AE%AE%E5%AF%BA%E3%83%8A%E3%82%AA", img: "https://fourhoi.com/actress/1041897-t.jpg" },
+    { name: "北野未奈", href: "/dm115/actresses/%E5%8C%97%E9%87%8E%E6%9C%AA%E5%A5%88", img: "https://fourhoi.com/actress/1068671-t.jpg" },
+    { name: "川越にこ", href: "/dm2/actresses/%E5%B7%9D%E8%B6%8A%E3%81%AB%E3%81%93", img: "https://fourhoi.com/actress/1084346-t.jpg" },
+    { name: "楓ふうあ", href: "/dm64/actresses/%E6%A5%93%E3%81%B5%E3%81%86%E3%81%82", img: "https://fourhoi.com/actress/1071155-t.jpg" },
+    { name: "皆月光", href: "/dm84/actresses/%E7%9A%86%E6%9C%88%E3%81%B2%E3%81%8B%E3%82%8B", img: "https://fourhoi.com/actress/1046723-t.jpg" },
+    { name: "七森莉莉", href: "/dm131/actresses/%E4%B8%83%E3%83%84%E6%A3%AE%E3%82%8A%E3%82%8A", img: "https://fourhoi.com/actress/1063214-t.jpg" },
+    { name: "東條夏", href: "/dm65/actresses/%E6%9D%B1%E6%A2%9D%E3%81%AA%E3%81%A4", img: "https://fourhoi.com/actress/1059080-t.jpg" },
+    { name: "吉根柚莉愛", href: "/dm163/actresses/%E5%90%89%E6%A0%B9%E3%82%86%E3%82%8A%E3%81%82", img: "https://fourhoi.com/actress/1052930-t.jpg" },
+    { name: "新井リマ", href: "/dm68/actresses/%E6%96%B0%E4%BA%95%E3%83%AA%E3%83%9E", img: "https://fourhoi.com/actress/1069952-t.jpg" },
+    { name: "奧田咲", href: "/dm95/actresses/%E5%A5%A5%E7%94%B0%E5%92%B2", img: "https://fourhoi.com/actress/1008965-t.jpg" },
+    { name: "大槻響", href: "/dm6681/actresses/%E5%A4%A7%E6%A7%BB%E3%81%B2%E3%81%B3%E3%81%8D", img: "https://fourhoi.com/actress/30130-t.jpg" },
+    { name: "花守夏步", href: "/dm5/actresses/%E8%8A%B1%E5%AE%88%E5%A4%8F%E6%AD%A9", img: "https://fourhoi.com/actress/1099813-t.jpg" },
+    { name: "宍戶里帆", href: "/dm33/actresses/%E5%AE%8D%E6%88%B8%E9%87%8C%E5%B8%86", img: "https://fourhoi.com/actress/1075010-t.jpg" },
+    { name: "安達夕莉", href: "/dm28/actresses/%E5%AE%89%E9%81%94%E5%A4%95%E8%8E%89", img: "https://fourhoi.com/actress/1077684-t.jpg" },
+    { name: "淺野こころ", href: "/dm112/actresses/%E6%B5%85%E9%87%8E%E3%81%93%E3%81%93%E3%82%8D", img: "https://fourhoi.com/actress/1086581-t.jpg" },
+    { name: "伊藤舞雪", href: "/dm177/actresses/%E4%BC%8A%E8%97%A4%E8%88%9E%E9%9B%AA", img: "https://fourhoi.com/actress/1042907-t.jpg" },
+    { name: "AIKA", href: "/dm177/actresses/AIKA", img: "https://fourhoi.com/actress/1008887-t.jpg" },
+    { name: "七瀨愛麗絲", href: "/dm163/actresses/%E4%B8%83%E7%80%AC%E3%82%A2%E3%83%AA%E3%82%B9", img: "https://fourhoi.com/actress/1063724-t.jpg" },
+    { name: "椿莉香", href: "/dm36/actresses/%E6%A4%BF%E3%82%8A%E3%81%8B", img: "https://fourhoi.com/actress/1061348-t.jpg" },
+    { name: "幸村泉希", href: "/actresses/%E5%B9%B8%E6%9D%91%E6%B3%89%E5%B8%8C", img: "https://fourhoi.com/actress/1104612-t.jpg" },
+    { name: "月乃露娜", href: "/dm80/actresses/%E6%9C%88%E4%B9%83%E3%83%AB%E3%83%8A", img: "https://fourhoi.com/actress/1050439-t.jpg" },
+    { name: "風間由美", href: "/dm208/actresses/%E9%A2%A8%E9%96%93%E3%82%86%E3%81%BF", img: "https://fourhoi.com/actress/2752-t.jpg" },
+    { name: "羽月乃蒼", href: "/dm83/actresses/%E7%BE%BD%E6%9C%88%E4%B9%83%E8%92%BC", img: "https://fourhoi.com/actress/1084337-t.jpg" },
+    { name: "小花のん", href: "/dm95/actresses/%E5%B0%8F%E8%8A%B1%E3%81%AE%E3%82%93", img: "https://fourhoi.com/actress/1072206-t.jpg" },
+    { name: "末廣純", href: "/dm110/actresses/%E6%9C%AB%E5%BA%83%E7%B4%94", img: "https://fourhoi.com/actress/1075675-t.jpg" },
+    { name: "未步なな", href: "/dm27/actresses/%E6%9C%AA%E6%AD%A9%E3%81%AA%E3%81%AA", img: "https://fourhoi.com/actress/1077071-t.jpg" },
+    { name: "新村晶", href: "/dm51/actresses/%E6%96%B0%E6%9D%91%E3%81%82%E3%81%8B%E3%82%8A", img: "https://fourhoi.com/actress/1036352-t.jpg" },
+];
+var MISSAAV_ACTRESS_PREFIX = "missavactress:";
+function actressByName(input) {
+    var text = String(input || "").replace(/\s+/g, "");
+    if (!text) return null;
+    for (var i = 0; i < MISSAAV_ACTRESSES.length; i++) {
+        var name = MISSAAV_ACTRESSES[i].name.replace(/\s+/g, "");
+        if (name === text || name.indexOf(text) >= 0 || text.indexOf(name) >= 0) return MISSAAV_ACTRESSES[i];
+    }
+    return null;
+}
+
 /* 统一改写请求 URL 与请求头里的站点地址，正文里的硬编码路径因此不用逐条改 */
 (function () {
     var rawGet = Widget.http.get;
@@ -34,7 +98,7 @@ var WidgetMetadata = {
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.1.0",
+    version: "1.2.0",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
     globalParams: [
@@ -54,6 +118,17 @@ var WidgetMetadata = {
     ],
     search: { title: "搜索", functionName: "searchVideos", params: [] },
     modules: [
+        {
+            id: "actresses",
+            title: "女优排行 TOP50",
+            description: "MissAV 月度女优排行前 50 名，点进去是该女优的影片列表",
+            functionName: "loadActressRanking",
+            type: "video",
+            cacheDuration: 3600,
+            params: [
+                { name: "page", title: "页码", type: "page", value: "1" }
+            ]
+        },
         {
             title: "搜索影片",
             description: "搜索 MissAV 影片内容",
@@ -1037,8 +1112,75 @@ function buildStreamHeaders(pageLink) {
     };
 }
 
+function loadActressRanking(params = {}) {
+    const page = parseInt(params.page) || 1;
+    if (page > 1) return [];   // 榜单只有 50 位，不做翻页
+    return MISSAAV_ACTRESSES.map(function (item, index) {
+        return {
+            id: MISSAAV_ACTRESS_PREFIX + item.name,
+            type: "video",
+            title: (index + 1) + ". " + item.name,
+            seriesName: item.name,
+            mediaType: "tv",
+            posterPath: item.img,
+            backdropPath: item.img,
+            description: "第 " + (index + 1) + " 名",
+            link: MISSAAV_ACTRESS_PREFIX + item.name
+        };
+    });
+}
+
+/** 女优页 -> 她的影片列表；每部片作为一集，点开走同一条播放源 */
+async function loadActressDetail(link, params) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
+    const name = String(link || "").slice(MISSAAV_ACTRESS_PREFIX.length);
+    const entry = actressByName(name);
+    if (!entry) return null;
+    const url = MISSAV_SITE + entry.href;
+    const response = await Widget.http.get(url, {
+        headers: {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "Referer": MISSAV_SITE + "/"
+        },
+        allow_redirects: true
+    });
+    const html = response && (typeof response.data === "string" ? response.data : response.body) || "";
+    if (!html || html.includes("Just a moment")) return null;
+    const videos = parseVideoList(html).filter(function (item) { return item && item.type !== "placeholder" && item.link; });
+    if (!videos.length) return null;
+    return {
+        id: link,
+        type: "url",
+        title: entry.name,
+        seriesName: entry.name,
+        mediaType: "tv",
+        posterPath: entry.img,
+        backdropPath: entry.img,
+        description: "共 " + videos.length + " 部（女优页第一页）",
+        episodeItems: videos.map(function (video, index) {
+            return {
+                id: video.link,
+                type: "url",
+                title: video.title,
+                seriesName: entry.name,
+                episodeName: (index + 1) + " · " + video.title,
+                episode: index + 1,
+                mediaType: "tv",
+                posterPath: video.posterPath || entry.img,
+                link: video.link
+            };
+        }),
+        link: link
+    };
+}
+
 async function loadDetail(link) {
     try {
+        if (String(link || "").indexOf(MISSAAV_ACTRESS_PREFIX) === 0) {
+            return await loadActressDetail(link, { site: MISSAV_SITE });
+        }
         var hostMatch = /^https?:\/\/([^/?#]+)/i.exec(String(link || ""));
         if (hostMatch) MISSAV_SITE = "https://" + hostMatch[1].toLowerCase().replace(/^www\./, "");
         const response = await Widget.http.get(link, {
