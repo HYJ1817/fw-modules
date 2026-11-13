@@ -144,7 +144,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
 | `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
-| `missav.js` | 1.0.4 | `missav-resource.js` | 1.1.0 |
+| `missav.js` | 1.0.4 | `missav-resource.js` | 1.2.0 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
@@ -152,6 +152,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`missav-resource.js` 1.2.0**：起播优化。原来把页面里扫到的所有 m3u8/mp4 原样丢给播放器（含广告域、
+  重复项、死链），播放器往往先撞上一条慢线路才回落。现在：剔除广告/占位域、去重、HLS 与媒体域优先；
+  并发探测前 6 条（3.5 秒上限，m3u8 还要求真以 `#EXTM3U` 开头），只留下能播的、按耗时排序、
+  线路名带 ms；master 只有一路变体时直接下发变体；结果缓存 10 分钟。测速可用全局参数关掉。
 
 - **`huangguo.js` 1.0.4**：专题按标题也能匹配。实测宿主会把枚举的**标题**（「百合女同」）而不是值
   （`baihe-nvtong`）传给模块，站点对标题直接回「专题不存在或已下架」。现在标题、去「专辑」尾、
