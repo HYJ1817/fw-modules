@@ -1,7 +1,7 @@
 {
   "title": "影视",
   "description": "4KVM 播放源与苹果CMS 聚合源（2 个组件）",
-  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@49f906e/icon.png",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@1338bd8/icon.png",
   "widgets": [
     {
       "id": "hyj1817.4kvm.resource",
@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@49f906e/widgets/4kvm-resource.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@1338bd8/widgets/4kvm-resource.js",
       "type": "url"
     },
     {
@@ -20,7 +20,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@49f906e/widgets/maccms-source.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@1338bd8/widgets/maccms-source.js"
     }
   ]
 }
