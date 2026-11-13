@@ -74,6 +74,11 @@ function actressByName(input) {
     return null;
 }
 
+var MISSAAV_MIRRORS = ["https://missav.ws", "https://missav.live", "https://missav.fans"];
+function rehostTo(url, base) {
+    return String(url || "").replace(/^https?:\/\/(?:missav\.(?:fans|ws|live|123|tv))/i, base);
+}
+
 /* 统一改写请求 URL 与请求头里的站点地址，正文里的硬编码路径因此不用逐条改 */
 (function () {
     var rawGet = Widget.http.get;
@@ -97,7 +102,7 @@ var WidgetMetadata = {
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.3.0",
+    version: "1.3.1",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
     globalParams: [
@@ -1004,36 +1009,43 @@ async function loadPage(params = {}) {
 }
 
 async function fetchVideoList(url) {
-    try {
-        const response = await Widget.http.get(url, {
-            headers: {
-                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-                "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Cache-Control": "no-cache",
-                "Pragma": "no-cache",
-                "Sec-Fetch-Dest": "document",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "none",
-                "Sec-Fetch-User": "?1",
-                "Upgrade-Insecure-Requests": "1",
-                "DNT": "1",
-                "Referer": "https://missav.fans/",
-                "Connection": "keep-alive"
-            },
-            allow_redirects: true
-        });
-
-        if (!response || !response.data || response.data.length < 10000) {
-            return [createPlaceholderItem("网络请求失败或数据异常")];
-        }
-
-        return parseVideoList(response.data);
-        
-    } catch (error) {
-        return [createPlaceholderItem("访问失败，可能已被风控")];
+    var order = [MISSAV_SITE];
+    for (var m = 0; m < MISSAAV_MIRRORS.length; m++) {
+        if (MISSAAV_MIRRORS[m] !== MISSAV_SITE) order.push(MISSAAV_MIRRORS[m]);
     }
+    var tried = [];
+    for (var i = 0; i < order.length; i++) {
+        var base = order[i];
+        var target = rehostTo(url, base);
+        var saved = MISSAV_SITE;
+        MISSAV_SITE = base;
+        try {
+            var response = await Widget.http.get(target, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                    "Cache-Control": "no-cache",
+                    "Referer": base + "/"
+                },
+                allow_redirects: true
+            });
+            var status = Number((response && (response.status || response.statusCode)) || 200);
+            var body = response && (typeof response.data === "string" ? response.data : response.body) || "";
+            if (status >= 400 || !body || body.length < 10000 || body.indexOf("Just a moment") >= 0) {
+                tried.push(base.replace(/^https?:\/\//, "") + " HTTP " + status);
+                continue;
+            }
+            var parsed = parseVideoList(body);
+            if (parsed && parsed.length && parsed[0].type !== "placeholder") return parsed;
+            tried.push(base.replace(/^https?:\/\//, "") + " 无内容");
+        } catch (error) {
+            tried.push(base.replace(/^https?:\/\//, "") + " 请求失败");
+        } finally {
+            MISSAV_SITE = saved;
+        }
+    }
+    return [createPlaceholderItem("三个镜像都没取到内容（" + tried.join(" / ") + "）：多半是节点被 Cloudflare 拦，换节点或在参数里把站点域名切到 missav.ws")];
 }
 
 function createPlaceholderItem(message = "已被风控，请稍后重试") {

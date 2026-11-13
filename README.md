@@ -144,7 +144,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
 | `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
-| `missav.js` | 1.3.0 | `missav-resource.js` | 1.2.1 |
+| `missav.js` | 1.3.1 | `missav-resource.js` | 1.2.1 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
@@ -153,6 +153,9 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 
 ### 最近变更
 
+- **`missav.js` 1.3.1**：列表取数加多镜像回退。当前站点被 CF 拦时，依次换 `missav.ws` → `missav.live` →
+  `missav.fans` 再试一次，全失败时明确写出每个镜像的失败原因（HTTP 状态 / 无内容 / 请求失败），
+  不再只丢一句「已被风控」。实测宿主确实会遇到「选好女优却只有一条风控提示」。
 - **`missav.js` 1.3.0**：女优模块改成**枚举式**「女优影片」——排行前 50 名做成枚举参数，
   选谁看谁的影片（默认第一位）。之前两版（头像墙 / 无封面列表）都受宿主条目渲染形态限制，
   枚举是宿主验证过的形态，不占首页版面、也不会出现灰块。
