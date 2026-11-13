@@ -64,7 +64,6 @@ var MISSAAV_ACTRESSES = [
     { name: "未步なな", href: "/dm27/actresses/%E6%9C%AA%E6%AD%A9%E3%81%AA%E3%81%AA", img: "https://fourhoi.com/actress/1077071-t.jpg" },
     { name: "新村晶", href: "/dm51/actresses/%E6%96%B0%E6%9D%91%E3%81%82%E3%81%8B%E3%82%8A", img: "https://fourhoi.com/actress/1036352-t.jpg" },
 ];
-var MISSAAV_ACTRESS_PREFIX = "missavactress:";
 function actressByName(input) {
     var text = String(input || "").replace(/\s+/g, "");
     if (!text) return null;
@@ -98,7 +97,7 @@ var WidgetMetadata = {
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.2.1",
+    version: "1.3.0",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
     globalParams: [
@@ -119,13 +118,71 @@ var WidgetMetadata = {
     search: { title: "搜索", functionName: "searchVideos", params: [] },
     modules: [
         {
-            id: "actresses",
-            title: "女优排行 TOP50",
-            description: "MissAV 月度女优排行前 50 名，点进去是该女优的影片列表",
-            functionName: "loadActressRanking",
+            id: "actressVideos",
+            title: "女优影片",
+            description: "从排行前 50 名里选一位，直接看她的影片",
+            functionName: "loadActressVideos",
             type: "video",
-            cacheDuration: 3600,
+            cacheDuration: 1800,
             params: [
+                {
+                    name: "actress",
+                    title: "女优（排行前 50）",
+                    type: "enumeration",
+                    value: "瀬戶環奈",
+                    enumOptions: [
+                { title: "瀬戶環奈", value: "瀬戶環奈" },
+                { title: "松本一香", value: "松本一香" },
+                { title: "逢澤みゆ", value: "逢澤みゆ" },
+                { title: "河北彩花", value: "河北彩花" },
+                { title: "美園和花", value: "美園和花" },
+                { title: "波多野結衣", value: "波多野結衣" },
+                { title: "北岡果林", value: "北岡果林" },
+                { title: "倉本すみれ", value: "倉本すみれ" },
+                { title: "彌生美月", value: "彌生美月" },
+                { title: "木下日葵", value: "木下日葵" },
+                { title: "森澤佳奈 (飯岡佳奈子)", value: "森澤佳奈 (飯岡佳奈子)" },
+                { title: "鷲尾芽衣", value: "鷲尾芽衣" },
+                { title: "篠田優", value: "篠田優" },
+                { title: "沙月惠奈", value: "沙月惠奈" },
+                { title: "miru", value: "miru" },
+                { title: "夢乃愛佳", value: "夢乃愛佳" },
+                { title: "三上悠亞", value: "三上悠亞" },
+                { title: "石原希望", value: "石原希望" },
+                { title: "森日向子", value: "森日向子" },
+                { title: "柏木こなつ", value: "柏木こなつ" },
+                { title: "石川澪", value: "石川澪" },
+                { title: "小宵虎南", value: "小宵虎南" },
+                { title: "清原みゆう", value: "清原みゆう" },
+                { title: "神宮寺奈緒", value: "神宮寺奈緒" },
+                { title: "北野未奈", value: "北野未奈" },
+                { title: "川越にこ", value: "川越にこ" },
+                { title: "楓ふうあ", value: "楓ふうあ" },
+                { title: "皆月光", value: "皆月光" },
+                { title: "七森莉莉", value: "七森莉莉" },
+                { title: "東條夏", value: "東條夏" },
+                { title: "吉根柚莉愛", value: "吉根柚莉愛" },
+                { title: "新井リマ", value: "新井リマ" },
+                { title: "奧田咲", value: "奧田咲" },
+                { title: "大槻響", value: "大槻響" },
+                { title: "花守夏步", value: "花守夏步" },
+                { title: "宍戶里帆", value: "宍戶里帆" },
+                { title: "安達夕莉", value: "安達夕莉" },
+                { title: "淺野こころ", value: "淺野こころ" },
+                { title: "伊藤舞雪", value: "伊藤舞雪" },
+                { title: "AIKA", value: "AIKA" },
+                { title: "七瀨愛麗絲", value: "七瀨愛麗絲" },
+                { title: "椿莉香", value: "椿莉香" },
+                { title: "幸村泉希", value: "幸村泉希" },
+                { title: "月乃露娜", value: "月乃露娜" },
+                { title: "風間由美", value: "風間由美" },
+                { title: "羽月乃蒼", value: "羽月乃蒼" },
+                { title: "小花のん", value: "小花のん" },
+                { title: "末廣純", value: "末廣純" },
+                { title: "未步なな", value: "未步なな" },
+                { title: "新村晶", value: "新村晶" }
+                    ]
+                },
                 { name: "page", title: "页码", type: "page", value: "1" }
             ]
         },
@@ -1112,75 +1169,19 @@ function buildStreamHeaders(pageLink) {
     };
 }
 
-function loadActressRanking(params = {}) {
-    const page = parseInt(params.page) || 1;
-    if (page > 1) return [];   // 榜单只有 50 位，不做翻页
-    // 列表式：不给封面，宿主就会按「无海报条目」排成紧凑的列表，
-    // 而不是一屏三张撕不开的竖版头像卡。
-    return MISSAAV_ACTRESSES.map(function (item, index) {
-        return {
-            id: MISSAAV_ACTRESS_PREFIX + item.name,
-            type: "video",
-            title: item.name,
-            seriesName: item.name,
-            mediaType: "tv",
-            description: "第 " + (index + 1) + " 名 · 点开看她的影片",
-            link: MISSAAV_ACTRESS_PREFIX + item.name
-        };
-    });
-}
-
-/** 女优页 -> 她的影片列表；每部片作为一集，点开走同一条播放源 */
-async function loadActressDetail(link, params) {
+/** 女优页 -> 她的影片列表（枚举参数选定后直接出片） */
+async function loadActressVideos(params = {}) {
     MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
-    const name = String(link || "").slice(MISSAAV_ACTRESS_PREFIX.length);
-    const entry = actressByName(name);
-    if (!entry) return null;
-    const url = MISSAV_SITE + entry.href;
-    const response = await Widget.http.get(url, {
-        headers: {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Referer": MISSAV_SITE + "/"
-        },
-        allow_redirects: true
-    });
-    const html = response && (typeof response.data === "string" ? response.data : response.body) || "";
-    if (!html || html.includes("Just a moment")) return null;
-    const videos = parseVideoList(html).filter(function (item) { return item && item.type !== "placeholder" && item.link; });
-    if (!videos.length) return null;
-    return {
-        id: link,
-        type: "url",
-        title: entry.name,
-        seriesName: entry.name,
-        mediaType: "tv",
-        posterPath: entry.img,
-        backdropPath: entry.img,
-        description: "共 " + videos.length + " 部（女优页第一页）",
-        episodeItems: videos.map(function (video, index) {
-            return {
-                id: video.link,
-                type: "url",
-                title: video.title,
-                seriesName: entry.name,
-                episodeName: (index + 1) + " · " + video.title,
-                episode: index + 1,
-                mediaType: "tv",
-                posterPath: video.posterPath || entry.img,
-                link: video.link
-            };
-        }),
-        link: link
-    };
+    const entry = actressByName(params && params.actress) || MISSAAV_ACTRESSES[0];
+    if (!entry) return [createPlaceholderItem("请选择一位女优")];
+    const page = parseInt(params.page) || 1;
+    let url = MISSAV_SITE + entry.href;
+    if (page > 1) url += (url.indexOf("?") >= 0 ? "&" : "?") + "page=" + page;
+    return await fetchVideoList(url);
 }
 
 async function loadDetail(link) {
     try {
-        if (String(link || "").indexOf(MISSAAV_ACTRESS_PREFIX) === 0) {
-            return await loadActressDetail(link, { site: MISSAV_SITE });
-        }
         var hostMatch = /^https?:\/\/([^/?#]+)/i.exec(String(link || ""));
         if (hostMatch) MISSAV_SITE = "https://" + hostMatch[1].toLowerCase().replace(/^www\./, "");
         const response = await Widget.http.get(link, {
