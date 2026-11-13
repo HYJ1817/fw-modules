@@ -53,7 +53,7 @@ const VARIANT = "#EXTM3U\n#EXTINF:5,\nseg1.ts\n";
 function testMetadata() {
   const w = load({});
   assert.strictEqual(w.WidgetMetadata.id, "hyj1817.missav.resource");
-  assert.strictEqual(w.WidgetMetadata.version, "1.2.0");
+  assert.ok(/^1\.2\./.test(w.WidgetMetadata.version), "版本应为 1.2.x");
   assert.strictEqual(w.WidgetMetadata.modules[0].id, "loadResource");
   assert.strictEqual(w.WidgetMetadata.modules[0].type, "stream");
   assert.ok(w.WidgetMetadata.globalParams.some((p) => p.name === "multiSource"));

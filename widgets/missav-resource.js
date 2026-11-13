@@ -1,5 +1,5 @@
 // MissAV resource module for Forward
-WidgetMetadata={id:"hyj1817.missav.resource",title:"MissAV 播放源",icon:"https://missav.fans/favicon.ico",version:"1.2.0",requiredVersion:"0.0.1",description:"MissAV HLS/MP4 播放源：提取后并发测速、剔除广告与死链、按快慢排序并缓存",author:"Forward Widgets",site:"https://missav.fans",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]},{name:"probing",title:"播放前测速",type:"enumeration",value:"on",enumOptions:[{title:"开启（慢 1~2 秒，但只留下能播的线路）",value:"on"},{title:"关闭（直接按页面顺序返回）",value:"off"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
+WidgetMetadata={id:"hyj1817.missav.resource",title:"MissAV 播放源",icon:"https://missav.fans/favicon.ico",version:"1.2.1",requiredVersion:"0.0.1",description:"MissAV HLS/MP4 播放源：提取后并发测速、剔除广告与死链、按快慢排序并缓存",author:"Forward Widgets",site:"https://missav.fans",globalParams:[{name:"multiSource",title:"是否启用聚合搜索",type:"enumeration",value:"enabled",enumOptions:[{title:"启用",value:"enabled"},{title:"禁用",value:"disabled"}]},{name:"probing",title:"播放前测速",type:"enumeration",value:"on",enumOptions:[{title:"开启（慢 1~2 秒，但只留下能播的线路）",value:"on"},{title:"关闭（直接按页面顺序返回）",value:"off"}]}],modules:[{id:"loadResource",title:"加载资源",functionName:"loadResource",type:"stream",cacheDuration:0,params:[]}]};
 
 var BASE = "https://missav.fans";
 var UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1";
@@ -93,6 +93,9 @@ async function loadResource(params){
   if(params.multiSource==="disabled")return[];
   var page=makeUrl(params.link||params.url||params.id);
   if(!page)return[];
+  // 跟随链接自身的域名（fans / ws / live 用的是同一套页面结构）
+  var hostMatch=/^https?:\/\/([^/?#]+)/i.exec(page);
+  if(hostMatch)BASE="https://"+hostMatch[1].toLowerCase().replace(/^www\./,"");
   var hit=cached(page);
   if(hit)return hit;
   var headers={"User-Agent":UA,Referer:BASE+"/cn"};

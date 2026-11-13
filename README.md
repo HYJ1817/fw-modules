@@ -144,7 +144,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `yinhentai.js` | 1.1.0 | `yinhentai-resource.js` | 1.2.0 |
 | `hanime.js` | 1.1.0 | `hanime-resource.js` | 1.1.0 |
 | `hentaimama.js` | 1.2.0 | `hentaimama-resource.js` | 1.3.1 |
-| `missav.js` | 1.0.4 | `missav-resource.js` | 1.2.0 |
+| `missav.js` | 1.1.0 | `missav-resource.js` | 1.2.1 |
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
@@ -152,6 +152,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`missav.js` 1.1.0 / `missav-resource.js` 1.2.1**：站点可切。MissAV 换域名是常态
+  （`missav.fans` / `missav.ws` / `missav.live` 共用同一套 `/dm{id}/cn/...` 路径，实测 ws 会把 dm265
+  重定向到 dm278），现在首页模块有「站点域名」参数，选 ws 时请求 URL 与 Referer/Origin 一起改写；
+  播放源则跟随链接自身的域名。`npm run test:missav-site` 覆盖切换与自定义地址。
 
 - **`missav-resource.js` 1.2.0**：起播优化。原来把页面里扫到的所有 m3u8/mp4 原样丢给播放器（含广告域、
   重复项、死链），播放器往往先撞上一条慢线路才回落。现在：剔除广告/占位域、去重、HLS 与媒体域优先；

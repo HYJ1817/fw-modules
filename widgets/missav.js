@@ -1,12 +1,57 @@
+/* 站点域名可切：missav.fans 被墙时切到 missav.ws / missav.live。
+ * 页面路径结构是同一套（/dm{id}/cn/...），所以只换 origin 即可。 */
+var MISSAV_SITE = "https://missav.fans";
+function missavSite(params) {
+    var value = String((params && params.site) || "").trim();
+    if (value === "ws") return "https://missav.ws";
+    if (value === "live") return "https://missav.live";
+    if (/^https?:\/\//i.test(value)) return value.replace(/\/+$/, "");
+    return "https://missav.fans";
+}
+function missavRehost(url) {
+    return String(url || "").replace(/^https?:\/\/(?:missav\.(?:fans|ws|live|123|tv))/i, MISSAV_SITE);
+}
+/* 统一改写请求 URL 与请求头里的站点地址，正文里的硬编码路径因此不用逐条改 */
+(function () {
+    var rawGet = Widget.http.get;
+    Widget.http.get = function (url, options) {
+        var target = missavRehost(url);
+        if (options && options.headers) {
+            var headers = {};
+            for (var key in options.headers) {
+                var value = options.headers[key];
+                headers[key] = typeof value === "string" ? missavRehost(value) : value;
+            }
+            options.headers = headers;
+        }
+        return rawGet.call(Widget.http, target, options);
+    };
+})();
+
 var WidgetMetadata = {
     id: "hyj1817.missav.home",
     title: "MissAV",
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.0.4",
+    version: "1.1.0",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
+    globalParams: [
+        {
+            name: "site",
+            title: "站点域名",
+            type: "enumeration",
+            value: "fans",
+            enumOptions: [
+                { title: "missav.fans（默认）", value: "fans" },
+                { title: "missav.ws（主域，被墙时可用）", value: "ws" },
+                { title: "missav.live", value: "live" },
+                { title: "自定义地址", value: "custom" }
+            ]
+        },
+        { name: "custom_site", title: "自定义站点地址", type: "input", description: "站点选「自定义地址」时生效，如 https://missav.ws" },
+    ],
     search: { title: "搜索", functionName: "searchVideos", params: [] },
     modules: [
         {
@@ -690,6 +735,7 @@ var WidgetMetadata = {
 
 
 async function searchVideos(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const keyword = params.keyword ? params.keyword.trim() : '';
     const page = parseInt(params.page) || 1;
     const sortBy = params.sort_by;
@@ -733,6 +779,7 @@ async function searchVideos(params = {}) {
 }
 
 async function loadTodayHot(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const page = parseInt(params.page) || 1;
     
     let url = "https://missav.fans/dm291/cn/today-hot?sort=today_views";
@@ -745,6 +792,7 @@ async function loadTodayHot(params = {}) {
 }
 
 async function loadWeeklyHot(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const page = parseInt(params.page) || 1;
     
     let url = "https://missav.fans/dm169/cn/weekly-hot?sort=weekly_views";
@@ -757,6 +805,7 @@ async function loadWeeklyHot(params = {}) {
 }
 
 async function loadMonthlyHot(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const page = parseInt(params.page) || 1;
     
     let url = "https://missav.fans/dm257/cn/monthly-hot?sort=monthly_views";
@@ -769,6 +818,7 @@ async function loadMonthlyHot(params = {}) {
 }
 
 async function loadNewRelease(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const page = parseInt(params.page) || 1;
     
     let url = "https://missav.fans/dm588/cn/release?sort=released_at";
@@ -781,6 +831,7 @@ async function loadNewRelease(params = {}) {
 }
 
 async function loadChineseSubtitle(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const page = parseInt(params.page) || 1;
     const sortBy = params.sort_by || "released_at";
     
@@ -800,6 +851,7 @@ async function loadChineseSubtitle(params = {}) {
 }
 
 async function loadPage(params = {}) {
+    MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const baseUrl = params.url;
     const page = parseInt(params.page) || 1;
     const sortBy = params.sort_by;
@@ -894,7 +946,7 @@ function parseVideoList(html) {
                 }
                 
                 const videoId = extractVideoId(href);
-                const fullVideoUrl = href.startsWith('http') ? href : `https://missav.fans${href}`;
+                const fullVideoUrl = missavRehost(href.startsWith('http') ? href : `https://missav.fans${href}`);
                 const horizontalCoverUrl = `https://fourhoi.mrstcdn.store/${videoId}/cover-t.jpg`;
                 let videoCode = videoId.toUpperCase().replace('-CHINESE-SUBTITLE', '').replace('-UNCENSORED-LEAK', '');
                 
@@ -987,6 +1039,8 @@ function buildStreamHeaders(pageLink) {
 
 async function loadDetail(link) {
     try {
+        var hostMatch = /^https?:\/\/([^/?#]+)/i.exec(String(link || ""));
+        if (hostMatch) MISSAV_SITE = "https://" + hostMatch[1].toLowerCase().replace(/^www\./, "");
         const response = await Widget.http.get(link, {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
