@@ -50,6 +50,9 @@ host-suffix, xtremestream.xyz, PROXY   ; Perverzija 播放 CDN
 host-suffix, wufazhuce.com, PROXY   ; ONE 一个官方站
 host-suffix, javday.app, PROXY   ; JAVDay 站点
 host-suffix, javday.homes, PROXY   ; JAVDay 播放 CDN
+host-suffix, 91porn.com, PROXY   ; 91Porn 站点
+host-suffix, killcovid2021.com, PROXY   ; 91Porn 预览缩略图
+host-suffix, btc620.com, PROXY   ; 91Porn 视频 CDN（la.btc620.com）
 host-suffix, api.2b37894.com, PROXY   ; ONE 后端 API（会轮换）
 host-suffix, api.3459381.com, PROXY   ; ONE 后端 API（会轮换）
 host-suffix, api.35a46dd.com, PROXY   ; ONE 后端 API（会轮换）

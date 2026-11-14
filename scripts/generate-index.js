@@ -42,8 +42,8 @@ const GROUP_OUTPUTS = [
   {
     file: path.join(ROOT, "fw-av.fwd"),
     title: "AV",
-    description: "MissAV / Jable / XChina / Avbebe / SupJav / JAVDay 与四合一第三方模块（14 个组件）",
-    files: ["missav.js", "missav-resource.js", "jable.js", "jable-resource.js", "xchina.js", "xchina-resource.js", "avbebe.js", "avbebe-resource.js", "supjav-webox.js", "javday.js", "getav.js", "one.js", "perverzija.js", "supjav.js"],
+    description: "MissAV / Jable / XChina / Avbebe / SupJav / JAVDay / 91Porn 与四合一第三方模块（15 个组件）",
+    files: ["missav.js", "missav-resource.js", "jable.js", "jable-resource.js", "xchina.js", "xchina-resource.js", "avbebe.js", "avbebe-resource.js", "supjav-webox.js", "javday.js", "porn91.js", "getav.js", "one.js", "perverzija.js", "supjav.js"],
   },
   {
     file: path.join(ROOT, "fw-movie.fwd"),
