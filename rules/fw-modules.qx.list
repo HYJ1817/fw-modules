@@ -46,6 +46,15 @@ host-suffix, worldstatic.com, PROXY   ; GetAV 静态资源
 host-suffix, perverzija.com, PROXY   ; Perverzija 站点
 host-suffix, xtremestream.xyz, PROXY   ; Perverzija 播放 CDN
 host-suffix, wufazhuce.com, PROXY   ; ONE 一个官方站
+host-suffix, api.2b37894.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.3459381.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.35a46dd.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.43b8477.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.5ce3771.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.61c76a0.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.632d809.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.em1oifd0.com, PROXY   ; ONE 后端 API（会轮换）
+host-suffix, api.j7y675.com, PROXY   ; ONE 后端 API（会轮换）
 
 # ── ONE 一个的轮换域名（后端 API 与图床会变，用关键字兜） ──
 host-keyword, mfpt8g.com, PROXY   ; ONE 后端 API（随机前缀）
@@ -53,15 +62,6 @@ host-keyword, hkq57tt.com, PROXY   ; ONE 图床
 host-keyword, 2u7qzt7.com, PROXY   ; ONE 图床
 host-keyword, s7n7ue8.com, PROXY   ; ONE 图床
 host-keyword, upmf83.com, PROXY   ; ONE 后端 API
-host-keyword, api.2b37894.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.3459381.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.35a46dd.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.43b8477.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.5ce3771.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.61c76a0.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.632d809.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.em1oifd0.com, PROXY   ; ONE 后端 API（会轮换）
-host-keyword, api.j7y675.com, PROXY   ; ONE 后端 API（会轮换）
 
 # ── 影视 ──
 host-suffix, 4kvm.net, PROXY   ; 4KVM 站点与播放
