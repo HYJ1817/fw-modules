@@ -69,13 +69,13 @@ rules:
 
 ## 订阅（按内容分组）
 
-按内容拆成四份，**互不重叠，合起来等于全部 29 个组件**。只订阅你要的类型，列表里就不会混进别的：
+按内容拆成四份，**互不重叠，合起来等于全部 30 个组件**。只订阅你要的类型，列表里就不会混进别的：
 
 | 分组 | 清单 | 组件 | 包含 |
 | --- | --- | --- | --- |
 | 里番 | `fw-hentai.fwd` | 9 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源）+ girigiri 动漫 |
 | 短剧 | `fw-drama.fwd` | 3 | 黄果短剧 / 黑桃短剧 |
-| AV | `fw-av.fwd` | 15 | MissAV / Jable / XChina / Avbebe / SupJav 新版 / JAVDay / 91Porn + 四合一第三方四个 |
+| AV | `fw-av.fwd` | 16 | MissAV / Jable / XChina / Avbebe / SupJav 新版 / JAVDay / 91Porn / 碧池直播 + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
 
 **订阅地址（推荐 raw，5 分钟内生效）**
@@ -161,6 +161,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 黑桃短剧 | 首页 + 资源 | `widgets/heitao.js` | 苹果CMS 短剧站：首页、栏目、题材、搜索、详情与分集（WeBox 插件移植） |
 | JAVDay | 首页（内联播放） | `widgets/javday.js` | 10 个栏目 + 搜索，详情直接给 m3u8（上游原生模块，已补元信息与搜索地址） |
 | 91Porn | 首页（内联播放） | `widgets/porn91.js` | 6 个分类列表 + 详情取 mp4（上游打包产物，已补 type 与状态码兼容） |
+| 碧池直播 | 直播列表 | `widgets/bitchlives.js` | 133 个直播平台分类，条目直接给 FLV 流（playerType: ijk） |
 | SupJav 新版 | 首页 + 资源 | `widgets/supjav-webox.js` | WeBox 插件移植：多镜像、语言目录、embed 接口探测、packer 解包、广告过滤 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
@@ -183,7 +184,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
 | `girigiri.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
 | `heitao.js` | 1.0.0 | `javday.js` | 1.2.0 |
-| `porn91.js` | 0.9.6 | | |
+| `porn91.js` | 0.9.6 | `bitchlives.js` | 1.0.0 |
 | `getav.js` | 0.5.0 | `one.js` | 2.2.0 |
 | `perverzija.js` | 1.2.0 | `supjav.js` | 1.3.0 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
@@ -198,6 +199,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **新增 `bitchlives.js` 1.0.0**：碧池直播聚合。一个 JSON 接口按平台返回主播列表（133 个分类：卡哇伊 / 咪狐 /
+  花蝴蝶 / 蜜桃 …），条目直接带 `videoUrl`——是 **FLV 直播流**（`http://xbo.视频.com/live/xxx.flv?wsSecret=…&wsTime=…`，
+  带时效签名）。规范化：元信息补 id/icon、模块补 type、条目补 `playerType: "ijk"`（AVPlayer 播不了 FLV，必须 ijk）
+  和请求头。实测列表 81 条、首条流 200 且是标准 FLV 头。
 
 - **新增 `porn91.js` 0.9.6**：91Porn（上游 baranwang/forward-widget 的打包产物）。规范化两处：
   模块补 `type: "video"`、元信息补 icon/author；**上游用 `resp.statusCode` 判断成功，而 Forward 的响应只有
