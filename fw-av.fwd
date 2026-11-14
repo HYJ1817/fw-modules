@@ -1,7 +1,7 @@
 {
   "title": "AV",
   "description": "MissAV / Jable / XChina / Avbebe / SupJav / JAVDay / 91Porn / 碧池直播 与四合一第三方模块（16 个组件）",
-  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/icon.png",
+  "icon": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/icon.png",
   "widgets": [
     {
       "id": "hyj1817.missav.home",
@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.3.3",
       "author": "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/missav.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/missav.js",
       "type": "url"
     },
     {
@@ -20,7 +20,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.2.1",
       "author": "Forward Widgets",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/missav-resource.js",
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/missav-resource.js",
       "type": "url"
     },
     {
@@ -30,7 +30,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.3.0",
       "author": "nibiru｜MakkaPakka｜蝴蝶（收录整理 HYJ1817）",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/jable.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/jable.js"
     },
     {
       "id": "hyj1817.jable.resource",
@@ -39,7 +39,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.0",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/jable-resource.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/jable-resource.js"
     },
     {
       "id": "hyj1817.xchina.home",
@@ -48,7 +48,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.3",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/xchina.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/xchina.js"
     },
     {
       "id": "hyj1817.xchina.resource",
@@ -57,7 +57,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.2",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/xchina-resource.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/xchina-resource.js"
     },
     {
       "id": "hyj1817.avbebe.home",
@@ -66,7 +66,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.1",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/avbebe.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/avbebe.js"
     },
     {
       "id": "hyj1817.avbebe.resource",
@@ -75,7 +75,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.1",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/avbebe-resource.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/avbebe-resource.js"
     },
     {
       "id": "hyj1817.supjav.webox",
@@ -84,7 +84,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.0.2",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/supjav-webox.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/supjav-webox.js"
     },
     {
       "id": "hyj1817.javday.home",
@@ -93,7 +93,7 @@
       "requiredVersion": "0.0.2",
       "version": "1.2.0",
       "author": "HYJ1817",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/javday.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/javday.js"
     },
     {
       "id": "hyj1817.porn91.home",
@@ -102,7 +102,7 @@
       "requiredVersion": "0.0.1",
       "version": "0.9.6",
       "author": "網路（收录整理 HYJ1817）",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/porn91.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/porn91.js"
     },
     {
       "id": "hyj1817.bitchlives.home",
@@ -111,7 +111,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "上游：VEUS（收录整理 HYJ1817）",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/bitchlives.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/bitchlives.js"
     },
     {
       "id": "user.getav",
@@ -120,7 +120,7 @@
       "requiredVersion": "0.0.1",
       "version": "0.5.0",
       "author": "Tiamo",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/getav.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/getav.js"
     },
     {
       "id": "user.one",
@@ -129,7 +129,7 @@
       "requiredVersion": "0.0.1",
       "version": "2.2.0",
       "author": "YG",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/one.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/one.js"
     },
     {
       "id": "user.perverzija",
@@ -138,7 +138,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.2.0",
       "author": "Tiamo",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/perverzija.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/perverzija.js"
     },
     {
       "id": "user.supjav",
@@ -147,7 +147,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.3.0",
       "author": "Tiamo",
-      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@b9e2483/widgets/supjav.js"
+      "url": "https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@45a1a85/widgets/supjav.js"
     }
   ]
 }
