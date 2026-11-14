@@ -153,7 +153,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | Avbebe 播放源 | 资源 | `widgets/avbebe-resource.js` | 解析文章内嵌 HLS 直链（需 Referer） |
 | XChina | 首页 | `widgets/xchina.js` | 影片列表、20 个分类/精选入口、搜索与详情 |
 | XChina 播放源 | 资源 | `widgets/xchina-resource.js` | 由影片 hash 构造 HLS 直链（不校验 UA 的通用线路优先，主站与镜像备选） |
-| Jable | 首页 | `widgets/jable.js` | 最近更新、热门、新作、12 个分类、搜索与详情 |
+| Jable | 首页 | `widgets/jable.js` | nibiru 版：185 个分类入口、搜索、详情；ijk 播放修复无声，站点可切 jable.tv / fs1.app |
 | Jable 播放源 | 资源 | `widgets/jable-resource.js` | 解析详情页 `hlsUrl`，片源不校验 UA |
 | 黄果短剧 | 首页 | `widgets/huangguo.js` | 首页推荐、最近上新、排行榜、分类、专题、搜索与分集 |
 | 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
@@ -192,10 +192,15 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `4kvm-resource.js` | 1.0.1 | `xchina.js` | 1.0.3 |
 | `avbebe.js` | 1.0.1 | `xchina-resource.js` | 1.0.2 |
 | `avbebe-resource.js` | 1.0.1 | `jable-resource.js` | 1.0.0 |
-| `jable.js` | 1.0.0 | `huangguo.js` | 1.0.4 |
+| `jable.js` | 1.3.0 | `huangguo.js` | 1.0.4 |
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **`jable.js` 换成 nibiru 版 1.3.0**：分类入口从 12 个恢复到 185 个（含女优、衣着、剧情、地点等系列），
+  详情带 `playerType: "ijk"` 修无声问题，并补了防盗链头。规范化处理：模块补 `id`/`type`、补 `icon`、
+  加「站点域名」参数（jable.tv / fs1.app / 自定义，请求 URL 与 Referer 一起改写）、解析不再写死 `jable.tv`
+  （切到 fs1.app 后页面链接就是 fs1.app，原来会被过滤成空列表）、列表失败返回提示条目而不是抛异常。
 
 - **新增 `javday.js` 1.2.0**：JAVDay（`javday.app`）上游是 Forward 原生模块，直接收进仓库并补齐规范：
   10 个栏目各配一个固定入口函数（不再依赖宿主的 `type:"constant"` 参数）、模块补 `id`/`type`、补 `icon`、
