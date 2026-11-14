@@ -39,6 +39,8 @@ const GROUPS = [
     items: [
       { suffix: "huangguoai.com", note: "黄果短剧主站" },
       { suffix: "huangguoai.ai", note: "黄果短剧备用站" },
+      { suffix: "heitaodj.com", note: "黑桃短剧站点" },
+      { suffix: "djqiepian.app", note: "黑桃短剧封面与 m3u8 CDN" },
     ],
   },
   {

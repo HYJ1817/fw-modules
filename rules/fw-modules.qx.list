@@ -18,6 +18,8 @@ host-suffix, girigirilove.top, PROXY   ; girigiri 备用域名
 # ── 短剧 ──
 host-suffix, huangguoai.com, PROXY   ; 黄果短剧主站
 host-suffix, huangguoai.ai, PROXY   ; 黄果短剧备用站
+host-suffix, heitaodj.com, PROXY   ; 黑桃短剧站点
+host-suffix, djqiepian.app, PROXY   ; 黑桃短剧封面与 m3u8 CDN
 
 # ── AV ──
 host-suffix, supjav.blog, PROXY   ; SupJav 主站

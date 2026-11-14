@@ -18,6 +18,8 @@ DOMAIN-SUFFIX,girigirilove.top,PROXY
 # ── 短剧 ──
 DOMAIN-SUFFIX,huangguoai.com,PROXY
 DOMAIN-SUFFIX,huangguoai.ai,PROXY
+DOMAIN-SUFFIX,heitaodj.com,PROXY
+DOMAIN-SUFFIX,djqiepian.app,PROXY
 
 # ── AV ──
 DOMAIN-SUFFIX,supjav.blog,PROXY

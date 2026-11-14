@@ -25,6 +25,8 @@ payload:
   # ── 短剧 ──
   - '+.huangguoai.com'
   - '+.huangguoai.ai'
+  - '+.heitaodj.com'
+  - '+.djqiepian.app'
 
   # ── AV ──
   - '+.supjav.blog'

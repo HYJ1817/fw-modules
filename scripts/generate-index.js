@@ -36,8 +36,8 @@ const GROUP_OUTPUTS = [
   {
     file: path.join(ROOT, "fw-drama.fwd"),
     title: "短剧",
-    description: "黄果短剧的首页与播放源（2 个组件）",
-    files: ["huangguo.js", "huangguo-resource.js"],
+    description: "黄果短剧与黑桃短剧的首页、播放源（3 个组件）",
+    files: ["huangguo.js", "huangguo-resource.js", "heitao.js"],
   },
   {
     file: path.join(ROOT, "fw-av.fwd"),

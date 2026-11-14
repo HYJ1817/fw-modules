@@ -69,12 +69,12 @@ rules:
 
 ## 订阅（按内容分组）
 
-按内容拆成四份，**互不重叠，合起来等于全部 26 个组件**。只订阅你要的类型，列表里就不会混进别的：
+按内容拆成四份，**互不重叠，合起来等于全部 27 个组件**。只订阅你要的类型，列表里就不会混进别的：
 
 | 分组 | 清单 | 组件 | 包含 |
 | --- | --- | --- | --- |
 | 里番 | `fw-hentai.fwd` | 9 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源）+ girigiri 动漫 |
-| 短剧 | `fw-drama.fwd` | 2 | 黄果短剧 |
+| 短剧 | `fw-drama.fwd` | 3 | 黄果短剧 / 黑桃短剧 |
 | AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
 
@@ -158,6 +158,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 黄果短剧 | 首页 | `widgets/huangguo.js` | 首页推荐、最近上新、排行榜、分类、专题、搜索与分集 |
 | 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
 | girigiri 动漫 | 首页 + 资源 | `widgets/girigiri.js` | 动漫站首页、日番、搜索、详情与分集（WeBox 插件移植） |
+| 黑桃短剧 | 首页 + 资源 | `widgets/heitao.js` | 苹果CMS 短剧站：首页、栏目、题材、搜索、详情与分集（WeBox 插件移植） |
 | SupJav 新版 | 首页 + 资源 | `widgets/supjav-webox.js` | WeBox 插件移植：多镜像、语言目录、embed 接口探测、packer 解包、广告过滤 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
@@ -179,6 +180,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | --- | --- | --- | --- |
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
 | `girigiri.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
+| `heitao.js` | 1.0.0 | | |
 | `getav.js` | 0.5.0 | `one.js` | 2.2.0 |
 | `perverzija.js` | 1.2.0 | `supjav.js` | 1.3.0 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
@@ -193,6 +195,12 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **新增 `heitao.js` 1.0.0**：黑桃短剧（`heitaodj.com`，苹果CMS）的 WeBox 插件移植，并入「短剧」分组。
+  站点用 `/index.php/vod/...` 标准路径，播放页给 `player_aaaa` 配置；上游带年龄门 Cookie 处理与导航发现，
+  所以按桥接方式移植（`lib/vendor/` 放原文，`lib/entries/` 放桥接，`npm run build:heitao` 拼接）。
+  实测：首页 93 条、栏目 30 条、搜索 4 条、详情 1 集、master m3u8 200。分流域名 `heitaodj.com` 与
+  `djqiepian.app` 已并入规则集。
 
 - **新增分流规则集** `rules/fw-modules.{qx.list,surge.list,clash.yaml}`：覆盖仓库 26 个模块用到的
   52 个域名，按内容分五组；`npm run generate:rules` 生成、`npm run check:rules` 校验（缺域名直接报错，
@@ -441,12 +449,13 @@ scripts/build-maccms.js       把适配层内联进入口层 → widgets/
 scripts/build-huangguo.js    同上，黄果短剧入口层 → widgets/huangguo{,-resource}.js
 scripts/build-supjav-webox.js 桥接层 + 上游 WeBox 原文 → widgets/supjav-webox.js
 scripts/build-girigiri.js    同上，girigiri 动漫 → widgets/girigiri.js
+scripts/build-heitao.js      同上，黑桃短剧 → widgets/heitao.js
 scripts/generate-index.js     生成四份分组订阅清单（里番 / 短剧 / AV / 影视）
 scripts/check-manifests.js    一致性校验
 widgets/                      分发物（含生成物，勿手改）
 ```
 
-`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js`、`widgets/supjav-webox.js`、`widgets/girigiri.js` 是**生成物**，
+`widgets/maccms-source.js`、`widgets/fw-sourcecheck.js`、`widgets/huangguo.js`、`widgets/huangguo-resource.js`、`widgets/supjav-webox.js`、`widgets/girigiri.js`、`widgets/heitao.js` 是**生成物**，
 文件头带 `Do not edit directly` 标记。要改逻辑请改 `lib/`，然后重新构建。
 
 ### 标准流程
