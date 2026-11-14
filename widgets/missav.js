@@ -102,7 +102,7 @@ var WidgetMetadata = {
     description: "获取 MissAV 推荐",
     author: "𝓑𝓾𝓽𝓽𝓮𝓻𝓯𝓵𝔂",
     site: "https://widgets-xd.vercel.app",
-    version: "1.3.1",
+    version: "1.3.3",
     requiredVersion: "0.0.2",
     detailCacheDuration: 3600,
     globalParams: [
@@ -1074,8 +1074,10 @@ function parseVideoList(html) {
         const href = $link.attr('href') || '';
         const $img = $link.find('img').first();
         
-        if ($img.length && href.match(/\/cn\/[a-zA-Z0-9\-]+(-uncensored-leak)?$/)) {
-            const imgSrc = $img.attr('data-src') || $img.attr('src');
+        const slugMatch = String(href).match(/\/cn\/([a-zA-Z0-9\-]+)(?:-uncensored-leak)?(?:[/?#]|$)/);
+        const anyImg = $img.length ? $img : $link.find('img, picture img').first();
+        if (slugMatch && anyImg.length) {
+            const imgSrc = anyImg.attr('data-src') || anyImg.attr('data-original') || anyImg.attr('data-lazy-src') || anyImg.attr('src');
             
             if (imgSrc) {
                 let title = $link.attr('title') || $img.attr('alt') || '';
@@ -1119,7 +1121,7 @@ function parseVideoList(html) {
     });
     
     if (videos.length === 0) {
-        return [createPlaceholderItem()];
+        return [createPlaceholderItem("页面取回来了，但没解析出影片卡片（可能是站点改了结构，或当前页确实没有片）")];
     }
     
     return videos;
@@ -1181,15 +1183,29 @@ function buildStreamHeaders(pageLink) {
     };
 }
 
-/** 女优页 -> 她的影片列表（枚举参数选定后直接出片） */
+/** 女优页 -> 她的影片列表。
+ * 排行页抓下来的链接带 /dm{编号}（每个镜像是不同的节点号），换镜像就会 404，
+ * 所以这里按几种常见形态依次试：不带 dm、带 /cn、带 dm、/cn + dm。 */
 async function loadActressVideos(params = {}) {
     MISSAV_SITE = missavSite((params && params.site === "custom") ? { site: params.custom_site } : params);
     const entry = actressByName(params && params.actress) || MISSAAV_ACTRESSES[0];
     if (!entry) return [createPlaceholderItem("请选择一位女优")];
     const page = parseInt(params.page) || 1;
-    let url = MISSAV_SITE + entry.href;
-    if (page > 1) url += (url.indexOf("?") >= 0 ? "&" : "?") + "page=" + page;
-    return await fetchVideoList(url);
+    const tail = String(entry.href).split("/actresses/")[1] || "";
+    const node = (String(entry.href).match(/^\/dm\d+/) || [""])[0];
+    if (!tail) return [createPlaceholderItem("女优链接无效")];
+    const shapes = ["/actresses/" + tail, "/cn/actresses/" + tail];
+    if (node) shapes.push(node + "/actresses/" + tail, "/cn" + node + "/actresses/" + tail);
+    const tried = [];
+    for (let i = 0; i < shapes.length; i++) {
+        let url = MISSAV_SITE + shapes[i];
+        if (page > 1) url += (url.indexOf("?") >= 0 ? "&" : "?") + "page=" + page;
+        const items = await fetchVideoList(url);
+        if (items && items.length && items[0].type !== "placeholder") return items;
+        tried.push(shapes[i]);
+        if (tried.length >= 4) break;
+    }
+    return [createPlaceholderItem("这位女优的页面四种写法都没取到内容（" + tried.join(" / ") + "）：站点结构可能变了，或节点被 Cloudflare 拦")];
 }
 
 async function loadDetail(link) {

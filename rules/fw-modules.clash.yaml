@@ -1,0 +1,75 @@
+# fw-modules 站点域名 · Clash / Mihomo rule-provider（classical）
+# 用法：
+#   rule-providers:
+#     fw-modules:
+#       type: http
+#       behavior: classical
+#       url: https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.clash.yaml
+#       path: ./rules/fw-modules.yaml
+#       interval: 86400
+#   rules:
+#     - RULE-SET,fw-modules,PROXY
+# 由 npm run generate:rules 生成，勿手改
+payload:
+
+  # ── 里番 / 动漫 ──
+  - '+.hentaimama.io'
+  - '+.hstream.moe'
+  - '+.yinhentai.com'
+  - '+.hanime.tv'
+  - '+.htv-services.com'
+  - '+.girigirilove.icu'
+  - '+.girigirilove.com'
+  - '+.girigirilove.top'
+
+  # ── 短剧 ──
+  - '+.huangguoai.com'
+  - '+.huangguoai.ai'
+
+  # ── AV ──
+  - '+.supjav.blog'
+  - '+.supjav.com'
+  - '+.upload18.org'
+  - '+.upload18.cc'
+  - '+.helvid.com'
+  - '+.supremejav.com'
+  - '+.streamtape.com'
+  - '+.streamtape.net'
+  - '+.missav.fans'
+  - '+.missav.ws'
+  - '+.missav.live'
+  - '+.mrstcdn.store'
+  - '+.fourhoi.com'
+  - '+.surrit.com'
+  - '+.jable.tv'
+  - '+.fs1.app'
+  - '+.xchina.co'
+  - '+.xchina.download'
+  - '+.myjav.tv'
+  - '+.avbebe.com'
+  - '+.52cute.com'
+  - '+.getav.net'
+  - '+.worldstatic.com'
+  - '+.perverzija.com'
+  - '+.xtremestream.xyz'
+  - '+.wufazhuce.com'
+
+  # ── ONE 一个的轮换域名（后端 API 与图床会变，用关键字兜） ──
+  - DOMAIN-KEYWORD,mfpt8g.com
+  - DOMAIN-KEYWORD,hkq57tt.com
+  - DOMAIN-KEYWORD,2u7qzt7.com
+  - DOMAIN-KEYWORD,s7n7ue8.com
+  - DOMAIN-KEYWORD,upmf83.com
+  - DOMAIN-KEYWORD,api.2b37894.com
+  - DOMAIN-KEYWORD,api.3459381.com
+  - DOMAIN-KEYWORD,api.35a46dd.com
+  - DOMAIN-KEYWORD,api.43b8477.com
+  - DOMAIN-KEYWORD,api.5ce3771.com
+  - DOMAIN-KEYWORD,api.61c76a0.com
+  - DOMAIN-KEYWORD,api.632d809.com
+  - DOMAIN-KEYWORD,api.em1oifd0.com
+  - DOMAIN-KEYWORD,api.j7y675.com
+
+  # ── 影视 ──
+  - '+.4kvm.net'
+  - '+.jyzyapi.com'

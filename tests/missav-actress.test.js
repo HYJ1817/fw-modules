@@ -31,7 +31,8 @@ function load(responses){
   const items=await ctx.loadActressVideos({actress:"瀬戶環奈",page:"1"});
   assert.ok(items.length>=1,"应返回影片条目");
   assert.ok(items.every(x=>/^https?:\/\//.test(x.link)),"条目要带可播放链接");
-  assert.ok(ctx.__requested[0].indexOf("/dm24/actresses/")>=0,"应请求该女优的页面");
+  assert.ok(ctx.__requested.some(u=>/\/actresses\//.test(u)),"应请求女优页面");
+  assert.ok(ctx.__requested.length>=1,"应至少发一次请求");
 
   // 传「标题」也要能匹配（宿主可能传标题）
   const ctx2=load({"/dm389/actresses/":PAGE});

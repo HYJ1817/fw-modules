@@ -26,6 +26,47 @@ https://raw.githubusercontent.com/HYJ1817/fw-modules/main/widgets/fw-probe.js
 `maccms-source.js` 也会输出 `FW_MACCMS` 日志，包含收到的片名、每站的候选数与匹配质量，
 返回空时会明确写出原因（`no-title` / `no-match`）。
 
+## 分流规则集
+
+仓库里所有模块用到的站点域名已经整理成规则集，随模块更新一起维护（`npm run generate:rules` 生成，
+`npm run check:rules` 校验覆盖，缺域名会直接报错）：
+
+| 客户端 | 文件 | 说明 |
+| --- | --- | --- |
+| Quantumult X | `rules/fw-modules.qx.list` | `host-suffix` 语法，可作为 `filter_remote` 引用 |
+| Surge / Loon / Stash / Shadowrocket | `rules/fw-modules.surge.list` | `DOMAIN-SUFFIX` 语法 |
+| Clash / Mihomo | `rules/fw-modules.clash.yaml` | `rule-provider`（classical），只含域名，策略在 RULE-SET 那行指定 |
+
+```text
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.qx.list
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.surge.list
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.clash.yaml
+```
+
+Quantumult X 引用示例（策略名 `PROXY` 是占位符，换成自己的策略组，比如 `Emby`）：
+
+```text
+[filter_remote]
+https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.qx.list, tag=fw-modules, force-policy=Emby, enabled=true
+```
+
+Clash 引用示例：
+
+```yaml
+rule-providers:
+  fw-modules:
+    type: http
+    behavior: classical
+    url: https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.clash.yaml
+    path: ./rules/fw-modules.yaml
+    interval: 86400
+rules:
+  - RULE-SET,fw-modules,PROXY
+```
+
+规则按内容分了五组（里番 / 短剧 / AV / ONE 一个 / 影视），每条后面注明了归属模块。
+**ONE 一个的后端 API 与图床域名会随机轮换**，文件里列的是当前模块内的那一批，轮换后需要重新生成。
+
 ## 订阅（按内容分组）
 
 按内容拆成四份，**互不重叠，合起来等于全部 26 个组件**。只订阅你要的类型，列表里就不会混进别的：
@@ -152,6 +193,10 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **新增分流规则集** `rules/fw-modules.{qx.list,surge.list,clash.yaml}`：覆盖仓库 26 个模块用到的
+  52 个域名，按内容分五组；`npm run generate:rules` 生成、`npm run check:rules` 校验（缺域名直接报错，
+  已挂进 `verify:fast`）。
 
 - **`missav.js` 1.3.1**：列表取数加多镜像回退。当前站点被 CF 拦时，依次换 `missav.ws` → `missav.live` →
   `missav.fans` 再试一次，全失败时明确写出每个镜像的失败原因（HTTP 状态 / 无内容 / 请求失败），

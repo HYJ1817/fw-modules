@@ -1,0 +1,68 @@
+# fw-modules 站点域名 · Quantumult X
+# 用法：把本文件放进 [filter_local]，或作为 filter_remote 引用
+#   https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.qx.list
+# 策略名占位符 PROXY：换成你自己的策略组（例如 Emby）
+# 由 npm run generate:rules 生成，勿手改
+
+
+# ── 里番 / 动漫 ──
+host-suffix, hentaimama.io, PROXY   ; Hentaimama 站点与图片
+host-suffix, hstream.moe, PROXY   ; HStream 站点与播放
+host-suffix, yinhentai.com, PROXY   ; YinHentai 站点与播放
+host-suffix, hanime.tv, PROXY   ; Hanime 站点
+host-suffix, htv-services.com, PROXY   ; Hanime 搜索接口
+host-suffix, girigirilove.icu, PROXY   ; girigiri 动漫站点
+host-suffix, girigirilove.com, PROXY   ; girigiri 图片与 m3u8 CDN
+host-suffix, girigirilove.top, PROXY   ; girigiri 备用域名
+
+# ── 短剧 ──
+host-suffix, huangguoai.com, PROXY   ; 黄果短剧主站
+host-suffix, huangguoai.ai, PROXY   ; 黄果短剧备用站
+
+# ── AV ──
+host-suffix, supjav.blog, PROXY   ; SupJav 主站
+host-suffix, supjav.com, PROXY   ; SupJav 镜像
+host-suffix, upload18.org, PROXY   ; SupJav 播放器页
+host-suffix, upload18.cc, PROXY   ; SupJav 封面图床
+host-suffix, helvid.com, PROXY   ; SupJav HLS 签名 CDN
+host-suffix, supremejav.com, PROXY   ; SupJav embed 解析接口（lk1.）
+host-suffix, streamtape.com, PROXY   ; SupJav 备用线路 ST
+host-suffix, streamtape.net, PROXY   ; SupJav 备用线路 ST 备用域
+host-suffix, missav.fans, PROXY   ; MissAV 默认站
+host-suffix, missav.ws, PROXY   ; MissAV 主域
+host-suffix, missav.live, PROXY   ; MissAV 备用镜像
+host-suffix, mrstcdn.store, PROXY   ; MissAV 封面与 m3u8 CDN（surrit / fourhoi 子域）
+host-suffix, fourhoi.com, PROXY   ; MissAV 女优头像 CDN
+host-suffix, surrit.com, PROXY   ; MissAV 分片 CDN
+host-suffix, jable.tv, PROXY   ; Jable 主站
+host-suffix, fs1.app, PROXY   ; Jable 取页备用域
+host-suffix, xchina.co, PROXY   ; XChina 站点与语言镜像
+host-suffix, xchina.download, PROXY   ; XChina 图片 CDN
+host-suffix, myjav.tv, PROXY   ; XChina 播放 CDN
+host-suffix, avbebe.com, PROXY   ; Avbebe 站点
+host-suffix, 52cute.com, PROXY   ; Avbebe 播放 CDN
+host-suffix, getav.net, PROXY   ; GetAV 站点
+host-suffix, worldstatic.com, PROXY   ; GetAV 静态资源
+host-suffix, perverzija.com, PROXY   ; Perverzija 站点
+host-suffix, xtremestream.xyz, PROXY   ; Perverzija 播放 CDN
+host-suffix, wufazhuce.com, PROXY   ; ONE 一个官方站
+
+# ── ONE 一个的轮换域名（后端 API 与图床会变，用关键字兜） ──
+host-keyword, mfpt8g.com, PROXY   ; ONE 后端 API（随机前缀）
+host-keyword, hkq57tt.com, PROXY   ; ONE 图床
+host-keyword, 2u7qzt7.com, PROXY   ; ONE 图床
+host-keyword, s7n7ue8.com, PROXY   ; ONE 图床
+host-keyword, upmf83.com, PROXY   ; ONE 后端 API
+host-keyword, api.2b37894.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.3459381.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.35a46dd.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.43b8477.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.5ce3771.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.61c76a0.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.632d809.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.em1oifd0.com, PROXY   ; ONE 后端 API（会轮换）
+host-keyword, api.j7y675.com, PROXY   ; ONE 后端 API（会轮换）
+
+# ── 影视 ──
+host-suffix, 4kvm.net, PROXY   ; 4KVM 站点与播放
+host-suffix, jyzyapi.com, PROXY   ; 苹果CMS 默认采集站

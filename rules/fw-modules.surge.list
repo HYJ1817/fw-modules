@@ -1,0 +1,68 @@
+# fw-modules 站点域名 · Surge / Loon / Stash / Shadowrocket
+# 用法：作为规则集文件引用，或粘进 [Rule] 段
+#   https://raw.githubusercontent.com/HYJ1817/fw-modules/main/rules/fw-modules.surge.list
+# 策略名占位符 PROXY：换成你自己的策略组
+# 由 npm run generate:rules 生成，勿手改
+
+
+# ── 里番 / 动漫 ──
+DOMAIN-SUFFIX,hentaimama.io,PROXY
+DOMAIN-SUFFIX,hstream.moe,PROXY
+DOMAIN-SUFFIX,yinhentai.com,PROXY
+DOMAIN-SUFFIX,hanime.tv,PROXY
+DOMAIN-SUFFIX,htv-services.com,PROXY
+DOMAIN-SUFFIX,girigirilove.icu,PROXY
+DOMAIN-SUFFIX,girigirilove.com,PROXY
+DOMAIN-SUFFIX,girigirilove.top,PROXY
+
+# ── 短剧 ──
+DOMAIN-SUFFIX,huangguoai.com,PROXY
+DOMAIN-SUFFIX,huangguoai.ai,PROXY
+
+# ── AV ──
+DOMAIN-SUFFIX,supjav.blog,PROXY
+DOMAIN-SUFFIX,supjav.com,PROXY
+DOMAIN-SUFFIX,upload18.org,PROXY
+DOMAIN-SUFFIX,upload18.cc,PROXY
+DOMAIN-SUFFIX,helvid.com,PROXY
+DOMAIN-SUFFIX,supremejav.com,PROXY
+DOMAIN-SUFFIX,streamtape.com,PROXY
+DOMAIN-SUFFIX,streamtape.net,PROXY
+DOMAIN-SUFFIX,missav.fans,PROXY
+DOMAIN-SUFFIX,missav.ws,PROXY
+DOMAIN-SUFFIX,missav.live,PROXY
+DOMAIN-SUFFIX,mrstcdn.store,PROXY
+DOMAIN-SUFFIX,fourhoi.com,PROXY
+DOMAIN-SUFFIX,surrit.com,PROXY
+DOMAIN-SUFFIX,jable.tv,PROXY
+DOMAIN-SUFFIX,fs1.app,PROXY
+DOMAIN-SUFFIX,xchina.co,PROXY
+DOMAIN-SUFFIX,xchina.download,PROXY
+DOMAIN-SUFFIX,myjav.tv,PROXY
+DOMAIN-SUFFIX,avbebe.com,PROXY
+DOMAIN-SUFFIX,52cute.com,PROXY
+DOMAIN-SUFFIX,getav.net,PROXY
+DOMAIN-SUFFIX,worldstatic.com,PROXY
+DOMAIN-SUFFIX,perverzija.com,PROXY
+DOMAIN-SUFFIX,xtremestream.xyz,PROXY
+DOMAIN-SUFFIX,wufazhuce.com,PROXY
+
+# ── ONE 一个的轮换域名（后端 API 与图床会变，用关键字兜） ──
+DOMAIN-KEYWORD,mfpt8g.com,PROXY
+DOMAIN-KEYWORD,hkq57tt.com,PROXY
+DOMAIN-KEYWORD,2u7qzt7.com,PROXY
+DOMAIN-KEYWORD,s7n7ue8.com,PROXY
+DOMAIN-KEYWORD,upmf83.com,PROXY
+DOMAIN-KEYWORD,api.2b37894.com,PROXY
+DOMAIN-KEYWORD,api.3459381.com,PROXY
+DOMAIN-KEYWORD,api.35a46dd.com,PROXY
+DOMAIN-KEYWORD,api.43b8477.com,PROXY
+DOMAIN-KEYWORD,api.5ce3771.com,PROXY
+DOMAIN-KEYWORD,api.61c76a0.com,PROXY
+DOMAIN-KEYWORD,api.632d809.com,PROXY
+DOMAIN-KEYWORD,api.em1oifd0.com,PROXY
+DOMAIN-KEYWORD,api.j7y675.com,PROXY
+
+# ── 影视 ──
+DOMAIN-SUFFIX,4kvm.net,PROXY
+DOMAIN-SUFFIX,jyzyapi.com,PROXY
