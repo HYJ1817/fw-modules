@@ -69,13 +69,13 @@ rules:
 
 ## 订阅（按内容分组）
 
-按内容拆成四份，**互不重叠，合起来等于全部 27 个组件**。只订阅你要的类型，列表里就不会混进别的：
+按内容拆成四份，**互不重叠，合起来等于全部 28 个组件**。只订阅你要的类型，列表里就不会混进别的：
 
 | 分组 | 清单 | 组件 | 包含 |
 | --- | --- | --- | --- |
 | 里番 | `fw-hentai.fwd` | 9 | Hentaimama / HStream / YinHentai / Hanime（各含首页 + 播放源）+ girigiri 动漫 |
 | 短剧 | `fw-drama.fwd` | 3 | 黄果短剧 / 黑桃短剧 |
-| AV | `fw-av.fwd` | 13 | MissAV / Jable / XChina / Avbebe / SupJav 新版 + 四合一第三方四个 |
+| AV | `fw-av.fwd` | 14 | MissAV / Jable / XChina / Avbebe / SupJav 新版 / JAVDay + 四合一第三方四个 |
 | 影视 | `fw-movie.fwd` | 2 | 4KVM 播放源 / 苹果CMS 聚合源 |
 
 **订阅地址（推荐 raw，5 分钟内生效）**
@@ -159,6 +159,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | 黄果短剧 播放源 | 资源 | `widgets/huangguo-resource.js` | 默认线路与 HEVC 线路，播放前校验 CDN 鉴权头 |
 | girigiri 动漫 | 首页 + 资源 | `widgets/girigiri.js` | 动漫站首页、日番、搜索、详情与分集（WeBox 插件移植） |
 | 黑桃短剧 | 首页 + 资源 | `widgets/heitao.js` | 苹果CMS 短剧站：首页、栏目、题材、搜索、详情与分集（WeBox 插件移植） |
+| JAVDay | 首页（内联播放） | `widgets/javday.js` | 10 个栏目 + 搜索，详情直接给 m3u8（上游原生模块，已补元信息与搜索地址） |
 | SupJav 新版 | 首页 + 资源 | `widgets/supjav-webox.js` | WeBox 插件移植：多镜像、语言目录、embed 接口探测、packer 解包、广告过滤 |
 
 > **分类是按实测可播放比例挑的**：Avbebe 里 aiovg 播放器的源（`cdn2020.com`，实测无条件 451）
@@ -180,7 +181,7 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | --- | --- | --- | --- |
 | `maccms-source.js` | 1.0.0 | `4kvm-resource.js` | 1.0.1 |
 | `girigiri.js` | 1.0.1 | `supjav-webox.js` | 1.0.2 |
-| `heitao.js` | 1.0.0 | | |
+| `heitao.js` | 1.0.0 | `javday.js` | 1.2.0 |
 | `getav.js` | 0.5.0 | `one.js` | 2.2.0 |
 | `perverzija.js` | 1.2.0 | `supjav.js` | 1.3.0 |
 | `hstream.js` | 2.1.1 | `hstream-resource.js` | 1.0.0 |
@@ -195,6 +196,11 @@ https://cdn.jsdelivr.net/gh/HYJ1817/fw-modules@main/widgets/yinhentai-resource.j
 | `huangguo-resource.js` | 1.0.1 | `jable.js` | 1.0.0 |
 
 ### 最近变更
+
+- **新增 `javday.js` 1.2.0**：JAVDay（`javday.app`）上游是 Forward 原生模块，直接收进仓库并补齐规范：
+  10 个栏目各配一个固定入口函数（不再依赖宿主的 `type:"constant"` 参数）、模块补 `id`/`type`、补 `icon`、
+  搜索从模块改成元信息。另外站点对 `/search/?wd=` 查询串形式回 403，构建时改成路径形式 `/search/<关键词>/`。
+  实测：最新 28 条、人气 28 条、无码流出 24 条、玩偶姐姐 24 条、搜索 20 条、详情返回 `javday.homes` 的 m3u8。
 
 - **新增 `heitao.js` 1.0.0**：黑桃短剧（`heitaodj.com`，苹果CMS）的 WeBox 插件移植，并入「短剧」分组。
   站点用 `/index.php/vod/...` 标准路径，播放页给 `player_aaaa` 配置；上游带年龄门 Cookie 处理与导航发现，

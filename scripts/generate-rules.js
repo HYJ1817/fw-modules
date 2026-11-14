@@ -72,6 +72,8 @@ const GROUPS = [
       { suffix: "perverzija.com", note: "Perverzija 站点" },
       { suffix: "xtremestream.xyz", note: "Perverzija 播放 CDN" },
       { suffix: "wufazhuce.com", note: "ONE 一个官方站" },
+      { suffix: "javday.app", note: "JAVDay 站点" },
+      { suffix: "javday.homes", note: "JAVDay 播放 CDN" },
       { suffix: "api.2b37894.com", note: "ONE 后端 API（会轮换）" },
       { suffix: "api.3459381.com", note: "ONE 后端 API（会轮换）" },
       { suffix: "api.35a46dd.com", note: "ONE 后端 API（会轮换）" },
